@@ -231,7 +231,7 @@ const SHARED_DIR = 'supabase/functions/_shared';
 const IMPORT_RE = /import\s+([^;'"]*?)\s+from\s+['"]\.\.\/_shared\/([^'"]+)['"]\s*;?\s*\n?/g;
 // Dentro de _shared/: cobre `import ... from './x'`, `import type ...`,
 // `export * from './x'` e `export { X } from './x'` — inclusive em subpastas
-// (ex.: _shared/whatsapp/). A clause exclui aspas/; para não engolir código.
+// (ex.: uma subpasta de _shared/). A clause exclui aspas/; para não engolir código.
 const SHARED_RELATIVE_RE = /(?:import|export)\s+([^;'"]*?)\s+from\s+['"](\.{1,2}\/[^'"]+)['"]\s*;?\s*\n?/g;
 const EXPORT_RE = /^export\s+(default\s+)?/gm;
 
@@ -263,7 +263,7 @@ function loadSharedFile(name: string): string {
   }
   let source = readFileSync(path, 'utf8');
   // Imports/re-exports relativos resolvem contra o diretório DESTE arquivo
-  // (ex.: dentro de _shared/whatsapp/index.ts, './types.ts' → whatsapp/types.ts).
+  // (ex.: dentro de _shared/sub/index.ts, './types.ts' → sub/types.ts).
   const dir = norm.includes('/') ? norm.slice(0, norm.lastIndexOf('/')) : '';
   source = source.replace(SHARED_RELATIVE_RE, (_match, _clause, modulePath: string) => {
     const target = dir ? `${dir}/${modulePath}` : modulePath;

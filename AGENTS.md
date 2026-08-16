@@ -544,7 +544,7 @@ fallback default.
 
 ## Notas de migração e variáveis não-triviais
 
-- `tenant_members` foi renomeada para `app_users` na Fase 4 da migração SaaS
+- A tabela de membros chama-se `app_users`.
   → OSS. O enum `whatsapp_hub.tenant_role` manteve o nome por inércia, mas
   hoje só aceita `'admin' | 'operator'`.
 - A fonte de verdade das credenciais de aplicação é `public.app_settings`
