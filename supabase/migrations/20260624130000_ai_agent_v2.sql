@@ -16,14 +16,14 @@ ALTER TABLE whatsapp_hub.ai_agent_config
   ADD COLUMN IF NOT EXISTS model     TEXT NOT NULL DEFAULT 'gpt-4.1-mini',
   ADD COLUMN IF NOT EXISTS timezone  TEXT NOT NULL DEFAULT 'America/Sao_Paulo',
   ADD COLUMN IF NOT EXISTS variables JSONB NOT NULL DEFAULT jsonb_build_object(
-    'nome_do_agente',    'Sophia',
+    'nome_do_agente',    'Alex',
     'nome_da_empresa',   'Sua Empresa',
-    'segmento',          'Educação em IA',
-    'produtos_servicos', 'Ferramentas de IA',
-    'proposta_de_valor', 'IA traduzida em resultado de negócio — mais vendas e menos tempo operacional, com mão na massa',
-    'publico_alvo',      'Empreendedores e gestores não-técnicos',
-    'criterio_fit',      'Tem empresa real, uma dor clara que a IA pode resolver e intenção de agir',
-    'oferta_lead_frio',  'Diagnóstico de Maturidade em IA gratuito'
+    'segmento',          'seu segmento',
+    'produtos_servicos', 'seus produtos e servicos',
+    'proposta_de_valor', 'o resultado que voce entrega para o cliente',
+    'publico_alvo',      'quem voce atende',
+    'criterio_fit',      'o que faz um lead ter fit com voce',
+    'oferta_lead_frio',  'seu primeiro passo sem compromisso'
   );
 
 -- 2. Prompt SDR padrão. Aplica ao singleton existente apenas se o prompt

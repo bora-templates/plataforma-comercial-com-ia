@@ -39,7 +39,7 @@ const TIMEZONES = [
 ];
 
 const DEFAULT_VARIABLES: Record<string, string> = {
-  nome_do_agente: 'Sophia',
+  nome_do_agente: 'Alex',
   nome_da_empresa: BRAND.companyName,
   segmento: 'Educação em IA',
   produtos_servicos: 'Ferramentas de IA',
