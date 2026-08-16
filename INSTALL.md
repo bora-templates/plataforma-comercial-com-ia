@@ -1,4 +1,4 @@
-# Guia de Instalação — Plataforma Comercial (Bora! IA)
+# Guia de Instalação — Plataforma Comercial com IA
 
 White-label self-hosted: **Plataforma Comercial com IA + CRM** (funil comercial, entrega de
 projetos e educação) numa instância só, para uma organização.

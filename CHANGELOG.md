@@ -18,7 +18,7 @@ codebase to a single-organization deployable image.
   environment variables (`META_*`, `OPENAI_API_KEY`, `LLM_PROVIDER`,
   `LLM_API_KEY`) instead of the encrypted `tenant_credentials` table.
 - White-label (dynamic logo / favicon / brand colors) removed. The fixed
-  Bora! IA dark glassmorphism theme is the only theme.
+  The dark glassmorphism theme is the only theme.
 - Onboarding wizard collapsed into `SettingsPage` sections (AI agent, business
   hours, team, account, Supabase).
 - Roles consolidated to `admin` / `operator`. The first signed-up user is
@@ -45,7 +45,7 @@ codebase to a single-organization deployable image.
   browser on first visit; nothing about the build needs to change per
   deployment.
 - Supabase schema namespace `whatsapp_hub` — the Supabase project may be
-  shared with other Bora! IA apps.
+  shared with other apps.
 - Meta tier caps (`tier_250` / `tier_1k` / `tier_10k` / `tier_100k`) — these
   are official Meta limits, not commercial plans, and gate the dispatcher
   batch size.

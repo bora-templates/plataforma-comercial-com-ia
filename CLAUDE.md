@@ -1,8 +1,8 @@
-# CLAUDE.md — Plataforma Comercial com IA (Bora! IA)
+# CLAUDE.md — Plataforma Comercial com IA
 
 ## Visão geral
 
-Plataforma open source self-hosted de automação WhatsApp. Uma instância
+Plataforma self-hosted de automação WhatsApp. Uma instância
 atende **uma única organização**: criação de templates assistida por IA,
 aprovação na Meta via Zernio, disparos em massa por Broadcasts, agente de IA
 com RAG, inbox em tempo real com handoff IA ↔ humano, dashboard analítico.
@@ -45,7 +45,7 @@ envs core na Vercel e persiste credenciais de aplicação criptografadas em
 
 ## Arquitetura multi-schema (Supabase compartilhado)
 
-O mesmo Supabase pode hospedar várias apps Bora! IA. Cada app vive em seu
+O mesmo Supabase pode hospedar várias apps. Cada app vive em seu
 próprio schema PostgreSQL.
 
 ### Schemas ativos
