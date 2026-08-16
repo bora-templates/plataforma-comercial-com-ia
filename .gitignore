@@ -1,0 +1,70 @@
+# Node / Vite
+node_modules/
+dist/
+dist-ssr/
+*.local
+.vite/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs/
+*.log
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+.env.*.local
+.env.*
+*.env
+
+# Mantém apenas o template
+!.env.example
+
+# Credenciais e secrets diversos
+*.pem
+*.key
+secrets.json
+credentials.json
+config.local.json
+
+# Arquivo local de rotação de credenciais — não commitar
+ROTATION_CHECKLIST.md
+
+# Supabase local
+supabase/.branches/
+supabase/.temp/
+supabase/.env
+supabase/functions/**/.env
+**/supabase/.branches/
+**/supabase/.temp/
+
+# OS
+Thumbs.db
+
+# Playwright
+tests/.artifacts/
+
+# TypeScript incremental build cache (build artifact)
+*.tsbuildinfo
+
+.vercel
+.env.tracking-dev
+
+.env*
