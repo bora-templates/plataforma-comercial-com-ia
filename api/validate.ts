@@ -49,6 +49,16 @@ async function validateCore(
     case 'supabase_service_role_key': {
       const url = (context.supabase_url ?? '').trim().replace(/\/$/, '');
       if (!url || !v) return { ok: false, message: 'Preencha URL e chave.' };
+      // O Supabase passou a exibir primeiro as chaves novas (sb_publishable_ /
+      // sb_secret_) e mandou anon/service_role para a aba "Legacy". A
+      // publishable ainda responde 200 no ping abaixo, entao passaria como se
+      // fosse a anon e so quebraria depois. Barramos aqui, com o caminho.
+      if (/^sb_(publishable|secret)_/.test(v)) {
+        return {
+          ok: false,
+          message: 'Esta e a chave nova. Use as da aba "Legacy anon, service_role" em Settings > API Keys.',
+        };
+      }
       // Guard against SSRF: only ping a real Supabase project host.
       if (!SUPABASE_URL_RE.test(url)) {
         return { ok: false, message: 'SUPABASE_URL invalida.' };

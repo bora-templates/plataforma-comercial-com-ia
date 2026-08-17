@@ -386,7 +386,7 @@ export default function SetupPage() {
                 Antes de iniciar, deixe abertas as contas onde voce vai copiar os tokens de bootstrap.
               </p>
               <div className="space-y-4">
-                <PrepItem n={1} title="Criar projeto Supabase" text="Crie um projeto vazio e copie URL, anon key e service role key." href="https://supabase.com/dashboard/new" pills={['SUPABASE_URL', 'ANON_KEY', 'SERVICE_ROLE']} />
+                <PrepItem n={1} title="Criar projeto Supabase" text="Crie um projeto vazio. Em Settings > API Keys, abra a aba Legacy anon, service_role e copie as duas. As chaves novas (sb_publishable / sb_secret) NAO servem aqui." href="https://supabase.com/dashboard/new" pills={['SUPABASE_URL', 'ANON_KEY', 'SERVICE_ROLE']} />
                 <PrepItem n={2} title="Gerar PAT Supabase" text="Crie um Personal Access Token para rodar migrations e deployar Edge Functions." href="https://supabase.com/dashboard/account/tokens" pills={['SUPABASE_PAT']} />
                 <PrepItem n={3} title="Gerar Vercel Token" text="Crie um token para o wizard configurar envs core e disparar o redeploy." href="https://vercel.com/account/tokens" pills={['VERCEL_TOKEN']} />
               </div>
