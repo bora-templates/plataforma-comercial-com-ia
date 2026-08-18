@@ -124,6 +124,6 @@ export function getDealOrigin(lead: DealOriginInput | null | undefined): DealOri
 export const TONE_PILL_CLASS: Record<TrafficTone, string> = {
   pago: 'border-[rgba(var(--accent-rgb),0.35)] bg-[rgba(var(--accent-rgb),0.12)] text-[var(--accent-secondary)]',
   organico: 'border-[rgba(16,185,129,0.35)] bg-[rgba(16,185,129,0.12)] text-[#34D399]',
-  manual: 'border-[rgba(148,163,184,0.35)] bg-[rgba(148,163,184,0.12)] text-[#CBD5E1]',
+  manual: 'border-[rgba(148,163,184,0.35)] bg-[rgba(148,163,184,0.12)] text-[var(--text-label)]',
   outro: 'border-[rgba(148,163,184,0.25)] bg-[rgba(148,163,184,0.08)] text-[var(--color-text-secondary)]',
 };

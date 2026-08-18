@@ -178,8 +178,8 @@ export function ContactFormDialog({ open, onClose, contact, onSaved }: ContactFo
                     onClick={() => toggleTag(t.id)}
                     className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium transition-all ${
                       active
-                        ? 'bg-white/10 text-[var(--color-text-primary)] ring-2'
-                        : 'bg-white/[0.03] text-[var(--color-text-secondary)] opacity-70 hover:opacity-100'
+                        ? 'bg-[rgba(var(--surface-rgb),0.10)] text-[var(--color-text-primary)] ring-2'
+                        : 'bg-[rgba(var(--surface-rgb),0.03)] text-[var(--color-text-secondary)] opacity-70 hover:opacity-100'
                     }`}
                     style={active ? { boxShadow: `0 0 0 2px ${t.color}55 inset` } : undefined}
                   >

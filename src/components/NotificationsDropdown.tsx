@@ -59,14 +59,14 @@ export function NotificationsDropdown() {
       >
         <Bell className="h-4.5 w-4.5" />
         {unreadCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] rounded-full bg-[var(--color-error)] text-white text-[10px] font-bold flex items-center justify-center px-1">
+          <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] rounded-full bg-[var(--color-error)] text-[var(--on-accent)] text-[10px] font-bold flex items-center justify-center px-1">
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
       </Button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-[360px] max-w-[calc(100vw-1.5rem)] rounded-xl border border-[rgba(var(--accent-rgb),0.25)] bg-[#0F1223] shadow-2xl z-50 overflow-hidden max-h-[70vh] flex flex-col">
+        <div className="absolute right-0 mt-2 w-[360px] max-w-[calc(100vw-1.5rem)] rounded-xl border border-[rgba(var(--accent-rgb),0.25)] bg-[var(--bg-card)] shadow-2xl z-50 overflow-hidden max-h-[70vh] flex flex-col">
           <div className="flex items-center justify-between p-3 border-b border-[rgba(var(--accent-rgb),0.1)]">
             <div>
               <div className="text-label">Notificações</div>
@@ -98,7 +98,7 @@ export function NotificationsDropdown() {
                         onClick={() => handleItemClick(n)}
                         className={cn(
                           'w-full text-left p-3 flex items-start gap-3 transition-colors',
-                          'hover:bg-white/[0.03]',
+                          'hover:bg-[rgba(var(--surface-rgb),0.03)]',
                           !n.is_read && 'bg-[rgba(var(--accent-rgb),0.04)]',
                         )}
                       >

@@ -48,8 +48,8 @@ const brl = (n: number) =>
 const STATUS_OPTIONS = ['pending', 'sent', 'converted', 'snoozed'];
 
 const inputCls =
-  'w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.03] px-3 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--accent-primary)]';
-const selectCls = `${inputCls} [&>option]:bg-[#0A0A0F]`;
+  'w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-[rgba(var(--surface-rgb),0.03)] px-3 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--accent-primary)]';
+const selectCls = `${inputCls} [&>option]:bg-[var(--bg-primary)]`;
 
 export default function VendasPage() {
   const { role } = useAppUser();
@@ -279,7 +279,7 @@ export default function VendasPage() {
             <button
               onClick={() => fileRef.current?.click()}
               disabled={busy}
-              className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-br from-[var(--accent-deep)] to-[var(--accent-primary)] px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
+              className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-br from-[var(--accent-deep)] to-[var(--accent-primary)] px-4 py-2 text-sm font-semibold text-[var(--on-accent)] transition hover:opacity-90 disabled:opacity-60"
             >
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
               Subir Excel/CSV
@@ -356,7 +356,7 @@ export default function VendasPage() {
               value={templateName}
               onChange={(e) => setTemplateName(e.target.value)}
               placeholder="ex: reposicao_estoque"
-              className="flex-1 rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.03] px-3 py-1.5 text-xs text-[var(--color-text-primary)] outline-none focus:border-[var(--accent-primary)]"
+              className="flex-1 rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-[rgba(var(--surface-rgb),0.03)] px-3 py-1.5 text-xs text-[var(--color-text-primary)] outline-none focus:border-[var(--accent-primary)]"
             />
             <button
               onClick={saveTemplateName}
@@ -425,7 +425,7 @@ export default function VendasPage() {
                             setMenuFor({ id: p.id, top: r.bottom + 4, left: Math.max(8, r.right - 208) });
                           }}
                           aria-label="Ações"
-                          className="rounded-md p-1 text-[var(--color-text-secondary)] transition hover:bg-white/5 hover:text-[var(--color-text-primary)]"
+                          className="rounded-md p-1 text-[var(--color-text-secondary)] transition hover:bg-[rgba(var(--surface-rgb),0.05)] hover:text-[var(--color-text-primary)]"
                         >
                           {dispatching === p.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <MoreVertical className="h-4 w-4" />}
                         </button>
@@ -434,15 +434,15 @@ export default function VendasPage() {
                             <div className="fixed inset-0 z-10" onClick={() => setMenuFor(null)} />
                             <div
                               style={{ position: 'fixed', top: menuFor.top, left: menuFor.left }}
-                              className="z-20 w-52 rounded-lg border border-[rgba(var(--accent-rgb),0.25)] bg-[#0A0A0F] p-1 text-left shadow-[0_0_30px_rgba(var(--accent-rgb),0.15)]"
+                              className="z-20 w-52 rounded-lg border border-[rgba(var(--accent-rgb),0.25)] bg-[var(--bg-primary)] p-1 text-left shadow-[0_0_30px_rgba(var(--accent-rgb),0.15)]"
                             >
-                              <button onClick={() => void dispatchNow(p)} className="block w-full rounded-md px-3 py-2 text-left text-xs text-[var(--color-text-primary)] transition hover:bg-white/5">
+                              <button onClick={() => void dispatchNow(p)} className="block w-full rounded-md px-3 py-2 text-left text-xs text-[var(--color-text-primary)] transition hover:bg-[rgba(var(--surface-rgb),0.05)]">
                                 Disparar mensagem agora
                               </button>
-                              <button onClick={() => { setMenuFor(null); setEditing({ ...p }); }} className="block w-full rounded-md px-3 py-2 text-left text-xs text-[var(--color-text-primary)] transition hover:bg-white/5">
+                              <button onClick={() => { setMenuFor(null); setEditing({ ...p }); }} className="block w-full rounded-md px-3 py-2 text-left text-xs text-[var(--color-text-primary)] transition hover:bg-[rgba(var(--surface-rgb),0.05)]">
                                 Editar informações
                               </button>
-                              <button onClick={() => void removePrediction(p)} className="block w-full rounded-md px-3 py-2 text-left text-xs text-[var(--color-error)] transition hover:bg-white/5">
+                              <button onClick={() => void removePrediction(p)} className="block w-full rounded-md px-3 py-2 text-left text-xs text-[var(--color-error)] transition hover:bg-[rgba(var(--surface-rgb),0.05)]">
                                 Remover da lista
                               </button>
                             </div>
@@ -507,7 +507,7 @@ export default function VendasPage() {
               ))}
             </div>
             {/* Amostra das 3 primeiras linhas para conferência */}
-            <div className="max-h-32 overflow-auto rounded-lg border border-[rgba(var(--accent-rgb),0.12)] bg-white/[0.02] p-2 text-[11px] text-[var(--color-text-secondary)]">
+            <div className="max-h-32 overflow-auto rounded-lg border border-[rgba(var(--accent-rgb),0.12)] bg-[rgba(var(--surface-rgb),0.02)] p-2 text-[11px] text-[var(--color-text-secondary)]">
               {sheet.rows.slice(0, 3).map((r, i) => (
                 <div key={i} className="truncate">{(r as unknown[]).map((c) => String(c ?? '')).join(' · ')}</div>
               ))}
@@ -536,7 +536,7 @@ export default function VendasPage() {
             </p>
             <div className="overflow-hidden rounded-lg border border-[rgba(var(--accent-rgb),0.12)]">
               <table className="w-full text-sm">
-                <thead className="bg-white/[0.03] text-left text-[var(--color-text-secondary)]">
+                <thead className="bg-[rgba(var(--surface-rgb),0.03)] text-left text-[var(--color-text-secondary)]">
                   <tr>
                     <th className="px-3 py-2 font-medium">Produto</th>
                     <th className="px-3 py-2 font-medium text-right">Quantidade</th>

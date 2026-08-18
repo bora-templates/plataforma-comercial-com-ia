@@ -29,7 +29,7 @@ export function MobileNav({ open, onClose }: MobileNavProps) {
       aria-hidden={!open}
     >
       <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-[rgba(var(--shadow-rgb),0.60)] backdrop-blur-sm"
         onClick={onClose}
       />
       <aside
@@ -52,7 +52,7 @@ export function MobileNav({ open, onClose }: MobileNavProps) {
           <button
             onClick={onClose}
             aria-label="Fechar menu"
-            className="h-11 w-11 flex items-center justify-center rounded-lg text-[var(--color-text-secondary)] hover:bg-white/5 hover:text-[var(--color-text-primary)] transition-all duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+            className="h-11 w-11 flex items-center justify-center rounded-lg text-[var(--color-text-secondary)] hover:bg-[rgba(var(--surface-rgb),0.05)] hover:text-[var(--color-text-primary)] transition-all duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
           >
             <X className="h-5 w-5" />
           </button>
@@ -71,7 +71,7 @@ export function MobileNav({ open, onClose }: MobileNavProps) {
                     'flex items-center gap-3 rounded-lg px-3 min-h-11 text-sm font-medium transition-all duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]',
                     isActive
                       ? 'bg-[rgba(var(--accent-rgb),0.12)] text-[var(--color-text-primary)] shadow-[0_0_30px_rgba(var(--accent-rgb),0.15)]'
-                      : 'text-[var(--color-text-secondary)] hover:bg-white/5 hover:text-[var(--color-text-primary)]',
+                      : 'text-[var(--color-text-secondary)] hover:bg-[rgba(var(--surface-rgb),0.05)] hover:text-[var(--color-text-primary)]',
                   )
                 }
               >

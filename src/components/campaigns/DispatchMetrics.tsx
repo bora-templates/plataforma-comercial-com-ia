@@ -78,14 +78,14 @@ export function DispatchMetrics() {
           </div>
         </div>
 
-        <div className="flex items-center gap-1 rounded-lg border border-[rgba(var(--accent-rgb),0.12)] p-1 bg-white/[0.02]">
+        <div className="flex items-center gap-1 rounded-lg border border-[rgba(var(--accent-rgb),0.12)] p-1 bg-[rgba(var(--surface-rgb),0.02)]">
           {PERIODS.map((p) => (
             <button
               key={p.value}
               onClick={() => setPeriod(p.value)}
               className={
                 period === p.value
-                  ? 'rounded-md px-3 py-1 text-xs font-semibold bg-[var(--accent-primary)] text-white'
+                  ? 'rounded-md px-3 py-1 text-xs font-semibold bg-[var(--accent-primary)] text-[var(--on-accent)]'
                   : 'rounded-md px-3 py-1 text-xs font-semibold text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
               }
             >
@@ -128,7 +128,7 @@ export function DispatchMetrics() {
                   .map(([label, v]) => (
                     <span
                       key={label}
-                      className="rounded-full border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.02] px-3 py-1 text-[11px] text-[var(--color-text-secondary)]"
+                      className="rounded-full border border-[rgba(var(--accent-rgb),0.2)] bg-[rgba(var(--surface-rgb),0.02)] px-3 py-1 text-[11px] text-[var(--color-text-secondary)]"
                     >
                       {label}: <span className="font-mono text-[var(--color-text-primary)]">{v}</span>
                     </span>
@@ -186,11 +186,11 @@ export function DispatchMetrics() {
                   <CartesianGrid stroke="rgba(var(--accent-rgb),0.08)" vertical={false} />
                   <XAxis
                     dataKey="day"
-                    tick={{ fontSize: 11, fill: '#94A3B8' }}
+                    tick={{ fontSize: 11, fill: 'var(--text-secondary)' }}
                     tickFormatter={(d) => (typeof d === 'string' ? d.slice(5) : '')}
                     stroke="rgba(var(--accent-rgb),0.2)"
                   />
-                  <YAxis tick={{ fontSize: 11, fill: '#94A3B8' }} stroke="rgba(var(--accent-rgb),0.2)" allowDecimals={false} />
+                  <YAxis tick={{ fontSize: 11, fill: 'var(--text-secondary)' }} stroke="rgba(var(--accent-rgb),0.2)" allowDecimals={false} />
                   <Tooltip
                     contentStyle={{
                       background: 'rgba(15,18,35,0.95)',
@@ -198,7 +198,7 @@ export function DispatchMetrics() {
                       borderRadius: 10,
                       fontSize: 12,
                     }}
-                    labelStyle={{ color: '#F8FAFC' }}
+                    labelStyle={{ color: 'var(--text-primary)' }}
                   />
                   <Legend wrapperStyle={{ fontSize: 11 }} />
                   <Line
@@ -294,12 +294,12 @@ export function DispatchMetrics() {
                 barCategoryGap={10}
               >
                 <CartesianGrid stroke="rgba(var(--accent-rgb),0.08)" horizontal={false} />
-                <XAxis type="number" tick={{ fontSize: 11, fill: '#94A3B8' }} stroke="rgba(var(--accent-rgb),0.2)" allowDecimals={false} />
+                <XAxis type="number" tick={{ fontSize: 11, fill: 'var(--text-secondary)' }} stroke="rgba(var(--accent-rgb),0.2)" allowDecimals={false} />
                 <YAxis
                   type="category"
                   dataKey="name"
                   width={90}
-                  tick={{ fontSize: 11, fill: '#CBD5E1' }}
+                  tick={{ fontSize: 11, fill: 'var(--text-label)' }}
                   stroke="rgba(var(--accent-rgb),0.2)"
                 />
                 <Tooltip

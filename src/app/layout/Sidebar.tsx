@@ -67,7 +67,7 @@ export function Sidebar() {
                 cn(
                   'flex items-center rounded-lg py-2.5 text-sm font-medium transition-all',
                   collapsed ? 'justify-center px-0' : 'gap-3 px-3',
-                  'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/5',
+                  'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[rgba(var(--surface-rgb),0.05)]',
                   isActive &&
                     'bg-gradient-to-r from-[rgba(var(--accent-rgb),0.18)] to-[rgba(var(--accent-rgb),0.04)] text-[var(--color-text-primary)] shadow-[inset_0_1px_0_rgba(var(--accent-rgb),0.15)]',
                 )
@@ -88,7 +88,7 @@ export function Sidebar() {
         aria-label={collapsed ? 'Expandir menu' : 'Recolher menu'}
         title={collapsed ? 'Expandir menu' : 'Recolher menu'}
         className={cn(
-          'fixed top-1/2 z-30 hidden h-7 w-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-[rgba(var(--accent-rgb),0.3)] bg-[#0F1223] text-[var(--color-text-secondary)] shadow-[0_2px_12px_rgba(0,0,0,0.5)] transition-[left,color,border-color] duration-[420ms] ease-[cubic-bezier(0.65,0,0.35,1)] hover:border-[var(--accent-primary)] hover:text-[var(--color-text-primary)] md:flex',
+          'fixed top-1/2 z-30 hidden h-7 w-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-[rgba(var(--accent-rgb),0.3)] bg-[var(--bg-card)] text-[var(--color-text-secondary)] shadow-[0_2px_12px_rgba(0,0,0,0.5)] transition-[left,color,border-color] duration-[420ms] ease-[cubic-bezier(0.65,0,0.35,1)] hover:border-[var(--accent-primary)] hover:text-[var(--color-text-primary)] md:flex',
           collapsed ? 'left-16' : 'left-60',
         )}
       >

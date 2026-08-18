@@ -49,7 +49,7 @@ function Badge({ tone, children }: { tone: 'green' | 'amber' | 'gray'; children:
       ? 'bg-[rgba(16,185,129,0.12)] text-[var(--color-success)]'
       : tone === 'amber'
         ? 'bg-[rgba(245,158,11,0.12)] text-[#FBBF24]'
-        : 'bg-white/5 text-[var(--color-text-secondary)]';
+        : 'bg-[rgba(var(--surface-rgb),0.05)] text-[var(--color-text-secondary)]';
   return (
     <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold ${cls}`}>
       {children}
@@ -332,7 +332,7 @@ export function ContactPanel({
               toast.error('Falha', { description: err instanceof Error ? err.message : String(err) });
             }
           }}
-          className="h-11 w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.03] px-3 text-sm text-[var(--color-text-primary)]"
+          className="h-11 w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-[rgba(var(--surface-rgb),0.03)] px-3 text-sm text-[var(--color-text-primary)]"
         >
           <option value="">Ninguém</option>
           {operators.map((op) => (
@@ -357,7 +357,7 @@ export function ContactPanel({
                 toast.error('Falha', { description: err instanceof Error ? err.message : String(err) });
               }
             }}
-            className="h-11 w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.03] px-3 text-sm text-[var(--color-text-primary)]"
+            className="h-11 w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-[rgba(var(--surface-rgb),0.03)] px-3 text-sm text-[var(--color-text-primary)]"
           >
             <option value="">Nenhum</option>
             {openDeals.map((d) => (
@@ -405,13 +405,13 @@ export function ContactPanel({
                 onChange={(e) => setLostReason(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && void markOutcome('lost')}
                 placeholder="Motivo da perda (opcional)"
-                className="h-11 w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.03] px-3 text-sm text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
+                className="h-11 w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-[rgba(var(--surface-rgb),0.03)] px-3 text-sm text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
                 autoFocus
               />
               <button
                 onClick={() => void markOutcome('lost')}
                 disabled={savingOutcome}
-                className="w-full rounded-lg bg-[#EF4444] py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
+                className="w-full rounded-lg bg-[#EF4444] py-2 text-sm font-semibold text-[var(--on-accent)] transition hover:opacity-90 disabled:opacity-50"
               >
                 Confirmar perda
               </button>

@@ -261,7 +261,7 @@ function StatusBadge({ status }: { status: 'active' | 'archived' }) {
       className={
         active
           ? 'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-[rgba(16,185,129,0.12)] text-[#10B981]'
-          : 'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-white/5 text-[var(--color-text-secondary)]'
+          : 'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-[rgba(var(--surface-rgb),0.05)] text-[var(--color-text-secondary)]'
       }
     >
       {active ? 'Ativa' : 'Desativada'}
@@ -287,7 +287,7 @@ function IconAction({
       disabled={disabled}
       aria-label={label}
       title={label}
-      className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--color-text-secondary)] transition hover:bg-white/5 hover:text-[var(--color-text-primary)] disabled:opacity-40 disabled:hover:bg-transparent"
+      className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--color-text-secondary)] transition hover:bg-[rgba(var(--surface-rgb),0.05)] hover:text-[var(--color-text-primary)] disabled:opacity-40 disabled:hover:bg-transparent"
     >
       {icon}
     </button>

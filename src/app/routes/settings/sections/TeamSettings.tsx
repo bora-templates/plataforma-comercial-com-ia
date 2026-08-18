@@ -189,7 +189,7 @@ export function TeamSettings() {
                 value={role}
                 onChange={(e) => setRole(e.target.value as Role)}
                 disabled={inviting}
-                className="h-11 w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.03] px-4 text-sm text-[var(--color-text-primary)]"
+                className="h-11 w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-[rgba(var(--surface-rgb),0.03)] px-4 text-sm text-[var(--color-text-primary)]"
               >
                 <option value="admin">Admin</option>
                 <option value="operator">Operador</option>
@@ -222,7 +222,7 @@ export function TeamSettings() {
               Nenhum membro ainda.
             </div>
           ) : (
-            <ul className="divide-y divide-[rgba(var(--accent-rgb),0.08)] rounded-lg border border-[rgba(var(--accent-rgb),0.1)] bg-white/[0.02]">
+            <ul className="divide-y divide-[rgba(var(--accent-rgb),0.08)] rounded-lg border border-[rgba(var(--accent-rgb),0.1)] bg-[rgba(var(--surface-rgb),0.02)]">
               {members.map((m) => (
                 <li
                   key={m.id}
@@ -381,7 +381,7 @@ function LeadQueueManager() {
                   onDragStart={() => { dragIdx.current = i; }}
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={() => onDrop(i)}
-                  className="flex items-center justify-between gap-3 rounded-lg border border-[rgba(var(--accent-rgb),0.15)] bg-white/[0.02] px-3 py-2"
+                  className="flex items-center justify-between gap-3 rounded-lg border border-[rgba(var(--accent-rgb),0.15)] bg-[rgba(var(--surface-rgb),0.02)] px-3 py-2"
                 >
                   <div className="flex min-w-0 items-center gap-2">
                     <GripVertical className="h-4 w-4 shrink-0 cursor-grab text-[var(--color-text-secondary)]" />
@@ -416,7 +416,7 @@ function LeadQueueManager() {
                 id="queue_add"
                 value={addChoice}
                 onChange={(e) => setAddChoice(e.target.value)}
-                className="h-11 w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.03] px-4 text-sm text-[var(--color-text-primary)]"
+                className="h-11 w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-[rgba(var(--surface-rgb),0.03)] px-4 text-sm text-[var(--color-text-primary)]"
               >
                 <option value="">Selecione um membro…</option>
                 {available.map((o) => (

@@ -51,7 +51,7 @@ const EMPTY_NEW: NewRule = {
 };
 
 const selectCls =
-  'rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.03] px-2 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--accent-primary)] [&>option]:bg-[#0A0A0F]';
+  'rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-[rgba(var(--surface-rgb),0.03)] px-2 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--accent-primary)] [&>option]:bg-[var(--bg-primary)]';
 
 export function UtmChannelMapEditor() {
   const [rules, setRules] = useState<MapRule[]>([]);
@@ -182,14 +182,14 @@ export function UtmChannelMapEditor() {
             {rules.map((r) => (
               <div
                 key={r.id}
-                className="flex flex-wrap items-center gap-2 rounded-lg border border-[rgba(var(--accent-rgb),0.08)] bg-white/[0.02] px-3 py-2"
+                className="flex flex-wrap items-center gap-2 rounded-lg border border-[rgba(var(--accent-rgb),0.08)] bg-[rgba(var(--surface-rgb),0.02)] px-3 py-2"
               >
-                <span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px] uppercase tracking-wide text-[var(--color-text-secondary)]">
+                <span className="rounded-full bg-[rgba(var(--surface-rgb),0.05)] px-2 py-0.5 text-[10px] uppercase tracking-wide text-[var(--color-text-secondary)]">
                   {MATCH_TYPES.find((m) => m.value === r.match_type)?.label ?? r.match_type}
                 </span>
                 <code className="text-xs text-[var(--color-text-primary)]">{r.match_value}</code>
                 <span className="text-[var(--color-text-secondary)]">→</span>
-                <span className={`text-xs font-semibold ${r.traffic_type === 'pago' ? 'text-[var(--accent-secondary)]' : r.traffic_type === 'organico' ? 'text-[#34D399]' : 'text-[#CBD5E1]'}`}>
+                <span className={`text-xs font-semibold ${r.traffic_type === 'pago' ? 'text-[var(--accent-secondary)]' : r.traffic_type === 'organico' ? 'text-[#34D399]' : 'text-[var(--text-label)]'}`}>
                   {r.traffic_type}
                 </span>
                 <span className="text-xs text-[var(--color-text-secondary)]">/ {r.origin_channel}</span>

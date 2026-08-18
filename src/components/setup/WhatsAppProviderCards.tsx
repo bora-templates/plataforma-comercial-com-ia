@@ -33,10 +33,10 @@ export function WhatsAppProviderCards({
       {/* Card 1 — API Oficial (Zernio) */}
       <div className="glass-card p-5">
         <div className="mb-1 flex items-center gap-2">
-          <span className="text-base font-semibold text-[#F8FAFC]">API Oficial do WhatsApp</span>
+          <span className="text-base font-semibold text-[var(--text-primary)]">API Oficial do WhatsApp</span>
           <OptionalBadge />
         </div>
-        <p className="mb-3 text-[13px] leading-5 text-[#94A3B8]">
+        <p className="mb-3 text-[13px] leading-5 text-[var(--text-secondary)]">
           Insira a Zernio API Key. Atribuição automática via Click-to-WhatsApp (ctwa_clid) e
           conformidade Meta.
         </p>
@@ -51,10 +51,10 @@ export function WhatsAppProviderCards({
       {/* Card 2 — API Não Oficial (Uazapi) */}
       <div className="glass-card p-5">
         <div className="mb-1 flex items-center gap-2">
-          <span className="text-base font-semibold text-[#F8FAFC]">API Não Oficial do WhatsApp</span>
+          <span className="text-base font-semibold text-[var(--text-primary)]">API Não Oficial do WhatsApp</span>
           <OptionalBadge />
         </div>
-        <p className="mb-3 text-[13px] leading-5 text-[#94A3B8]">
+        <p className="mb-3 text-[13px] leading-5 text-[var(--text-secondary)]">
           Insira a URL Server e o Instance Token da Uazapi. Caminho acessível; atribuição via código
           de rastreio.
         </p>

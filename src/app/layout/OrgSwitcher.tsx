@@ -103,7 +103,7 @@ export function OrgSwitcher() {
       <button
         onClick={() => setOpen((v) => !v)}
         aria-label="Trocar de organização"
-        className="flex items-center gap-1.5 rounded-lg px-2 py-1 -my-1 transition hover:bg-white/5"
+        className="flex items-center gap-1.5 rounded-lg px-2 py-1 -my-1 transition hover:bg-[rgba(var(--surface-rgb),0.05)]"
       >
         {label}
         <ChevronDown
@@ -112,7 +112,7 @@ export function OrgSwitcher() {
       </button>
 
       {open ? (
-        <div className="absolute right-2 top-[calc(100%+10px)] z-50 w-64 overflow-hidden rounded-2xl border border-[rgba(var(--accent-rgb),0.25)] bg-[#0F1223] p-1.5 shadow-[0_0_40px_rgba(0,0,0,0.6)]">
+        <div className="absolute right-2 top-[calc(100%+10px)] z-50 w-64 overflow-hidden rounded-2xl border border-[rgba(var(--accent-rgb),0.25)] bg-[var(--bg-card)] p-1.5 shadow-[0_0_40px_rgba(0,0,0,0.6)]">
           <div className="px-2.5 py-1.5 text-[0.65rem] uppercase tracking-[0.12em] text-[var(--color-text-secondary)]">
             Organizações
           </div>
@@ -128,7 +128,7 @@ export function OrgSwitcher() {
                 key={org.id}
                 onClick={() => void switchTo(org)}
                 disabled={switching !== null || org.status === 'archived'}
-                className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-sm text-[var(--color-text-primary)] transition hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-sm text-[var(--color-text-primary)] transition hover:bg-[rgba(var(--surface-rgb),0.05)] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Building2 className="h-4 w-4 shrink-0 text-[var(--accent-secondary)]" />
                 <span className="min-w-0 flex-1 truncate">{org.name}</span>

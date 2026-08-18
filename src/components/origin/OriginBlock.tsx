@@ -28,7 +28,7 @@ export function OriginBlock({ deal }: { deal: DealOriginInput | null | undefined
     return (
       <section className="space-y-2">
         <div className="text-label">Origem</div>
-        <div className="rounded-lg border border-[rgba(var(--accent-rgb),0.12)] bg-white/[0.02] px-3 py-3 text-sm text-[var(--color-text-secondary)]">
+        <div className="rounded-lg border border-[rgba(var(--accent-rgb),0.12)] bg-[rgba(var(--surface-rgb),0.02)] px-3 py-3 text-sm text-[var(--color-text-secondary)]">
           Origem não rastreada
         </div>
       </section>
@@ -38,7 +38,7 @@ export function OriginBlock({ deal }: { deal: DealOriginInput | null | undefined
   return (
     <section className="space-y-2">
       <div className="text-label">Origem</div>
-      <div className="space-y-3 rounded-lg border border-[rgba(var(--accent-rgb),0.15)] bg-white/[0.02] p-3">
+      <div className="space-y-3 rounded-lg border border-[rgba(var(--accent-rgb),0.15)] bg-[rgba(var(--surface-rgb),0.02)] p-3">
         <div className="flex flex-wrap items-center gap-2">
           <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${TONE_PILL_CLASS[o.tone]}`}>
             {o.badge}

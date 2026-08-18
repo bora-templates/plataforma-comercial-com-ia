@@ -66,7 +66,7 @@ export function SupportBanner() {
         type="button"
         onClick={() => void handleBack()}
         disabled={returning}
-        className="shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-[rgba(var(--accent-rgb),0.35)] px-3 py-1.5 text-xs font-semibold text-[var(--color-text-primary)] transition hover:border-[var(--accent-primary)] hover:bg-white/5 disabled:opacity-50"
+        className="shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-[rgba(var(--accent-rgb),0.35)] px-3 py-1.5 text-xs font-semibold text-[var(--color-text-primary)] transition hover:border-[var(--accent-primary)] hover:bg-[rgba(var(--surface-rgb),0.05)] disabled:opacity-50"
       >
         {returning ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
         Voltar

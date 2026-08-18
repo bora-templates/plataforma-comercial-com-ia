@@ -257,7 +257,7 @@ export default function InboxPage() {
                 <button
                   onClick={() => setSelectedId(null)}
                   aria-label="Voltar à lista"
-                  className="lg:hidden h-9 w-9 shrink-0 flex items-center justify-center rounded-lg text-[var(--color-text-secondary)] hover:bg-white/5 hover:text-[var(--color-text-primary)] transition-all duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+                  className="lg:hidden h-9 w-9 shrink-0 flex items-center justify-center rounded-lg text-[var(--color-text-secondary)] hover:bg-[rgba(var(--surface-rgb),0.05)] hover:text-[var(--color-text-primary)] transition-all duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
                 >
                   <ArrowLeft className="h-4.5 w-4.5" />
                 </button>
@@ -272,7 +272,7 @@ export default function InboxPage() {
                 <button
                   onClick={() => setShowPanelMobile(true)}
                   aria-label="Detalhes da conversa"
-                  className="xl:hidden h-9 w-9 shrink-0 flex items-center justify-center rounded-lg text-[var(--color-text-secondary)] hover:bg-white/5 hover:text-[var(--color-text-primary)] transition-all duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+                  className="xl:hidden h-9 w-9 shrink-0 flex items-center justify-center rounded-lg text-[var(--color-text-secondary)] hover:bg-[rgba(var(--surface-rgb),0.05)] hover:text-[var(--color-text-primary)] transition-all duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
                 >
                   <Info className="h-4.5 w-4.5" />
                 </button>
@@ -314,7 +314,7 @@ export default function InboxPage() {
               onClick={togglePanel}
               aria-label="Expandir painel de detalhes"
               title="Expandir painel"
-              className="h-full w-full flex items-start justify-center pt-3 text-[var(--color-text-secondary)] hover:bg-white/5 hover:text-[var(--color-text-primary)] transition-all duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+              className="h-full w-full flex items-start justify-center pt-3 text-[var(--color-text-secondary)] hover:bg-[rgba(var(--surface-rgb),0.05)] hover:text-[var(--color-text-primary)] transition-all duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
             >
               <PanelRightOpen className="h-4.5 w-4.5" />
             </button>
@@ -326,7 +326,7 @@ export default function InboxPage() {
                   onClick={togglePanel}
                   aria-label="Recolher painel de detalhes"
                   title="Recolher painel"
-                  className="h-8 w-8 flex items-center justify-center rounded-lg text-[var(--color-text-secondary)] hover:bg-white/5 hover:text-[var(--color-text-primary)] transition-all duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+                  className="h-8 w-8 flex items-center justify-center rounded-lg text-[var(--color-text-secondary)] hover:bg-[rgba(var(--surface-rgb),0.05)] hover:text-[var(--color-text-primary)] transition-all duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
                 >
                   <PanelRightClose className="h-4 w-4" />
                 </button>
@@ -358,7 +358,7 @@ export default function InboxPage() {
                   onClick={togglePanel}
                   aria-label="Recolher painel de detalhes"
                   title="Recolher painel"
-                  className="h-8 w-8 flex items-center justify-center rounded-lg text-[var(--color-text-secondary)] hover:bg-white/5 hover:text-[var(--color-text-primary)] transition-all duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+                  className="h-8 w-8 flex items-center justify-center rounded-lg text-[var(--color-text-secondary)] hover:bg-[rgba(var(--surface-rgb),0.05)] hover:text-[var(--color-text-primary)] transition-all duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
                 >
                   <PanelRightClose className="h-4 w-4" />
                 </button>
@@ -375,7 +375,7 @@ export default function InboxPage() {
       {selected && showPanelMobile && (
         <div className="fixed inset-0 z-50 xl:hidden">
           <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-[rgba(var(--shadow-rgb),0.60)] backdrop-blur-sm"
             onClick={() => setShowPanelMobile(false)}
           />
           <div className="absolute right-0 top-0 h-full w-80 max-w-[85vw] glass-surface border-l border-[rgba(var(--accent-rgb),0.15)] overflow-y-auto">
@@ -383,7 +383,7 @@ export default function InboxPage() {
               <button
                 onClick={() => setShowPanelMobile(false)}
                 aria-label="Fechar detalhes"
-                className="h-11 w-11 flex items-center justify-center rounded-lg text-[var(--color-text-secondary)] hover:bg-white/5 hover:text-[var(--color-text-primary)] transition-all duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+                className="h-11 w-11 flex items-center justify-center rounded-lg text-[var(--color-text-secondary)] hover:bg-[rgba(var(--surface-rgb),0.05)] hover:text-[var(--color-text-primary)] transition-all duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
               >
                 <X className="h-5 w-5" />
               </button>

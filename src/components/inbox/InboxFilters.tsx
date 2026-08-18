@@ -38,7 +38,7 @@ interface Props {
 }
 
 const inputCls =
-  'w-full rounded-md border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.03] px-2 py-1.5 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--accent-primary)]';
+  'w-full rounded-md border border-[rgba(var(--accent-rgb),0.2)] bg-[rgba(var(--surface-rgb),0.03)] px-2 py-1.5 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--accent-primary)]';
 const labelCls =
   'mb-1 block text-[10px] font-semibold uppercase tracking-wider text-[var(--color-text-secondary)]';
 
@@ -139,14 +139,14 @@ function MultiSelect({
         <ChevronDown className="h-3.5 w-3.5 opacity-70" />
       </button>
       {open && (
-        <div className="absolute z-[60] mt-1 max-h-56 w-full overflow-y-auto rounded-lg border border-[rgba(var(--accent-rgb),0.25)] bg-[#0A0A0F] p-1 shadow-[0_0_30px_rgba(var(--accent-rgb),0.15)]">
+        <div className="absolute z-[60] mt-1 max-h-56 w-full overflow-y-auto rounded-lg border border-[rgba(var(--accent-rgb),0.25)] bg-[var(--bg-primary)] p-1 shadow-[0_0_30px_rgba(var(--accent-rgb),0.15)]">
           {options.length === 0 && (
             <div className="px-2 py-1.5 text-xs text-[var(--color-text-secondary)]">Nenhuma opção</div>
           )}
           {options.map((o) => (
             <label
               key={o.id}
-              className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm text-[var(--color-text-primary)] hover:bg-white/5"
+              className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm text-[var(--color-text-primary)] hover:bg-[rgba(var(--surface-rgb),0.05)]"
             >
               <input
                 type="checkbox"
@@ -241,7 +241,7 @@ export function InboxFilters({ filters, onChange, sort, onSortChange, operators,
         <button
           onClick={() => setOpen(false)}
           aria-label="Fechar filtros"
-          className="h-9 w-9 flex items-center justify-center rounded-lg text-[var(--color-text-secondary)] hover:bg-white/5"
+          className="h-9 w-9 flex items-center justify-center rounded-lg text-[var(--color-text-secondary)] hover:bg-[rgba(var(--surface-rgb),0.05)]"
         >
           <X className="h-4.5 w-4.5" />
         </button>
@@ -383,7 +383,7 @@ export function InboxFilters({ filters, onChange, sort, onSortChange, operators,
         <Filter className="h-3.5 w-3.5" />
         Filtros
         {count > 0 && (
-          <span className="ml-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--accent-primary)] px-1 text-[10px] font-bold text-white">
+          <span className="ml-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--accent-primary)] px-1 text-[10px] font-bold text-[var(--on-accent)]">
             {count}
           </span>
         )}
@@ -395,7 +395,7 @@ export function InboxFilters({ filters, onChange, sort, onSortChange, operators,
         <select
           value={sort}
           onChange={(e) => onSortChange(e.target.value as InboxSort)}
-          className="bg-transparent text-xs text-[var(--color-text-primary)] outline-none [&>option]:bg-[#0A0A0F]"
+          className="bg-transparent text-xs text-[var(--color-text-primary)] outline-none [&>option]:bg-[var(--bg-primary)]"
         >
           {(Object.keys(INBOX_SORT_LABEL) as InboxSort[]).map((s) => (
             <option key={s} value={s}>{INBOX_SORT_LABEL[s]}</option>
@@ -408,7 +408,7 @@ export function InboxFilters({ filters, onChange, sort, onSortChange, operators,
           <>
             {/* Desktop: popover ancorado. Mobile: bottom-sheet com overlay. */}
             <div
-              className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm sm:hidden"
+              className="fixed inset-0 z-40 bg-[rgba(var(--shadow-rgb),0.50)] backdrop-blur-sm sm:hidden"
               onClick={() => setOpen(false)}
             />
             <div
@@ -419,7 +419,7 @@ export function InboxFilters({ filters, onChange, sort, onSortChange, operators,
                   : undefined
               }
               className={cn(
-                'z-50 bg-[#0F1223] border border-[rgba(var(--accent-rgb),0.25)] shadow-[0_0_40px_rgba(0,0,0,0.6)]',
+                'z-50 bg-[var(--bg-card)] border border-[rgba(var(--accent-rgb),0.25)] shadow-[0_0_40px_rgba(0,0,0,0.6)]',
                 'fixed inset-x-0 bottom-0 max-h-[80vh] overflow-y-auto rounded-t-2xl',
                 'sm:inset-x-auto sm:bottom-auto sm:w-[34rem] sm:max-w-[92vw] sm:rounded-xl',
                 'sm:top-[var(--pop-top)] sm:left-[var(--pop-left)]',

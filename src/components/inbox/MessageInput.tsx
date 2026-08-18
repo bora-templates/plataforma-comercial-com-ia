@@ -179,7 +179,7 @@ export function MessageInput({ conversationId, disabled, withinWindow = true, on
           className={
             isPrivate
               ? 'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold bg-[rgba(245,158,11,0.12)] text-[#FBBF24]'
-              : 'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold text-[var(--color-text-secondary)] hover:bg-white/5'
+              : 'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold text-[var(--color-text-secondary)] hover:bg-[rgba(var(--surface-rgb),0.05)]'
           }
           disabled={disabled || sending || Boolean(file)}
         >
@@ -217,7 +217,7 @@ export function MessageInput({ conversationId, disabled, withinWindow = true, on
       ) : null}
 
       {(withinWindow || isPrivate) && file && (
-        <div className="flex items-center gap-2 rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.03] px-3 py-2 text-xs">
+        <div className="flex items-center gap-2 rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-[rgba(var(--surface-rgb),0.03)] px-3 py-2 text-xs">
           <Paperclip className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
           <span className="truncate text-[var(--color-text-primary)]">{file.name}</span>
           <span className="text-[var(--color-text-secondary)]">
@@ -306,7 +306,7 @@ export function MessageInput({ conversationId, disabled, withinWindow = true, on
           className={
             isPrivate
               ? 'flex-1 rounded-lg border border-[rgba(245,158,11,0.3)] bg-[rgba(245,158,11,0.04)] px-3 py-2 text-sm text-[var(--color-text-primary)] focus:outline-none focus:border-[#FBBF24] resize-none'
-              : 'flex-1 rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.03] px-3 py-2 text-sm text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--accent-primary)] resize-none'
+              : 'flex-1 rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-[rgba(var(--surface-rgb),0.03)] px-3 py-2 text-sm text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--accent-primary)] resize-none'
           }
         />
         )}

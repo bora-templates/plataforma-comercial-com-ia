@@ -83,7 +83,7 @@ export function ContactTagsEditor({ contactId }: { contactId: string }) {
             Tag
           </button>
           {adding && (
-            <div className="absolute z-20 mt-1 w-48 rounded-lg border border-[rgba(var(--accent-rgb),0.25)] bg-[#0F1223] shadow-2xl overflow-hidden max-h-56 overflow-y-auto">
+            <div className="absolute z-20 mt-1 w-48 rounded-lg border border-[rgba(var(--accent-rgb),0.25)] bg-[var(--bg-card)] shadow-2xl overflow-hidden max-h-56 overflow-y-auto">
               {available.length === 0 ? (
                 <div className="px-3 py-2 text-xs text-[var(--color-text-secondary)] opacity-70">
                   Sem tags disponíveis. Crie em Contatos.

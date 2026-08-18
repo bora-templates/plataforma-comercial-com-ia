@@ -56,7 +56,7 @@ function PrimaryButton(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
     <button
       {...props}
       className={[
-        'min-h-12 rounded-xl px-8 py-4 text-base font-medium text-white transition-[box-shadow,opacity,transform] duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]',
+        'min-h-12 rounded-xl px-8 py-4 text-base font-medium text-[var(--on-accent)] transition-[box-shadow,opacity,transform] duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]',
         'bg-[linear-gradient(135deg,var(--accent-deep)_0%,var(--accent-primary)_100%)] shadow-[0_8px_40px_rgba(var(--accent-rgb),0.4),0_0_60px_rgba(var(--accent-rgb),0.2)]',
         'hover:shadow-[0_8px_50px_rgba(var(--accent-rgb),0.6),0_0_80px_rgba(var(--accent-rgb),0.3)] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none',
         'w-full sm:w-auto',
@@ -80,10 +80,10 @@ function StepIndicator({ step }: { step: Step }) {
                 className={[
                   'flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold',
                   active
-                    ? 'bg-[var(--accent-primary)] text-white shadow-[0_0_30px_rgba(var(--accent-rgb),0.5)]'
+                    ? 'bg-[var(--accent-primary)] text-[var(--on-accent)] shadow-[0_0_30px_rgba(var(--accent-rgb),0.5)]'
                     : complete
-                      ? 'bg-[var(--accent-deep)] text-white'
-                      : 'border border-[rgba(var(--accent-rgb),0.3)] bg-transparent text-[#94A3B8]',
+                      ? 'bg-[var(--accent-deep)] text-[var(--on-accent)]'
+                      : 'border border-[rgba(var(--accent-rgb),0.3)] bg-transparent text-[var(--text-secondary)]',
                 ].join(' ')}
               >
                 {complete ? <Check className="h-4 w-4" /> : n}
@@ -91,7 +91,7 @@ function StepIndicator({ step }: { step: Step }) {
               <div
                 className={[
                   'mt-3 whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.1em]',
-                  active ? 'text-[#F8FAFC]' : 'text-[#94A3B8]',
+                  active ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]',
                 ].join(' ')}
               >
                 {label}
@@ -109,7 +109,7 @@ function StepIndicator({ step }: { step: Step }) {
 
 function SetupCard({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-[rgba(var(--accent-rgb),0.15)] bg-white/[0.02] p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-[40px] md:p-12">
+    <div className="rounded-2xl border border-[rgba(var(--accent-rgb),0.15)] bg-[rgba(var(--surface-rgb),0.02)] p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-[40px] md:p-12">
       {children}
     </div>
   );
@@ -129,14 +129,14 @@ function PrepItem({
   pills: string[];
 }) {
   return (
-    <div className="relative rounded-xl border border-[rgba(var(--accent-rgb),0.12)] bg-white/[0.02] p-5">
+    <div className="relative rounded-xl border border-[rgba(var(--accent-rgb),0.12)] bg-[rgba(var(--surface-rgb),0.02)] p-5">
       <div className="flex gap-4 pr-16">
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[rgba(var(--accent-rgb),0.4)] text-sm font-medium text-[var(--accent-secondary)]">
           {n}
         </div>
         <div>
-          <h2 className="text-base font-semibold text-[#F8FAFC]">{title}</h2>
-          <p className="mt-1 text-[13px] leading-5 text-[#94A3B8]">{text}</p>
+          <h2 className="text-base font-semibold text-[var(--text-primary)]">{title}</h2>
+          <p className="mt-1 text-[13px] leading-5 text-[var(--text-secondary)]">{text}</p>
           <div className="mt-4 flex flex-wrap gap-2">
             {pills.map((pill) => (
               <span
@@ -375,14 +375,14 @@ export default function SetupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0A0A0F] px-4 py-8 text-[#F8FAFC] md:py-12">
+    <div className="min-h-screen bg-[var(--bg-primary)] px-4 py-8 text-[var(--text-primary)] md:py-12">
       <div className="mx-auto w-full max-w-[760px]">
         <StepIndicator step={step} />
         <SetupCard>
           {step === 1 ? (
             <>
-              <h1 className="mb-2 text-[28px] font-semibold text-[#F8FAFC]">{setupConfig.toolName}</h1>
-              <p className="mb-8 text-base leading-[1.6] text-[#94A3B8]">
+              <h1 className="mb-2 text-[28px] font-semibold text-[var(--text-primary)]">{setupConfig.toolName}</h1>
+              <p className="mb-8 text-base leading-[1.6] text-[var(--text-secondary)]">
                 Antes de iniciar, deixe abertas as contas onde voce vai copiar os tokens de bootstrap.
               </p>
               <div className="space-y-4">
@@ -398,8 +398,8 @@ export default function SetupPage() {
 
           {step === 2 ? (
             <>
-              <h1 className="mb-2 text-[28px] font-semibold text-[#F8FAFC]">Credenciais core</h1>
-              <p className="mb-8 text-base leading-[1.6] text-[#94A3B8]">
+              <h1 className="mb-2 text-[28px] font-semibold text-[var(--text-primary)]">Credenciais core</h1>
+              <p className="mb-8 text-base leading-[1.6] text-[var(--text-secondary)]">
                 Estas credenciais sao usadas uma vez para preparar a instancia. Senha do owner nao fica salva.
               </p>
               <div className="grid gap-4">
@@ -408,7 +408,7 @@ export default function SetupPage() {
                   const revealed = showCorePassword[key];
                   return (
                     <div key={key}>
-                      <label className="mb-1.5 block text-[13px] font-medium text-[#CBD5E1]">
+                      <label className="mb-1.5 block text-[13px] font-medium text-[var(--text-label)]">
                         {key.toUpperCase()}
                       </label>
                       <div className="relative">
@@ -421,7 +421,7 @@ export default function SetupPage() {
                             setCore((prev) => ({ ...prev, [key]: next }));
                           }}
                           autoComplete={key === 'owner_password' ? 'new-password' : 'off'}
-                          className="w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.03] px-4 py-3 pr-16 text-sm text-[#F8FAFC] placeholder:text-[#94A3B8] focus:border-[var(--accent-primary)] focus:outline-none focus:shadow-[0_0_20px_rgba(var(--accent-rgb),0.2)]"
+                          className="w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-[rgba(var(--surface-rgb),0.03)] px-4 py-3 pr-16 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] focus:border-[var(--accent-primary)] focus:outline-none focus:shadow-[0_0_20px_rgba(var(--accent-rgb),0.2)]"
                         />
                         <div className="absolute right-3 top-1/2 flex -translate-y-1/2 items-center gap-2">
                           {isSecret ? (
@@ -429,7 +429,7 @@ export default function SetupPage() {
                               type="button"
                               aria-label={revealed ? 'Ocultar' : 'Mostrar'}
                               onClick={() => setShowCorePassword((prev) => ({ ...prev, [key]: !prev[key] }))}
-                              className="text-[#94A3B8] hover:text-[#F8FAFC]"
+                              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                             >
                               {revealed ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                             </button>
@@ -450,7 +450,7 @@ export default function SetupPage() {
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="min-h-11 w-full rounded-lg border border-[rgba(var(--accent-rgb),0.25)] bg-white/[0.03] px-5 text-sm font-medium text-[#F8FAFC] transition hover:border-[var(--accent-primary)] sm:w-auto"
+                  className="min-h-11 w-full rounded-lg border border-[rgba(var(--accent-rgb),0.25)] bg-[rgba(var(--surface-rgb),0.03)] px-5 text-sm font-medium text-[var(--text-primary)] transition hover:border-[var(--accent-primary)] sm:w-auto"
                 >
                   Voltar
                 </button>
@@ -463,27 +463,27 @@ export default function SetupPage() {
 
           {step === 3 ? (
             <>
-              <h1 className="mb-2 text-[28px] font-semibold text-[#F8FAFC]">Setup</h1>
-              <p className="mb-8 text-base leading-[1.6] text-[#94A3B8]">
+              <h1 className="mb-2 text-[28px] font-semibold text-[var(--text-primary)]">Setup</h1>
+              <p className="mb-8 text-base leading-[1.6] text-[var(--text-secondary)]">
                 Preparando Supabase, Edge Functions, owner e Vercel.
               </p>
               <div className="space-y-3">
                 {TIMELINE_STEPS.map((entry) => (
-                  <div key={entry.label} className="flex items-center gap-3 rounded-xl border border-[rgba(var(--accent-rgb),0.12)] bg-white/[0.02] p-4">
+                  <div key={entry.label} className="flex items-center gap-3 rounded-xl border border-[rgba(var(--accent-rgb),0.12)] bg-[rgba(var(--surface-rgb),0.02)] p-4">
                     {timeline.includes(entry.label) ? <Check className="h-5 w-5 text-[#10B981]" /> : <Loader2 className="h-5 w-5 animate-spin text-[var(--accent-secondary)]" />}
-                    <span className="text-sm text-[#F8FAFC]">{entry.label}</span>
+                    <span className="text-sm text-[var(--text-primary)]">{entry.label}</span>
                   </div>
                 ))}
               </div>
               {waitingForApp ? (
-                <p className="mt-6 text-center text-sm text-[#94A3B8]">
+                <p className="mt-6 text-center text-sm text-[var(--text-secondary)]">
                   O Vercel esta publicando o novo deployment com as envs. Isso pode levar alguns minutos.
                 </p>
               ) : null}
 
               {setupDone ? (
                 <div className="mt-8 rounded-xl border border-[rgba(16,185,129,0.3)] bg-[rgba(16,185,129,0.06)] p-5">
-                  <p className="text-sm leading-5 text-[#F8FAFC]">
+                  <p className="text-sm leading-5 text-[var(--text-primary)]">
                     Setup concluido! Entre no CRM com o e-mail e a senha do owner. As chaves de
                     API (Zernio, OpenAI, UAZAPI) sao configuradas depois, em Configuracoes →
                     Credenciais.
@@ -498,7 +498,7 @@ export default function SetupPage() {
 
               {deployTimedOut ? (
                 <div className="mt-8 rounded-xl border border-[rgba(239,68,68,0.3)] bg-[rgba(239,68,68,0.06)] p-5">
-                  <p className="text-sm leading-5 text-[#F8FAFC]">
+                  <p className="text-sm leading-5 text-[var(--text-primary)]">
                     O redeploy esta demorando mais que o esperado. Verifique o status em{' '}
                     <a
                       href="https://vercel.com/dashboard"
@@ -514,7 +514,7 @@ export default function SetupPage() {
                     <button
                       type="button"
                       onClick={() => void waitForAppLive()}
-                      className="min-h-11 rounded-lg border border-[rgba(var(--accent-rgb),0.25)] bg-white/[0.03] px-5 text-sm font-medium text-[#F8FAFC] transition hover:border-[var(--accent-primary)]"
+                      className="min-h-11 rounded-lg border border-[rgba(var(--accent-rgb),0.25)] bg-[rgba(var(--surface-rgb),0.03)] px-5 text-sm font-medium text-[var(--text-primary)] transition hover:border-[var(--accent-primary)]"
                     >
                       Verificar de novo
                     </button>
@@ -527,7 +527,7 @@ export default function SetupPage() {
                 <div className="mt-8 space-y-3">
                   {!core.owner_password ? (
                     <div>
-                      <label className="mb-1.5 block text-[13px] font-medium text-[#CBD5E1]">
+                      <label className="mb-1.5 block text-[13px] font-medium text-[var(--text-label)]">
                         Reinforme a senha do owner para retomar
                       </label>
                       <input
@@ -536,7 +536,7 @@ export default function SetupPage() {
                         onChange={(event) => setCore((prev) => ({ ...prev, owner_password: event.target.value }))}
                         placeholder="senha do owner"
                         autoComplete="current-password"
-                        className="w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.03] px-4 py-3 text-sm text-[#F8FAFC] placeholder:text-[#94A3B8] focus:border-[var(--accent-primary)] focus:outline-none focus:shadow-[0_0_20px_rgba(var(--accent-rgb),0.2)]"
+                        className="w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-[rgba(var(--surface-rgb),0.03)] px-4 py-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] focus:border-[var(--accent-primary)] focus:outline-none focus:shadow-[0_0_20px_rgba(var(--accent-rgb),0.2)]"
                       />
                     </div>
                   ) : null}

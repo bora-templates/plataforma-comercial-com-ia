@@ -130,7 +130,7 @@ export const TRAFFIC_TYPE_LABEL: Record<string, string> = {
 export const TRAFFIC_TYPE_STYLE: Record<string, string> = {
   organico: 'bg-[rgba(16,185,129,0.14)] text-[#10B981]',
   pago: 'bg-[rgba(232,200,154,0.14)] text-[var(--accent-secondary)]',
-  manual: 'bg-white/5 text-[var(--color-text-secondary)]',
+  manual: 'bg-[rgba(var(--surface-rgb),0.05)] text-[var(--color-text-secondary)]',
 };
 
 export const ORIGIN_CHANNEL_LABEL: Record<string, string> = {
