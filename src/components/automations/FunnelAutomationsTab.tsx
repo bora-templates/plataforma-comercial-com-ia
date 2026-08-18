@@ -8,7 +8,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { Plus, Trash2, Zap } from 'lucide-react';
 import { getSupabase } from '@/lib/supabase';
-import { useOperators } from '@/hooks/useOperators';
+import { operatorLabel, useOperators } from '@/hooks/useOperators';
 import { useTags } from '@/hooks/useTags';
 import { useTemplates } from '@/hooks/useTemplates';
 import { CRM_ACTION_LABEL, CRM_ACTION_TYPES, type CrmActionType } from '@/types/crm';
@@ -180,7 +180,7 @@ function AutomationForm({
   pipelines: Pipeline[];
   allStages: Stage[];
   tags: { id: string; name: string }[];
-  operators: { user_id: string; email: string }[];
+  operators: { user_id: string; email: string; display_name?: string | null }[];
   templates: { id: string; name: string }[];
   onDone: () => Promise<void>;
   onCancel: () => void;
@@ -294,7 +294,7 @@ function AutomationForm({
               {a.type === 'assign' && (
                 <select value={String(a.user_id ?? '')} onChange={(e) => setAction(i, { user_id: e.target.value })} className={inputCls}>
                   <option value="">Membro da equipe…</option>
-                  {operators.map((o) => <option key={o.user_id} value={o.user_id}>{o.email}</option>)}
+                  {operators.map((o) => <option key={o.user_id} value={o.user_id}>{operatorLabel(o)}</option>)}
                 </select>
               )}
               {a.type === 'add_to_pipeline' && (

@@ -25,6 +25,12 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       port: 5173,
+      // Em dev, as rotas api/*.ts nao existem (sao funcoes da Vercel). Aponte
+      // VITE_API_PROXY para um servidor que as sirva (ex.: vercel dev) e o
+      // front continua chamando /api/... como em producao.
+      ...(process.env.VITE_API_PROXY
+        ? { proxy: { '/api': { target: process.env.VITE_API_PROXY, changeOrigin: true } } }
+        : {}),
     },
   };
 });

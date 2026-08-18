@@ -62,10 +62,10 @@ export async function loadZernioContext(orgId: string): Promise<ZernioContext> {
   const apiKey = creds.zernio_api_key?.trim();
   const accountId = creds.zernio_account_id?.trim();
   if (!apiKey) {
-    throw new ZernioError('Zernio API Key nao configurada. Configure em Configuracoes > Canais.', 400);
+    throw new ZernioError('Zernio API Key nao configurada. Configure a chave na tela de Canais.', 400);
   }
   if (!accountId) {
-    throw new ZernioError('Conta Zernio nao resolvida. Reabra Configuracoes > Canais e salve a chave.', 400);
+    throw new ZernioError('Conta Zernio nao resolvida. Reabra a tela de Canais e salve a chave.', 400);
   }
   return { apiKey, accountId, profileId: creds.zernio_profile_id?.trim() || null };
 }

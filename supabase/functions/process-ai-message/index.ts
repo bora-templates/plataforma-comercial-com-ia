@@ -505,12 +505,12 @@ Deno.serve(async (req) => {
   // 3. Credentials (da org da conversa).
   const creds = await loadAppCredentials(orgId);
   if (!creds.openai_api_key) {
-    return jsonResponse({ ok: false, error: 'Credencial openai_api_key nao configurada. Configure em Configuracoes > Agente de IA.' }, { status: 400 });
+    return jsonResponse({ ok: false, error: 'Credencial openai_api_key nao configurada. Configure na tela do agente de IA.' }, { status: 400 });
   }
   const provider: LLMProvider | null = creds.llm_provider;
   const llmKey = creds.llm_api_key;
   if (!provider || !llmKey) {
-    return jsonResponse({ ok: false, error: 'Chave de LLM nao configurada. Configure em Configuracoes > Agente de IA.' }, { status: 400 });
+    return jsonResponse({ ok: false, error: 'Chave de LLM nao configurada. Configure na tela do agente de IA.' }, { status: 400 });
   }
 
   // Mídia → texto. A IA só entende texto: imagem é descrita por visão (OpenAI,

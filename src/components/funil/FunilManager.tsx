@@ -92,7 +92,7 @@ export function FunilManager({ funil, onClose }: { funil: FunilController; onClo
               ))}
             </div>
             <div className="flex gap-2">
-              <input value={newFunil} onChange={(e) => setNewFunil(e.target.value)} placeholder="Novo funil…" className={inputCls} />
+              <input value={newFunil} onChange={(e) => setNewFunil(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && newFunil.trim() && !busy) void handleCreateFunil(); }} placeholder="Novo funil…" className={inputCls} />
               <button onClick={handleCreateFunil} disabled={busy || !newFunil.trim()} className="rounded-lg bg-gradient-to-br from-[#182940] to-[#D4A574] px-3 py-2 text-sm font-semibold text-white disabled:opacity-60">
                 <Plus className="h-4 w-4" />
               </button>
@@ -101,7 +101,7 @@ export function FunilManager({ funil, onClose }: { funil: FunilController; onClo
 
           {/* Coluna: estágios do funil selecionado */}
           <section className="space-y-3">
-            <div className="text-label">Estágios de “{pipelines.find((p) => p.id === selectedId)?.name ?? '—'}”</div>
+            <div className="text-label">Etapas de “{pipelines.find((p) => p.id === selectedId)?.name ?? '—'}”</div>
             <div className="space-y-2">
               {stages.map((s, i) => (
                 <StageRow
@@ -119,7 +119,7 @@ export function FunilManager({ funil, onClose }: { funil: FunilController; onClo
               ))}
             </div>
             <div className="flex gap-2">
-              <input value={newStage} onChange={(e) => setNewStage(e.target.value)} placeholder="Novo estágio…" className={inputCls} />
+              <input value={newStage} onChange={(e) => setNewStage(e.target.value)} onKeyDown={async (e) => { if (e.key === 'Enter' && newStage.trim()) { await addStage(newStage); setNewStage(''); } }} placeholder="Nova etapa…" className={inputCls} />
               <button
                 onClick={async () => { if (newStage.trim()) { await addStage(newStage); setNewStage(''); } }}
                 disabled={!newStage.trim()}
@@ -171,7 +171,7 @@ function StageRow({
         {(stage.is_won || stage.is_lost) && (
           <span className="text-[10px] text-[var(--color-text-secondary)]">{stage.is_won ? 'ganho' : 'perdido'}</span>
         )}
-        <button title="Excluir estágio" onClick={() => setConfirming((v) => !v)} className="text-[var(--color-text-secondary)] hover:text-[var(--color-error)]">
+        <button title="Excluir etapa" onClick={() => setConfirming((v) => !v)} className="text-[var(--color-text-secondary)] hover:text-[var(--color-error)]">
           <Trash2 className="h-3.5 w-3.5" />
         </button>
       </div>
@@ -212,7 +212,7 @@ function StageRow({
           defaultValue={stage.ai_criteria ?? ''}
           onBlur={(e) => { if (e.target.value.trim() !== (stage.ai_criteria ?? '').trim()) onAiCriteria(e.target.value); }}
           rows={2}
-          placeholder="Critério p/ a IA mover a pessoa p/ cá (ex.: pediu proposta). Vazio = a IA não move para este estágio."
+          placeholder="Critério p/ a IA mover a pessoa p/ cá (ex.: pediu proposta). Vazio = a IA não move para esta etapa."
           className="w-full resize-y rounded border border-[rgba(212,165,116,0.15)] bg-white/[0.02] px-2 py-1 text-[11px] text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-secondary)] focus:border-[var(--accent-primary)]"
         />
       </div>
@@ -230,7 +230,7 @@ function StageRow({
               onClick={async () => {
                 const res = await onRemove(moveTo);
                 if (!res.ok) toast.error(res.error ?? 'Falha ao excluir.');
-                else { toast.success('Estágio excluído.'); setConfirming(false); }
+                else { toast.success('Etapa excluída.'); setConfirming(false); }
               }}
               className="inline-flex items-center gap-1 rounded bg-[var(--color-error)] px-2 py-1 text-xs font-semibold text-white disabled:opacity-50"
             >

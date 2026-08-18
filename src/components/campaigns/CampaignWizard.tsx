@@ -622,7 +622,7 @@ export function CampaignWizard({ open, onClose, onSaved }: CampaignWizardProps) 
           )}
 
           <div className="rounded-lg border border-[rgba(212,165,116,0.15)] bg-[rgba(212,165,116,0.04)] p-4 text-center">
-            <div className="text-label">Contatos alcançados</div>
+            <div className="text-label">Pessoas alcançadas</div>
             <div className="text-stat mt-1">{audienceCount ?? '…'}</div>
           </div>
 

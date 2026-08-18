@@ -150,7 +150,7 @@ export function useDealDetail(deal: Deal | null): UseDealDetailResult {
   }, [deal]);
 
   const saveDeal = useCallback<UseDealDetailResult['saveDeal']>(async (patch) => {
-    if (!deal) return 'Sem negócio.';
+    if (!deal) return 'Sem oportunidade.';
     const supabase = getSupabase();
     const { error: err } = await supabase.from('deals').update({ ...patch, updated_at: new Date().toISOString() }).eq('id', deal.id);
     if (err) { setError(err.message); return err.message; }
@@ -163,7 +163,7 @@ export function useDealDetail(deal: Deal | null): UseDealDetailResult {
     if (!trimmed) return;
     const supabase = getSupabase();
     // upsert no catálogo (unique name) e recupera o id
-    const { data: up, error: upErr } = await supabase.from('products').upsert({ name: trimmed }, { onConflict: 'name' }).select('id, name, product_type, quantity').single();
+    const { data: up, error: upErr } = await supabase.from('products').upsert({ name: trimmed }, { onConflict: 'org_id,name' }).select('id, name, product_type, quantity').single();
     if (upErr) { setError(upErr.message); return; }
     const product = up as Product;
     const { error: linkErr } = await supabase.from('deal_products').upsert({ deal_id: deal.id, product_id: product.id });
@@ -184,7 +184,7 @@ export function useDealDetail(deal: Deal | null): UseDealDetailResult {
     const trimmed = name.trim();
     if (!trimmed) return;
     const supabase = getSupabase();
-    const { data: up, error: upErr } = await supabase.from('tags').upsert({ name: trimmed, color: TAG_DEFAULT_COLOR }, { onConflict: 'name' }).select('id, name, color').single();
+    const { data: up, error: upErr } = await supabase.from('tags').upsert({ name: trimmed, color: TAG_DEFAULT_COLOR }, { onConflict: 'org_id,name' }).select('id, name, color').single();
     if (upErr) { setError(upErr.message); return; }
     const tag = up as Tag;
     const { error: linkErr } = await supabase.from('deal_tags').upsert({ deal_id: deal.id, tag_id: tag.id });

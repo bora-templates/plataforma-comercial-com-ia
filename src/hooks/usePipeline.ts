@@ -210,6 +210,7 @@ export function usePipeline(): UsePipelineResult {
       if (stage?.is_won) {
         patch.status = 'won';
         patch.temperature = 'Morno';
+        patch.lead_type = 'Cliente';
       } else if (stage?.is_lost) {
         patch.status = 'lost';
         patch.temperature = 'Frio';
@@ -330,7 +331,7 @@ export function usePipeline(): UsePipelineResult {
         .select('id', { count: 'exact', head: true })
         .eq('pipeline_id', id);
       if ((count ?? 0) > 0) {
-        return { ok: false, error: 'Este funil tem negócios. Mova-os para outro funil antes de excluir.' };
+        return { ok: false, error: 'Este funil tem oportunidades. Mova-as para outro funil antes de excluir.' };
       }
       const { error: err } = await supabase.from('pipelines').delete().eq('id', id);
       if (err) return { ok: false, error: err.message };
@@ -406,7 +407,7 @@ export function usePipeline(): UsePipelineResult {
 
   const removeStage = useCallback<UsePipelineResult['removeStage']>(
     async (id, moveToStageId) => {
-      if (stages.length <= 1) return { ok: false, error: 'O funil precisa de ao menos um estágio.' };
+      if (stages.length <= 1) return { ok: false, error: 'O funil precisa de ao menos uma etapa.' };
       const supabase = getSupabase();
       // Move os deals do estágio para o destino escolhido antes de excluir.
       const { error: mvErr } = await supabase.from('deals').update({ stage_id: moveToStageId }).eq('stage_id', id);

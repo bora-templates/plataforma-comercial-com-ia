@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useTemplates } from '@/hooks/useTemplates';
 import { TemplateFormDialog } from '@/components/templates/TemplateFormDialog';
 import { LoadErrorBanner } from '@/components/LoadErrorBanner';
-import { getSupabase } from '@/lib/supabase';
+import { functionErrorMessage, getSupabase } from '@/lib/supabase';
 import type { Template, TemplateStatus } from '@/types/templates';
 
 const STATUS_LABEL: Record<TemplateStatus, string> = {
@@ -37,7 +37,7 @@ export function TemplatesList() {
     setSyncing(false);
     if (error || !data?.ok) {
       toast.error('Falha ao atualizar status', {
-        description: data?.error ?? error?.message ?? 'Erro desconhecido',
+        description: await functionErrorMessage(error, data),
       });
       return;
     }
@@ -57,7 +57,7 @@ export function TemplatesList() {
     setSubmitting(null);
     if (error || !data?.ok) {
       toast.error('Meta recusou', {
-        description: data?.error ?? error?.message ?? 'Erro desconhecido',
+        description: await functionErrorMessage(error, data),
       });
       await reload();
       return;

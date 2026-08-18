@@ -26,12 +26,12 @@ export interface WidgetDef {
 
 // Ordem = posição default no grid.
 export const WIDGETS: WidgetDef[] = [
-  { key: 'vendas_ganhas', label: 'Vendas ganhas', group: 'Vendas' },
-  { key: 'oportunidades_perdidas', label: 'Oportunidades perdidas', group: 'Vendas' },
-  { key: 'ranking_vendedores', label: 'Ranking de vendedores', group: 'Vendas' },
-  { key: 'forecast', label: 'Forecast', group: 'Vendas' },
-  { key: 'tempo_primeira_resposta', label: 'Tempo médio de 1ª resposta', group: 'Atendimento' },
-  { key: 'tempo_conclusao', label: 'Tempo médio para concluir venda', group: 'Atendimento' },
+  { key: 'vendas_ganhas', label: 'Fechamentos', group: 'Vendas' },
+  { key: 'oportunidades_perdidas', label: 'Não fecharam', group: 'Vendas' },
+  { key: 'ranking_vendedores', label: 'Quem mais fechou', group: 'Vendas' },
+  { key: 'forecast', label: 'Previsão de caixa', group: 'Vendas' },
+  { key: 'tempo_primeira_resposta', label: 'Tempo até a 1ª resposta', group: 'Atendimento' },
+  { key: 'tempo_conclusao', label: 'Tempo até fechar', group: 'Atendimento' },
   { key: 'origem_trafego', label: '% Origem do tráfego', group: 'Origem', needsUtm: true },
   { key: 'origem_canal', label: '% Canal de origem', group: 'Origem', needsUtm: true },
   { key: 'origem_campanha', label: '% Campanha de origem', group: 'Origem', needsUtm: true },
@@ -175,5 +175,6 @@ export const ORIGIN_CHANNEL_LABEL: Record<string, string> = {
 export const TRAFFIC_LABEL: Record<string, string> = {
   organico: 'Orgânico',
   pago: 'Pago',
+  direto: 'Direto',
   manual: 'Manual',
 };

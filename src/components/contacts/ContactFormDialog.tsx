@@ -210,7 +210,7 @@ export function ContactFormDialog({ open, onClose, contact, onSaved }: ContactFo
           </div>
           {customFields.length === 0 ? (
             <p className="text-xs text-[var(--color-text-secondary)] opacity-70">
-              Campos extras (cidade, plano, origem…) guardados como JSONB.
+              Campos extras (cidade, plano, origem…) que ficam salvos na ficha da pessoa.
             </p>
           ) : (
             <div className="space-y-2">

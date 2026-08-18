@@ -104,7 +104,7 @@ function translateDbError(message: string): string {
   const lower = message.toLowerCase();
   if (lower.includes('duplicate key')) return 'Já existe um produto com esse nome.';
   if (lower.includes('row-level security') || lower.includes('permission denied')) return 'Você não tem permissão para esta ação.';
-  if (lower.includes('violates foreign key')) return 'Não é possível excluir: o produto está vinculado a negócios.';
+  if (lower.includes('violates foreign key')) return 'Não é possível excluir: o produto está vinculado a oportunidades.';
   if (lower.includes('violates check constraint') || lower.includes('invalid input')) return 'Dados inválidos — revise os campos e tente novamente.';
   return message || 'Não foi possível concluir a operação.';
 }

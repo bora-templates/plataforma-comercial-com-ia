@@ -89,8 +89,9 @@ export function TagManagerDialog({ open, onClose }: TagManagerDialogProps) {
       description="Tags ajudam a segmentar contatos para campanhas e filtros."
       widthClass="max-w-xl"
     >
-      <form onSubmit={handleCreate} className="flex items-end gap-3 mb-6">
-        <div className="flex-1 space-y-2">
+      <form onSubmit={handleCreate} className="flex flex-wrap items-end gap-3 mb-6">
+        {/* min-w garante que o campo nao encolha ate sumir quando as cores e o botao nao cabem na mesma linha. */}
+        <div className="flex-1 min-w-[240px] space-y-2">
           <label className="text-xs font-semibold uppercase tracking-[0.1em] text-[var(--color-text-label)]">
             Nova tag
           </label>

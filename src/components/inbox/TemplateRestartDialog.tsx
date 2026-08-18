@@ -5,7 +5,7 @@ import { Dialog } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { getSupabase } from '@/lib/supabase';
+import { functionErrorMessage, getSupabase } from '@/lib/supabase';
 import { useTemplates } from '@/hooks/useTemplates';
 import { extractVariables } from '@/types/templates';
 
@@ -39,7 +39,7 @@ export function TemplateRestartDialog({ open, onClose, conversationId, onSent }:
     });
     setSending(false);
     if (error || !data?.ok) {
-      toast.error('Falha ao enviar template', { description: data?.error ?? error?.message ?? 'Erro' });
+      toast.error('Falha ao enviar template', { description: await functionErrorMessage(error, data, 'Erro') });
       return;
     }
     toast.success('Template enviado — conversa reiniciada.');

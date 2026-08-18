@@ -184,15 +184,31 @@ export function ImportContactsDialog({
       });
     }
 
-    // Chunked upsert — onConflict uses the UNIQUE(phone) constraint.
+    // Upsert em lotes. A chave unica e (org_id, phone); org_id vem do default.
+    // Quem ainda nao existe entra com source='import' (e o que o filtro
+    // "Importacao (Excel)" procura); quem ja existia mantem o canal de origem,
+    // por isso os dois grupos vao em requisicoes separadas.
     let imported = 0;
     for (let i = 0; i < pending.length; i += CHUNK_SIZE) {
       const chunk = pending.slice(i, i + CHUNK_SIZE);
-      const { error } = await supabase
+      const { data: existingRows } = await supabase
         .from('contacts')
-        .upsert(chunk, { onConflict: 'phone' });
-      if (error) {
-        errors.push({ row: -1, reason: `batch ${i / CHUNK_SIZE + 1}: ${error.message}` });
+        .select('phone')
+        .in('phone', chunk.map((c) => c.phone));
+      const existing = new Set((existingRows ?? []).map((r: { phone: string }) => r.phone));
+      const groups = [
+        chunk.filter((c) => !existing.has(c.phone)).map((c) => ({ ...c, source: 'import' })),
+        chunk.filter((c) => existing.has(c.phone)),
+      ].filter((g) => g.length > 0);
+      let batchError: string | null = null;
+      for (const rows of groups) {
+        const { error } = await supabase
+          .from('contacts')
+          .upsert(rows, { onConflict: 'org_id,phone' });
+        if (error) { batchError = error.message; break; }
+      }
+      if (batchError) {
+        errors.push({ row: -1, reason: `batch ${i / CHUNK_SIZE + 1}: ${batchError}` });
       } else {
         imported += chunk.length;
       }

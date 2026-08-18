@@ -71,7 +71,7 @@ const METHOD_LABEL: Record<string, { label: string; reliability: DealOriginView[
   manual: { label: 'Manual', reliability: 'baixa' },
 };
 
-const TRAFFIC_LABEL: Record<string, string> = { pago: 'Pago', organico: 'Orgânico', manual: 'Manual' };
+const TRAFFIC_LABEL: Record<string, string> = { pago: 'Pago', organico: 'Orgânico', direto: 'Direto', manual: 'Manual' };
 
 export function getDealOrigin(lead: DealOriginInput | null | undefined): DealOriginView {
   const l = lead ?? {};

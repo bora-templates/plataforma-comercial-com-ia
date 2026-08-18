@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { VOCAB } from '@/config/vocab';
 import { FunctionsHttpError } from '@supabase/supabase-js';
 import { getSupabase } from '@/lib/supabase';
 import { useAppUser } from '@/app/providers/AppUserProvider';
@@ -163,7 +164,7 @@ function friendlyOpenAiError(message: string): string {
     lower.includes('exceeded your current quota') ||
     /openai\D+(401|429)/.test(lower)
   ) {
-    return 'Chave de API da OpenAI inválida ou sem saldo. Atualize em Agente de IA → Configurações Avançadas.';
+    return `Chave de API da OpenAI inválida ou sem saldo. Atualize em ${VOCAB.aiAgent} → Configurações Avançadas.`;
   }
   return message;
 }

@@ -61,7 +61,7 @@ export function AddToPipelineDialog({
 
   const create = async () => {
     if (!pipelineId || !stageId) {
-      toast.error('Selecione o pipeline e o estágio.');
+      toast.error('Selecione o funil e a etapa.');
       return;
     }
     setSaving(true);
@@ -103,7 +103,7 @@ export function AddToPipelineDialog({
             </select>
           </label>
           <label className="space-y-1 text-xs text-[var(--color-text-secondary)]">
-            Estágio
+            Etapa
             <select value={stageId} onChange={(e) => setStageId(e.target.value)} className={selectCls}>
               {pipelineStages.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>

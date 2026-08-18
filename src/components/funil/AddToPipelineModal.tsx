@@ -12,7 +12,7 @@ interface AddToPipelineModalProps {
   contactId: string;
   contactName?: string | null;
   onClose: () => void;
-  onCreated?: () => void;
+  onCreated?: (dealId?: string) => void;
 }
 
 // Cria um novo negócio para um contato existente, escolhendo funil e etapa.
@@ -23,7 +23,7 @@ export function AddToPipelineModal({ contactId, contactName, onClose, onCreated 
   const [stages, setStages] = useState<Stage[]>([]);
   const [pipelineId, setPipelineId] = useState('');
   const [stageId, setStageId] = useState('');
-  const [title, setTitle] = useState(contactName ? `Negociação — ${contactName}` : 'Nova negociação');
+  const [title, setTitle] = useState(contactName ? `Oportunidade de ${contactName}` : 'Nova oportunidade');
   const [value, setValue] = useState('');
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -60,7 +60,7 @@ export function AddToPipelineModal({ contactId, contactName, onClose, onCreated 
   }, [pipelineId]);
 
   const submit = async () => {
-    if (!title.trim()) { setErr('Informe o nome do negócio.'); return; }
+    if (!title.trim()) { setErr('Informe o nome da oportunidade.'); return; }
     if (!pipelineId || !stageId) { setErr('Escolha o funil e a etapa.'); return; }
     setBusy(true);
     setErr(null);
@@ -70,7 +70,16 @@ export function AddToPipelineModal({ contactId, contactName, onClose, onCreated 
     // dashboard consistente com o funil.
     const stage = stages.find((s) => s.id === stageId);
     const nowISO = new Date().toISOString();
-    const { error } = await supabase.from('deals').insert({
+    // "Já comprou?" so vem marcado quando a pessoa ja tem uma oportunidade
+    // fechada (ou esta abrindo direto numa etapa de fechamento). Antes toda
+    // oportunidade nova nascia como Cliente, e o chip da pessoa mentia.
+    const { count: wonCount } = await supabase
+      .from('deals')
+      .select('id', { count: 'exact', head: true })
+      .eq('contact_id', contactId)
+      .eq('status', 'won');
+    const leadType = stage?.is_won || (wonCount ?? 0) > 0 ? 'Cliente' : 'Lead';
+    const { data: created, error } = await supabase.from('deals').insert({
       title: title.trim(),
       contact_id: contactId,
       value: Number(value) || 0,
@@ -78,12 +87,12 @@ export function AddToPipelineModal({ contactId, contactName, onClose, onCreated 
       stage_id: stageId,
       status: stage?.is_won ? 'won' : stage?.is_lost ? 'lost' : 'open',
       ...(stage?.is_won ? { won_at: nowISO } : stage?.is_lost ? { lost_at: nowISO } : {}),
-      lead_type: 'Cliente',
-    });
+      lead_type: leadType,
+    }).select('id').single();
     setBusy(false);
     if (error) { setErr(error.message); return; }
-    toast.success('Negócio adicionado ao pipeline.');
-    onCreated?.();
+    toast.success('Oportunidade aberta.');
+    onCreated?.((created as { id: string } | null)?.id);
     onClose();
   };
 

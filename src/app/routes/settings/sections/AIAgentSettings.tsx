@@ -375,7 +375,7 @@ export function AIAgentSettings() {
             <span className="text-sm text-[var(--color-text-primary)]">
               Mover as pessoas pelas etapas automaticamente
               <span className="block text-[11px] text-[var(--color-text-secondary)]">
-                Com sinal claro, a IA move o card entre estágios (que tenham critério definido) e
+                Com sinal claro, a IA move o card entre etapas (que tenham critério definido) e
                 registra no histórico. Reversível arrastando de volta.
               </span>
             </span>

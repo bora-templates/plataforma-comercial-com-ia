@@ -4,7 +4,8 @@ import { X, Phone, Mail, Building2, ChevronDown, MessageSquare, Plus, Check } fr
 import { toast } from 'sonner';
 import { getSupabase } from '@/lib/supabase';
 import { useDealDetail } from '@/hooks/useDealDetail';
-import { useOperators } from '@/hooks/useOperators';
+import { operatorLabel, useOperators } from '@/hooks/useOperators';
+import { VOCAB } from '@/config/vocab';
 import { ProximaAcao } from '@/components/crm/ProximaAcao';
 import {
   CONTACT_SOURCE_LABEL,
@@ -78,7 +79,7 @@ export function DealDrawer({ deal, stages, pipelines, isAdmin, onClose, onStageC
   // Status manual do negócio (Módulo 3): won/lost preenchem won_at/lost_at via
   // trigger; perdido guarda o motivo. Reabrir volta para 'open' e limpa datas.
   const markWon = () => {
-    const patch: Partial<Deal> = { status: 'won' };
+    const patch: Partial<Deal> = { status: 'won', lead_type: 'Cliente' };
     // Move automático para a etapa "Ganho" só quando o lead está no funil
     // padrão e a etapa (is_won) ainda existe; caso contrário, apenas o status
     // muda e o card fica onde está.
@@ -90,10 +91,10 @@ export function DealDrawer({ deal, stages, pipelines, isAdmin, onClose, onStageC
         setStageId(wonStage.id);
       }
     }
-    void saveDealField(patch, 'Marcado como ganho. 🎉');
+    void saveDealField(patch, 'Oportunidade fechada. 🎉');
   };
   const markLost = () => {
-    void saveDealField({ status: 'lost', lost_reason: lostReason.trim() || null }, 'Marcado como perdido.');
+    void saveDealField({ status: 'lost', lead_type: 'Lead', lost_reason: lostReason.trim() || null }, 'Marcada como não fechou.');
     setLostReasonOpen(false);
   };
   const reopen = () => {
@@ -302,7 +303,7 @@ export function DealDrawer({ deal, stages, pipelines, isAdmin, onClose, onStageC
               <Field label="Responsável">
                 <select value={deal.owner_id ?? ''} onChange={(e) => saveDealField({ owner_id: e.target.value || null }, 'Responsável atualizado.')} className={inputCls}>
                   <option value="">Não atribuído</option>
-                  {operators.map((o) => <option key={o.user_id} value={o.user_id}>{o.email}</option>)}
+                  {operators.map((o) => <option key={o.user_id} value={o.user_id}>{operatorLabel(o)}</option>)}
                 </select>
               </Field>
               <Field label="Origem">
@@ -344,7 +345,7 @@ export function DealDrawer({ deal, stages, pipelines, isAdmin, onClose, onStageC
             </section>
 
             <Link to={`/inbox?contact=${deal.contact_id}`} className="flex items-center justify-center gap-2 rounded-lg border border-[rgba(212,165,116,0.2)] py-2.5 text-sm font-medium text-[var(--accent-secondary)] transition hover:border-[var(--accent-primary)] hover:bg-white/5">
-              <MessageSquare className="h-4 w-4" /> Abrir conversa no inbox
+              <MessageSquare className="h-4 w-4" /> Abrir em {VOCAB.inbox}
             </Link>
 
             {/* Tags */}
@@ -446,7 +447,7 @@ function ProductMultiSelect({
           <div className="absolute z-20 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border border-[rgba(212,165,116,0.25)] bg-[#0A0A0F] p-1 shadow-[0_0_30px_rgba(212,165,116,0.15)]">
             {catalog.length === 0 ? (
               <div className="px-3 py-2 text-xs text-[var(--color-text-secondary)]">
-                Nenhum produto no catálogo. Cadastre em Configurações → Produtos.
+                Nenhum produto no catálogo. Cadastre em {VOCAB.settings} → Produtos.
               </div>
             ) : (
               catalog.map((p) => {

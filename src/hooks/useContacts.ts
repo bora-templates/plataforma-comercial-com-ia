@@ -319,6 +319,8 @@ export function useContacts({
         name: contactPayload.name ?? null,
         email: contactPayload.email ?? null,
         custom_fields: contactPayload.custom_fields ?? {},
+        // Cadastro pela tela: e o valor que o filtro "Cadastro manual" procura.
+        source: 'manual',
       })
       .select()
       .single();

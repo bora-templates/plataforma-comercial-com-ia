@@ -99,7 +99,7 @@ Deno.serve(async (req) => {
           ok: false,
           error: 'Credenciais de LLM nao configuradas.',
           instrucao:
-            'Configure a chave da OpenAI em Configuracoes > Agente de IA.',
+            'Configure a chave da OpenAI na tela do agente de IA.',
         },
         { status: 400 },
       );

@@ -187,7 +187,7 @@ Deno.serve(async (req) => {
 
     const creds = await loadAppCredentials(caller.orgId);
     if (!creds.openai_api_key) {
-      return fail('Credencial openai_api_key nao configurada. Configure em Configuracoes > Agente de IA.', 400);
+      return fail('Credencial openai_api_key nao configurada. Configure na tela do agente de IA.', 400);
     }
 
     // 1. Resolve plaintext.

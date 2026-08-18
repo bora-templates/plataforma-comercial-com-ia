@@ -139,7 +139,7 @@ export async function setCredential(
 }
 
 export function formatMissingCredential(key: string): string {
-  return `Credencial ${key} nao configurada. Configure em Configuracoes.`;
+  return `Credencial ${key} nao configurada. Configure nas configuracoes da plataforma.`;
 }
 
 export function encodeWebhookVerifyToken(value: string): Uint8Array {

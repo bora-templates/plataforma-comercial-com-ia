@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { VOCAB } from '@/config/vocab';
 import { Link } from 'react-router-dom';
 import { KeyRound, X } from 'lucide-react';
 import { useMissingCredentials } from '@/hooks/useMissingCredentials';
@@ -23,7 +24,7 @@ export function CredentialsBanner() {
         </Link>{' '}
         e a da OpenAI em{' '}
         <Link to="/ai-agent" className="font-semibold text-[var(--accent-primary)] hover:underline">
-          Agente de IA
+          {VOCAB.aiAgent}
         </Link>
         .
       </div>

@@ -1,3 +1,4 @@
+import { VOCAB } from '@/config/vocab';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Plus, X } from 'lucide-react';
@@ -86,7 +87,7 @@ export function ContactTagsEditor({ contactId }: { contactId: string }) {
             <div className="absolute z-20 mt-1 w-48 rounded-lg border border-[rgba(212,165,116,0.25)] bg-[#0F1223] shadow-2xl overflow-hidden max-h-56 overflow-y-auto">
               {available.length === 0 ? (
                 <div className="px-3 py-2 text-xs text-[var(--color-text-secondary)] opacity-70">
-                  Sem tags disponíveis. Crie em Contatos.
+                  Sem tags disponíveis. Crie em {VOCAB.contacts}.
                 </div>
               ) : (
                 available.map((t) => (

@@ -116,11 +116,17 @@ export function useLeadAssignmentQueue(): UseLeadAssignmentQueueResult {
         const byId = new Map(cur.map((q) => [q.user_id, q]));
         return orderedIds.map((id, i) => ({ ...(byId.get(id) as QueueMember), position: i }));
       });
-      await Promise.all(
+      const results = await Promise.all(
         orderedIds.map((id, i) => supabase.from('lead_assignment_queue').update({ position: i }).eq('user_id', id)),
       );
+      const failed = results.find((r) => r.error);
+      if (failed?.error) {
+        // Sem isso a fila parecia reordenada na tela e voltava ao recarregar.
+        await reload();
+        throw new Error(failed.error.message);
+      }
     },
-    [],
+    [reload],
   );
 
   return { enabled, queue, available, loading, reload, toggle, add, remove, reorder };

@@ -149,7 +149,8 @@ export const SALES_FIELDS: { key: keyof typeof HEADER_ALIASES; label: string; re
   { key: 'customer_doc', label: 'CNPJ / Documento', required: true },
   { key: 'customer_phone', label: 'Telefone', required: false },
   { key: 'product_name', label: 'Produto', required: true },
-  { key: 'quantity', label: 'Quantidade', required: true },
+  // Opcional: a maioria dos relatorios de venda nao traz quantidade; vale 1.
+  { key: 'quantity', label: 'Quantidade', required: false },
   { key: 'amount', label: 'Valor', required: false },
   { key: 'purchase_date', label: 'Data da compra', required: true },
 ];
@@ -249,7 +250,7 @@ export function useSalesUpload() {
           errors.push({ line, message: 'produto vazio' });
           continue;
         }
-        const qty = num(row[cols.quantity]);
+        const qty = cols.quantity === undefined ? 1 : num(row[cols.quantity]);
         if (qty === null) {
           errors.push({ line, message: 'quantidade inválida' });
           continue;
@@ -285,7 +286,7 @@ export function useSalesUpload() {
           .from('sales_records')
           .upsert(
             valid.map((v) => ({ ...v, source_file: sheet.fileName })),
-            { onConflict: 'customer_doc,product_name,purchase_date', ignoreDuplicates: true },
+            { onConflict: 'org_id,customer_doc,product_name,purchase_date', ignoreDuplicates: true },
           );
         if (error) {
           const r = { total: rows.length - 1, valid: valid.length, inserted: 0, duplicates: 0, errors: [{ line: 0, message: `Falha ao salvar: ${error.message}` }] };

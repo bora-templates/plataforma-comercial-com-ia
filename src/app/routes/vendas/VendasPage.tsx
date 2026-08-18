@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { BarChart3, Loader2, MoreVertical, RefreshCw, Upload } from 'lucide-react';
 import { toast } from 'sonner';
@@ -46,6 +47,14 @@ const brl = (n: number) =>
   Number(n || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
 const STATUS_OPTIONS = ['pending', 'sent', 'converted', 'snoozed'];
+// Valores ficam em ingles no banco (o cron e as functions dependem deles);
+// so o rotulo muda.
+const STATUS_LABEL: Record<string, string> = {
+  pending: 'Pendente',
+  sent: 'Mensagem enviada',
+  converted: 'Comprou de novo',
+  snoozed: 'Adiada',
+};
 
 const inputCls =
   'w-full rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.03] px-3 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--accent-primary)]';
@@ -414,7 +423,7 @@ export default function VendasPage() {
                     <td className="py-2 text-[var(--color-text-secondary)]">{p.avg_interval_days}d</td>
                     <td className="py-2 text-[var(--color-text-secondary)]">{g.lastPurchase}</td>
                     <td className="py-2 text-[var(--color-text-primary)]">{p.predicted_next}</td>
-                    <td className="py-2"><span className="rounded-full bg-[rgba(212,165,116,0.12)] px-2 py-0.5 text-xs text-[var(--accent-secondary)]">{p.status}</span></td>
+                    <td className="py-2"><span className="rounded-full bg-[rgba(212,165,116,0.12)] px-2 py-0.5 text-xs text-[var(--accent-secondary)]">{STATUS_LABEL[p.status] ?? p.status}</span></td>
                     <td className="py-2 text-right">
                       <div className="relative inline-block">
                         <button
@@ -429,7 +438,7 @@ export default function VendasPage() {
                         >
                           {dispatching === p.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <MoreVertical className="h-4 w-4" />}
                         </button>
-                        {menuFor?.id === p.id && (
+                        {menuFor?.id === p.id && createPortal(
                           <>
                             <div className="fixed inset-0 z-10" onClick={() => setMenuFor(null)} />
                             <div
@@ -446,7 +455,8 @@ export default function VendasPage() {
                                 Remover da lista
                               </button>
                             </div>
-                          </>
+                          </>,
+                          document.body,
                         )}
                       </div>
                     </td>
@@ -576,7 +586,7 @@ export default function VendasPage() {
                 <Input type="number" min={1} value={editing.avg_interval_days} onChange={(e) => setEditing({ ...editing, avg_interval_days: Number(e.target.value) })} /></div>
               <div className="space-y-1"><Label>Status</Label>
                 <select value={editing.status} onChange={(e) => setEditing({ ...editing, status: e.target.value })} className={selectCls}>
-                  {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
+                  {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{STATUS_LABEL[s] ?? s}</option>)}
                 </select></div>
               <div className="space-y-1"><Label>Última compra</Label>
                 <Input type="date" value={editing.last_purchase} onChange={(e) => setEditing({ ...editing, last_purchase: e.target.value })} /></div>

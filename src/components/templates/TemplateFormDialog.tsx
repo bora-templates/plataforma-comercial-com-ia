@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog } from '@/components/ui/dialog';
-import { getSupabase } from '@/lib/supabase';
+import { functionErrorMessage, getSupabase } from '@/lib/supabase';
 import { useTemplates } from '@/hooks/useTemplates';
 import {
   extractVariables,
@@ -100,7 +100,7 @@ export function TemplateFormDialog({
 
     if (error || !data?.ok) {
       toast.error('Falha na geração', {
-        description: data?.error ?? error?.message ?? 'Erro desconhecido',
+        description: await functionErrorMessage(error, data),
       });
       return;
     }
@@ -181,7 +181,7 @@ export function TemplateFormDialog({
       await create(payload);
     }
     setSaving(false);
-    toast.success(isEdit ? 'Template atualizado.' : 'Template salvo como draft.');
+    toast.success(isEdit ? 'Template atualizado.' : 'Template salvo como rascunho.');
     onSaved?.();
     onClose();
   };
@@ -489,7 +489,7 @@ export function TemplateFormDialog({
             ) : isEdit ? (
               <>Salvar alterações</>
             ) : (
-              <>Salvar como draft</>
+              <>Salvar como rascunho</>
             )}
           </Button>
         </div>

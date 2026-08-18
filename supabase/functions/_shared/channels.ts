@@ -130,7 +130,7 @@ export async function loadOrgZernioContext(
 ): Promise<ZernioContext> {
   const apiKey = (await getCredential(orgId, 'zernio_api_key'))?.trim();
   if (!apiKey) {
-    throw new ZernioError('Zernio API Key nao configurada. Configure em Configuracoes > Canais.', 400);
+    throw new ZernioError('Zernio API Key nao configurada. Configure a chave na tela de Canais.', 400);
   }
   let accountId = preferredAccountId?.trim() || null;
   if (!accountId) {

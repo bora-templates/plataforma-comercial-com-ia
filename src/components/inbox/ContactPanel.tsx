@@ -197,7 +197,7 @@ export function ContactPanel({
       const supabase = getSupabase();
       const patch: Record<string, unknown> =
         outcome === 'won'
-          ? { status: 'won', temperature: 'Morno' }
+          ? { status: 'won', temperature: 'Morno', lead_type: 'Cliente' }
           : { status: 'lost', temperature: 'Frio', lead_type: 'Lead', lost_reason: lostReason.trim() || null };
       let toStageId: string | null = null;
       if (targetDeal.pipeline_id) {
@@ -352,7 +352,7 @@ export function ContactPanel({
             onChange={async (e) => {
               try {
                 await onSetActiveDeal(e.target.value || null);
-                toast.success('Negócio ativo atualizado.');
+                toast.success('Oportunidade ativa atualizada.');
               } catch (err) {
                 toast.error('Falha', { description: err instanceof Error ? err.message : String(err) });
               }
@@ -539,6 +539,14 @@ export function ContactPanel({
           contactId={contact.id}
           contactName={contact.name}
           onClose={() => setShowPipelineModal(false)}
+          onCreated={async (dealId) => {
+            // Recarrega o seletor e já deixa a nova oportunidade como a ativa
+            // da conversa (antes o painel seguia dizendo "nenhuma aberta").
+            setDealsVersion((v) => v + 1);
+            if (dealId) {
+              try { await onSetActiveDeal(dealId); } catch { /* seletor continua manual */ }
+            }
+          }}
         />
       )}
     </div>

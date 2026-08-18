@@ -6,7 +6,7 @@ import { CampaignsList } from '@/components/campaigns/CampaignsList';
 import { TemplatesList } from '@/components/campaigns/TemplatesList';
 import { DispatchMetrics } from '@/components/campaigns/DispatchMetrics';
 import { UtmBuilder } from '@/components/campaigns/UtmBuilder';
-import { UtmChannelMap } from '@/components/campaigns/UtmChannelMap';
+import { UtmChannelMapEditor } from '@/components/campaigns/UtmChannelMapEditor';
 import { VOCAB } from '@/config/vocab';
 
 // Campanhas concentra as abas: lista de campanhas, templates (Módulo 1),
@@ -34,7 +34,7 @@ const TABS: TabDef[] = [
     render: () => (
       <div className="space-y-6">
         <UtmBuilder />
-        <UtmChannelMap />
+        <UtmChannelMapEditor />
       </div>
     ),
   },

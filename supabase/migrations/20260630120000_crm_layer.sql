@@ -302,7 +302,7 @@ BEGIN
       (pid_com, 'Não fechou',     5, false, true);
 
     INSERT INTO whatsapp_hub.pipelines (name, kind, position)
-      VALUES ('Pós-venda', 'projeto', 1) RETURNING id INTO pid_proj;
+      VALUES ('Pós-venda', 'comercial', 1) RETURNING id INTO pid_proj;
     INSERT INTO whatsapp_hub.stages (pipeline_id, name, position, is_won, is_lost) VALUES
       (pid_proj, 'Onboarding',    0, false, false),
       (pid_proj, 'Em andamento',  1, false, false),

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { VOCAB } from '@/config/vocab';
 import { toast } from 'sonner';
 import { GripVertical, Loader2, Mail, Plus, Shuffle, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -315,7 +316,9 @@ function LeadQueueManager() {
     const ids = queue.map((q) => q.user_id);
     const [moved] = ids.splice(from, 1);
     ids.splice(targetIdx, 0, moved);
-    void reorder(ids);
+    void reorder(ids).catch((e: unknown) =>
+      toast.error('Falha ao salvar a ordem', { description: e instanceof Error ? e.message : String(e) }),
+    );
   };
 
   const wrap = (fn: () => Promise<void>) => async () => {
@@ -337,7 +340,7 @@ function LeadQueueManager() {
               <ol className="list-decimal space-y-1 pl-5">
                 <li>
                   <span className="text-[var(--color-text-label)]">Número com operador vinculado</span>{' '}
-                  (em Configurações → Canais): a conversa que chega por aquele número já nasce
+                  (em {VOCAB.settings} → Canais): a conversa que chega por aquele número já nasce
                   atribuída ao operador — não passa pelo rodízio.
                 </li>
                 <li>

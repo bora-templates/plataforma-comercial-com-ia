@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ChangeEvent, type FormEvent, type Key
 import { toast } from 'sonner';
 import { Clock, FileText, Loader2, Mic, Paperclip, Send, Square, StickyNote, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { getSupabase } from '@/lib/supabase';
+import { functionErrorMessage, getSupabase } from '@/lib/supabase';
 import type { SendResult } from '@/hooks/useMessages';
 import { TemplateRestartDialog } from './TemplateRestartDialog';
 
@@ -86,7 +86,7 @@ export function MessageInput({ conversationId, disabled, withinWindow = true, on
       const { data, error } = await supabase.functions.invoke('send-operator-media', { body: form });
       if (error || !data?.ok) {
         toast.error('Falha ao enviar áudio', {
-          description: data?.error ?? error?.message ?? 'Erro desconhecido',
+          description: await functionErrorMessage(error, data),
         });
       }
     } finally {
@@ -115,7 +115,7 @@ export function MessageInput({ conversationId, disabled, withinWindow = true, on
     const { data, error } = await supabase.functions.invoke('send-operator-media', { body: form });
     if (error || !data?.ok) {
       toast.error('Falha ao enviar mídia', {
-        description: data?.error ?? error?.message ?? 'Erro desconhecido',
+        description: await functionErrorMessage(error, data),
       });
       return;
     }

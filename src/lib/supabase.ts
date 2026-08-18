@@ -123,3 +123,32 @@ export async function testSupabaseConnection(
     };
   }
 }
+
+// Quando uma Edge Function responde com erro (4xx/5xx), o supabase-js devolve
+// um FunctionsHttpError cuja mensagem e generica ("Edge Function returned a
+// non-2xx status code") e o motivo real fica no corpo, em err.context. Este
+// helper devolve o motivo real para mostrar no toast.
+export async function functionErrorMessage(
+  err: unknown,
+  data?: { error?: unknown } | null,
+  fallback = 'Erro desconhecido',
+): Promise<string> {
+  if (data && typeof data.error === 'string' && data.error) return data.error;
+  const ctx = (err as { context?: unknown } | null)?.context;
+  if (ctx instanceof Response) {
+    try {
+      const body = (await ctx.clone().json()) as { error?: unknown; message?: unknown };
+      if (typeof body?.error === 'string' && body.error) return body.error;
+      if (typeof body?.message === 'string' && body.message) return body.message;
+    } catch {
+      /* corpo nao e JSON */
+    }
+    try {
+      const text = await ctx.clone().text();
+      if (text) return text.slice(0, 200);
+    } catch {
+      /* sem corpo */
+    }
+  }
+  return err instanceof Error && err.message ? err.message : fallback;
+}

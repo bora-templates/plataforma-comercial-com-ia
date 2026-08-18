@@ -132,7 +132,7 @@ Deno.serve(async (req) => {
   const creds = await loadAppCredentials(message.org_id);
   if (!creds.openai_api_key) {
     await markFailure('credencial OpenAI ausente');
-    return jsonResponse({ ok: false, error: 'Credencial openai_api_key ausente. Configure em Configuracoes > Agente de IA.' }, { status: 400 });
+    return jsonResponse({ ok: false, error: 'Credencial openai_api_key ausente. Configure na tela do agente de IA.' }, { status: 400 });
   }
 
   try {

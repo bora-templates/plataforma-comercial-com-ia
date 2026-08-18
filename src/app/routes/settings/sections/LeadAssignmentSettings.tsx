@@ -4,7 +4,7 @@ import { GripVertical, Plus, X } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { getSupabase } from '@/lib/supabase';
 import { useAppUser } from '@/app/providers/AppUserProvider';
-import { useOperators } from '@/hooks/useOperators';
+import { operatorLabel, useOperators } from '@/hooks/useOperators';
 
 // Fila de distribuição automática de leads no handoff. A ordem (position) define
 // a sequência do round-robin; o toggle liga/desliga a atribuição automática.
@@ -60,7 +60,7 @@ export function LeadAssignmentSettings() {
     const { error } = await supabase
       .schema('whatsapp_hub')
       .from('lead_assignment_queue')
-      .upsert(order.map((user_id, i) => ({ user_id, position: i })), { onConflict: 'user_id' });
+      .upsert(order.map((user_id, i) => ({ user_id, position: i })), { onConflict: 'org_id,user_id' });
     if (error) toast.error('Falha ao salvar a ordem', { description: error.message });
   };
 
@@ -194,7 +194,7 @@ export function LeadAssignmentSettings() {
                       className="flex items-center gap-2 rounded-lg border border-transparent bg-white/[0.015] px-3 py-2"
                     >
                       <span className="flex-1 truncate text-sm text-[var(--color-text-secondary)]">
-                        {op.email} {op.role === 'admin' ? '(admin)' : ''}
+                        {operatorLabel(op)} {op.role === 'admin' ? '(admin)' : ''}
                       </span>
                       <button
                         type="button"

@@ -130,7 +130,7 @@ export function useContactTimeline(contactId: string) {
       id: string; to_stage_id: string; from_stage_id: string | null; moved_by: string; reason: string | null; created_at: string;
     }>) {
       const day = h.created_at.slice(0, 10);
-      const to = stageName.get(h.to_stage_id) ?? 'estágio';
+      const to = stageName.get(h.to_stage_id) ?? 'etapa';
       const from = h.from_stage_id ? stageName.get(h.from_stage_id) : null;
       const who = h.moved_by === 'ia' ? 'IA' : 'Humano';
       push(day, {
@@ -147,12 +147,12 @@ export function useContactTimeline(contactId: string) {
     for (const d of dealList) {
       if (d.status === 'won' && d.won_at) {
         push(d.won_at.slice(0, 10), {
-          id: `won-${d.id}`, kind: 'ganho', label: 'Negócio ganho',
+          id: `won-${d.id}`, kind: 'ganho', label: 'Oportunidade fechada',
           text: d.title, at: d.won_at,
         });
       } else if (d.status === 'lost' && d.lost_at) {
         push(d.lost_at.slice(0, 10), {
-          id: `lost-${d.id}`, kind: 'perdido', label: 'Negócio perdido',
+          id: `lost-${d.id}`, kind: 'perdido', label: 'Oportunidade não fechada',
           text: d.lost_reason ? `${d.title} — ${d.lost_reason}` : d.title, at: d.lost_at,
         });
       }

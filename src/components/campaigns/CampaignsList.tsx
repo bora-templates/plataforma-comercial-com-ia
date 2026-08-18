@@ -93,7 +93,7 @@ export function CampaignsList() {
           <div className="glass-card p-8 text-center text-label opacity-60">Carregando...</div>
         ) : campaigns.length === 0 ? (
           <div className="glass-card p-8 text-center">
-            <div className="text-label mb-2">Em breve</div>
+            <div className="text-label mb-2">Nenhuma campanha ainda</div>
             <div className="text-sm text-[var(--color-text-secondary)]">
               Crie sua primeira campanha usando um template aprovado pela Meta.
             </div>

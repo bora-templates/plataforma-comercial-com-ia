@@ -11,7 +11,7 @@ export interface Operator {
 
 // Nome exibível de um operador: display_name do perfil, senão a parte local do
 // e-mail. Usado em badges de atribuição, seletores e listas de equipe.
-export function operatorLabel(op: Pick<Operator, 'display_name' | 'email'> | undefined | null): string {
+export function operatorLabel(op: (Pick<Operator, 'email'> & { display_name?: string | null }) | undefined | null): string {
   if (!op) return '';
   return op.display_name?.trim() || op.email.split('@')[0];
 }

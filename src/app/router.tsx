@@ -100,6 +100,14 @@ function RedirectIfAuthenticated({ children }: { children: ReactElement }) {
   return children;
 }
 
+
+// Redireciona preservando a query (?tab=channels etc.), que o <Navigate to="..."/>
+// com string descarta. Usado nos atalhos /settings e /settings/credentials.
+function RedirectKeepingSearch({ to }: { to: string }) {
+  const location = useLocation();
+  return <Navigate to={{ pathname: to, search: location.search }} replace />;
+}
+
 export function AppRouter() {
   return (
     <Suspense fallback={<PageFallback />}>
@@ -172,11 +180,11 @@ export function AppRouter() {
           {/* Rotas antigas → agora abas dentro de /ai-agent */}
           <Route path="/knowledge" element={<Navigate to="/ai-agent" replace />} />
           <Route path="/follow-ups" element={<Navigate to="/automations?tab=followups" replace />} />
-          <Route path="/settings" element={<Navigate to="/settings/profile" replace />} />
+          <Route path="/settings" element={<RedirectKeepingSearch to="/settings/profile" />} />
           <Route path="/settings/profile" element={<SettingsPage />} />
           <Route path="/admin" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
           {/* Credenciais agora é aba dentro de Configurações */}
-          <Route path="/settings/credentials" element={<Navigate to="/settings/profile" replace />} />
+          <Route path="/settings/credentials" element={<RedirectKeepingSearch to="/settings/profile" />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
