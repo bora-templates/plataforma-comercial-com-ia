@@ -9,6 +9,7 @@ import { DealDrawer } from '@/components/funil/DealDrawer';
 import { FunilManager } from '@/components/funil/FunilManager';
 import { applyFunilFilters, EMPTY_FILTERS, FunilFilters, sortFunilDeals, type FunilFilterState, type FunilSort } from '@/components/funil/FunilFilters';
 import { DUE_TONE_STYLE, dueTone, getDealOrigin, TEMPERATURE_STYLE, TRAFFIC_TYPE_STYLE, type ContactLite, type Deal, type Stage } from '@/types/crm';
+import { VOCAB } from '@/config/vocab';
 
 const fmtDueShort = (s: string) =>
   new Date(s).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
@@ -90,8 +91,8 @@ export default function FunilPage() {
           <GitBranchPlus className="h-5 w-5 text-[var(--accent-primary)]" />
         </div>
         <div className="min-w-0">
-          <div className="text-label">Funil comercial</div>
-          <h1 className="text-2xl font-bold text-display truncate">{pipeline?.name ?? 'Funil'}</h1>
+          <div className="text-label">{VOCAB.funnel}</div>
+          <h1 className="text-2xl font-bold text-display truncate">{pipeline?.name ?? VOCAB.funnel}</h1>
           <p className="text-sm text-[var(--color-text-secondary)]">
             {boardDeals.length} negócio(s) · {brl(totalPipeline)} em pipeline · arraste entre as etapas
           </p>

@@ -14,6 +14,7 @@ import { AccountSettings } from './sections/AccountSettings';
 import { TeamSettings } from './sections/TeamSettings';
 import { ChannelsSettings } from './sections/ChannelsSettings';
 import { ProductsSettings } from './sections/ProductsSettings';
+import { VOCAB } from '@/config/vocab';
 
 type TabId =
   | 'account'
@@ -89,7 +90,7 @@ export default function SettingsPage() {
         </div>
         <div>
           <div className="text-label">Seção</div>
-          <h1 className="text-2xl font-bold text-display">Configurações</h1>
+          <h1 className="text-2xl font-bold text-display">{VOCAB.settings}</h1>
           <p className="text-sm text-[var(--color-text-secondary)]">
             Conta, equipe e credenciais
           </p>

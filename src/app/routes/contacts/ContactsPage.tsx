@@ -25,6 +25,7 @@ import type { ContactWithTags } from '@/types/db';
 import { CONTACT_SOURCE_LABEL } from '@/types/crm';
 import { TRAFFIC_LABEL } from '@/lib/dashboard';
 import { LoadErrorBanner } from '@/components/LoadErrorBanner';
+import { VOCAB } from '@/config/vocab';
 
 const PAGE_SIZE_OPTIONS = [25, 50, 100, 1000] as const;
 
@@ -186,7 +187,7 @@ export default function ContactsPage() {
           </div>
           <div>
             <div className="text-label">Seção</div>
-            <h1 className="text-2xl font-bold text-display">Contatos</h1>
+            <h1 className="text-2xl font-bold text-display">{VOCAB.contacts}</h1>
             <p className="text-sm text-[var(--color-text-secondary)]">
               {total.toLocaleString('pt-BR')} contato{total !== 1 ? 's' : ''} no total
             </p>

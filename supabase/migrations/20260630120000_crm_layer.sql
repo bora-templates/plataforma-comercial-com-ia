@@ -292,27 +292,27 @@ DECLARE
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM whatsapp_hub.pipelines) THEN
     INSERT INTO whatsapp_hub.pipelines (name, kind, position)
-      VALUES ('Comercial', 'comercial', 0) RETURNING id INTO pid_com;
+      VALUES ('Vendas', 'comercial', 0) RETURNING id INTO pid_com;
     INSERT INTO whatsapp_hub.stages (pipeline_id, name, position, is_won, is_lost) VALUES
-      (pid_com, 'Novo lead',   0, false, false),
-      (pid_com, 'Qualificado', 1, false, false),
-      (pid_com, 'Proposta',    2, false, false),
-      (pid_com, 'Negociação',  3, false, false),
-      (pid_com, 'Ganho',       4, true,  false),
-      (pid_com, 'Perdido',     5, false, true);
+      (pid_com, 'Chegou agora',   0, false, false),
+      (pid_com, 'Em conversa',    1, false, false),
+      (pid_com, 'Recebeu oferta', 2, false, false),
+      (pid_com, 'Decidindo',      3, false, false),
+      (pid_com, 'Fechou',         4, true,  false),
+      (pid_com, 'Não fechou',     5, false, true);
 
     INSERT INTO whatsapp_hub.pipelines (name, kind, position)
-      VALUES ('Entrega de Projeto', 'projeto', 1) RETURNING id INTO pid_proj;
+      VALUES ('Pós-venda', 'projeto', 1) RETURNING id INTO pid_proj;
     INSERT INTO whatsapp_hub.stages (pipeline_id, name, position, is_won, is_lost) VALUES
-      (pid_proj, 'Briefing',           0, false, false),
-      (pid_proj, 'Em desenvolvimento', 1, false, false),
-      (pid_proj, 'Revisão',            2, false, false),
-      (pid_proj, 'Entregue',           3, true,  false);
+      (pid_proj, 'Onboarding',    0, false, false),
+      (pid_proj, 'Em andamento',  1, false, false),
+      (pid_proj, 'Acompanhamento',2, false, false),
+      (pid_proj, 'Concluído',     3, true,  false);
   END IF;
 
   IF NOT EXISTS (SELECT 1 FROM whatsapp_hub.courses) THEN
     INSERT INTO whatsapp_hub.courses (name, description)
-      VALUES ('Formação em IA Aplicada', 'Curso base') RETURNING id INTO cid;
+      VALUES ('Produto principal', 'Edite ou remova em Ajustes') RETURNING id INTO cid;
     INSERT INTO whatsapp_hub.classes (course_id, name, start_date)
       VALUES (cid, 'Turma 2026.2', '2026-08-01');
   END IF;

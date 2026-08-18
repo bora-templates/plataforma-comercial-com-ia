@@ -9,6 +9,7 @@ import { Dialog } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { VOCAB } from '@/config/vocab';
 
 interface Metrics {
   total_records: number;
@@ -270,7 +271,7 @@ export default function VendasPage() {
           </div>
           <div>
             <div className="text-label">Seção</div>
-            <h1 className="text-2xl font-bold text-display">Vendas &amp; Recompra</h1>
+            <h1 className="text-2xl font-bold text-display">{VOCAB.sales} &amp; Recompra</h1>
           </div>
         </div>
         {isAdmin && (

@@ -9,6 +9,7 @@ import { useTags } from '@/hooks/useTags';
 import { useContacts } from '@/hooks/useContacts';
 import { normalizePhone } from '@/lib/phone';
 import type { ContactWithTags } from '@/types/db';
+import { VOCAB } from '@/config/vocab';
 
 interface ContactFormDialogProps {
   open: boolean;
@@ -164,7 +165,7 @@ export function ContactFormDialog({ open, onClose, contact, onSaved }: ContactFo
           <Label>Tags</Label>
           {tags.length === 0 ? (
             <p className="text-xs text-[var(--color-text-secondary)] opacity-70">
-              Nenhuma tag criada. Use "Gerenciar tags" na página de Contatos.
+              Nenhuma tag criada. Use "Gerenciar tags" na página de {VOCAB.contacts}.
             </p>
           ) : (
             <div className="flex flex-wrap gap-2">

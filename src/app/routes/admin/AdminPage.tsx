@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { Dialog } from '@/components/ui/dialog';
 import { getSupabase } from '@/lib/supabase';
+import { VOCAB } from '@/config/vocab';
 
 // Console do SUPER ADMIN (/admin). Lista as organizações da instância, permite
 // criar, renomear, desativar/reativar e "entrar como suporte" (troca o org_id
@@ -140,7 +141,7 @@ export default function AdminPage() {
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-2xl font-bold text-display flex items-center gap-2">
-            <Building2 className="h-6 w-6 text-[var(--accent-primary)]" /> Organizações
+            <Building2 className="h-6 w-6 text-[var(--accent-primary)]" /> {VOCAB.orgs}
           </h1>
           <p className="text-sm text-[var(--color-text-secondary)]">
             Gerencie todas as organizações desta instância. Entre como suporte para operar em nome de uma delas.

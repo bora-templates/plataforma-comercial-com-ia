@@ -15,6 +15,7 @@ import { useFollowUpRules } from '@/hooks/useFollowUpRules';
 import { useTags } from '@/hooks/useTags';
 import { useTemplates } from '@/hooks/useTemplates';
 import type { FollowUpRule, FollowUpTrigger } from '@/types/campaigns';
+import { VOCAB } from '@/config/vocab';
 
 const TRIGGER_LABEL: Record<FollowUpTrigger, string> = {
   no_reply: 'Sem resposta (após campanha)',
@@ -260,7 +261,7 @@ function RuleForm({
           </label>
           <label
             className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm ${!uazapiOk || trigger === 'no_reply' ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'} ${effectiveProvider === 'uazapi' ? 'border-[#2DD4BF] bg-[rgba(45,212,191,0.08)]' : 'border-[rgba(212,165,116,0.2)]'}`}
-            title={!uazapiOk ? 'Conecte a UAZAPI em Configurações → Canais' : trigger === 'no_reply' ? 'Reengajamento de campanha usa a API oficial' : undefined}
+            title={!uazapiOk ? `Conecte a UAZAPI em ${VOCAB.settings} → Canais` : trigger === 'no_reply' ? 'Reengajamento de campanha usa a API oficial' : undefined}
           >
             <input
               type="radio"

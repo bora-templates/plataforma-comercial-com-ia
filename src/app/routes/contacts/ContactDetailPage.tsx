@@ -12,6 +12,7 @@ import { AddToPipelineModal } from '@/components/funil/AddToPipelineModal';
 import { ProximaAcao } from '@/components/crm/ProximaAcao';
 import { Button } from '@/components/ui/button';
 import { type Deal } from '@/types/crm';
+import { VOCAB } from '@/config/vocab';
 
 const brl = (n: number) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 const fmtTime = (s: string) => new Date(s).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
@@ -70,7 +71,7 @@ export default function ContactDetailPage() {
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       <Link to="/contacts" className="inline-flex items-center gap-1 text-sm text-[var(--color-text-secondary)] hover:text-[var(--accent-primary)]">
-        <ArrowLeft className="h-4 w-4" /> Contatos
+        <ArrowLeft className="h-4 w-4" /> {VOCAB.contacts}
       </Link>
 
       <div className="flex items-start justify-between gap-4 flex-wrap">

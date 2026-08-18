@@ -7,6 +7,7 @@ import { TemplatesList } from '@/components/campaigns/TemplatesList';
 import { DispatchMetrics } from '@/components/campaigns/DispatchMetrics';
 import { UtmBuilder } from '@/components/campaigns/UtmBuilder';
 import { UtmChannelMap } from '@/components/campaigns/UtmChannelMap';
+import { VOCAB } from '@/config/vocab';
 
 // Campanhas concentra as abas: lista de campanhas, templates (Módulo 1),
 // métricas de disparo (Módulo 2) e o gerador de UTMs (Módulo 4). A aba UTMs
@@ -23,7 +24,7 @@ interface TabDef {
 }
 
 const TABS: TabDef[] = [
-  { id: 'campanhas', label: 'Campanhas', icon: Megaphone, render: () => <CampaignsList /> },
+  { id: 'campanhas', label: VOCAB.campaigns, icon: Megaphone, render: () => <CampaignsList /> },
   { id: 'templates', label: 'Templates', icon: FileText, render: () => <TemplatesList /> },
   { id: 'metricas', label: 'Métricas', icon: BarChart3, render: () => <DispatchMetrics /> },
   {
@@ -62,7 +63,7 @@ export default function CampaignsPage() {
         </div>
         <div>
           <div className="text-label">Seção</div>
-          <h1 className="text-2xl font-bold text-display">Campanhas</h1>
+          <h1 className="text-2xl font-bold text-display">{VOCAB.campaigns}</h1>
           <p className="text-sm text-[var(--color-text-secondary)]">
             Disparos em massa, templates da Meta e métricas de entrega
           </p>

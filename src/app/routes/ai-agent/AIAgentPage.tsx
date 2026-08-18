@@ -8,6 +8,7 @@ import { AIAgentSettings } from '../settings/sections/AIAgentSettings';
 import { AgentMediaSettings } from '../settings/sections/AgentMediaSettings';
 import { BusinessHoursSettings } from '../settings/sections/BusinessHoursSettings';
 import KnowledgePage from '../knowledge/KnowledgePage';
+import { VOCAB } from '@/config/vocab';
 
 type TabId = 'agent' | 'media' | 'knowledge' | 'hours';
 
@@ -48,7 +49,7 @@ export default function AIAgentPage() {
         </div>
         <div>
           <div className="text-label">Seção</div>
-          <h1 className="text-2xl font-bold text-display">Agente de IA</h1>
+          <h1 className="text-2xl font-bold text-display">{VOCAB.aiAgent}</h1>
           <p className="text-sm text-[var(--color-text-secondary)]">
             Configuração do agente, base de conhecimento, follow-ups e horário
           </p>

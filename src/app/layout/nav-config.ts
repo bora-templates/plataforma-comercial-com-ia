@@ -11,6 +11,7 @@ import {
   Building2,
   type LucideIcon,
 } from 'lucide-react';
+import { VOCAB } from '@/config/vocab';
 
 export interface NavItem {
   to: string;
@@ -31,14 +32,14 @@ export interface NavItem {
 // de /ai-agent. Credenciais virou aba dentro de Configurações. Templates virou
 // aba dentro de /campaigns (Módulo 1).
 export const NAV_ITEMS: NavItem[] = [
-  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, adminOnly: true },
-  { to: '/inbox', label: 'Inbox', icon: Inbox },
-  { to: '/funil', label: 'Funil', icon: KanbanSquare, adminOnly: true },
-  { to: '/vendas', label: 'Vendas', icon: TrendingUp, adminOnly: true },
-  { to: '/contacts', label: 'Contatos', icon: Users },
-  { to: '/campaigns', label: 'Campanhas', icon: Megaphone },
-  { to: '/automations', label: 'Automações', icon: Zap, adminOnly: true },
-  { to: '/ai-agent', label: 'Agente de IA', icon: Bot, adminOnly: true },
-  { to: '/settings/profile', label: 'Configurações', icon: Settings },
-  { to: '/admin', label: 'Organizações', icon: Building2, superAdminOnly: true },
+  { to: '/dashboard', label: VOCAB.dashboard, icon: LayoutDashboard, adminOnly: true },
+  { to: '/inbox', label: VOCAB.inbox, icon: Inbox },
+  { to: '/funil', label: VOCAB.funnel, icon: KanbanSquare, adminOnly: true },
+  { to: '/vendas', label: VOCAB.sales, icon: TrendingUp, adminOnly: true },
+  { to: '/contacts', label: VOCAB.contacts, icon: Users },
+  { to: '/campaigns', label: VOCAB.campaigns, icon: Megaphone },
+  { to: '/automations', label: VOCAB.automations, icon: Zap, adminOnly: true },
+  { to: '/ai-agent', label: VOCAB.aiAgent, icon: Bot, adminOnly: true },
+  { to: '/settings/profile', label: VOCAB.settings, icon: Settings },
+  { to: '/admin', label: VOCAB.orgs, icon: Building2, superAdminOnly: true },
 ];

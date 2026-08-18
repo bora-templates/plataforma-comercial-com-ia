@@ -27,6 +27,7 @@ import {
 import { LoadErrorBanner } from '@/components/LoadErrorBanner';
 import { CredentialsBanner } from '@/components/CredentialsBanner';
 import { cn } from '@/lib/utils';
+import { VOCAB } from '@/config/vocab';
 
 const NO_UTM = 'Sem dados de rastreio ainda.';
 const NO_WON_UTM = 'Nenhuma venda ganha com rastreio no período.';
@@ -109,7 +110,7 @@ export default function DashboardPage() {
           </div>
           <div>
             <div className="text-label">Seção</div>
-            <h1 className="text-2xl font-bold text-display">Dashboard</h1>
+            <h1 className="text-2xl font-bold text-display">{VOCAB.dashboard}</h1>
             <p className="text-sm text-[var(--color-text-secondary)]">Vendas e atendimento</p>
           </div>
         </div>

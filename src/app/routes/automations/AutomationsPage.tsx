@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { GitBranchPlus, Timer, Zap } from 'lucide-react';
 import { FunnelAutomationsTab } from '@/components/automations/FunnelAutomationsTab';
 import { FollowUpsTab } from '@/components/automations/FollowUpsTab';
+import { VOCAB } from '@/config/vocab';
 
 // Automações: regras que rodam sozinhas — no Funil (lead entrou numa etapa →
 // ações) e em Follow-ups (inatividade / sem compra / sem resposta → mensagem).
@@ -15,7 +16,7 @@ export default function AutomationsPage() {
   );
 
   const tabs: { id: TabId; label: string; icon: typeof Zap }[] = [
-    { id: 'funil', label: 'Funil', icon: GitBranchPlus },
+    { id: 'funil', label: VOCAB.funnel, icon: GitBranchPlus },
     { id: 'followups', label: 'Follow-ups', icon: Timer },
   ];
 
@@ -27,7 +28,7 @@ export default function AutomationsPage() {
         </div>
         <div>
           <div className="text-label">Seção</div>
-          <h1 className="text-2xl font-bold text-display">Automações</h1>
+          <h1 className="text-2xl font-bold text-display">{VOCAB.automations}</h1>
           <p className="text-sm text-[var(--color-text-secondary)]">
             Regras automáticas no funil e follow-ups por tempo/condição.
           </p>

@@ -23,6 +23,7 @@ import {
   type InboxSort,
 } from '@/components/inbox/inbox-filters';
 import { LoadErrorBanner } from '@/components/LoadErrorBanner';
+import { VOCAB } from '@/config/vocab';
 
 export default function InboxPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -191,7 +192,7 @@ export default function InboxPage() {
           </div>
           <div>
             <div className="text-label">Seção</div>
-            <h1 className="text-2xl font-bold text-display">Inbox</h1>
+            <h1 className="text-2xl font-bold text-display">{VOCAB.inbox}</h1>
           </div>
         </div>
       </div>
