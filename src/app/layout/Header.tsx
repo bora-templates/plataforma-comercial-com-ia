@@ -21,8 +21,11 @@ export function Header({ onMenuClick }: HeaderProps) {
   };
 
   return (
+    // relative z-30: o glass-surface (backdrop-filter) cria um contexto de
+    // empilhamento; sem z-index os dropdowns de notificacoes e organizacao
+    // ficavam atras dos cards do <main>. Modais sao fixed z-40+ e seguem acima.
     <header
-      className="h-16 shrink-0 glass-surface border-b border-[rgba(212,165,116,0.08)] flex items-center justify-between px-4 sm:px-6 gap-4"
+      className="relative z-30 h-16 shrink-0 glass-surface border-b border-[rgba(212,165,116,0.08)] flex items-center justify-between px-4 sm:px-6 gap-4"
       role="banner"
     >
       <div className="flex items-center gap-2">
