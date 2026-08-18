@@ -35,14 +35,14 @@ atualizações.
 
 - Para sobrescrever um componente do projeto, copie a versão atual para
   `src/customizations/` e importe daqui em vez do original. Lembre-se que
-  esse fork manual deixa de receber atualizações do upstream — pesar se
+  esse fork manual deixa de receber atualizações do upstream. Vale pesar se
   vale a pena.
 
 ## Limites
 
 Customizações que exigem editar arquivos de domínio (ex.: alterar lógica de
 uma Edge Function existente, mudar comportamento de um componente core
-como `InboxPage` ou de uma migration aplicada) **não cabem aqui** — vão
+como `InboxPage` ou de uma migration aplicada) **não cabem aqui**: vão
 precisar de merge manual quando atualizar.
 
 Para essas, recomendado: abra issue ou PR no upstream sugerindo a
