@@ -13,7 +13,7 @@ type Props = {
 // fica no SetupPage) — o badge deixa isso explícito nos dois cards.
 function OptionalBadge() {
   return (
-    <span className="rounded-full border border-[rgba(212,165,116,0.3)] bg-[rgba(212,165,116,0.1)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#E8C89A]">
+    <span className="rounded-full border border-[rgba(var(--accent-rgb),0.3)] bg-[rgba(var(--accent-rgb),0.1)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--accent-secondary)]">
       Opcional
     </span>
   );

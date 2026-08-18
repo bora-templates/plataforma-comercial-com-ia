@@ -1,48 +1,55 @@
 @import "tailwindcss";
 
 /* =============================================================================
-   WhatsApp Hub · Design System (Dark Mode Glassmorphism, per CLAUDE.md)
+   Plataforma Comercial · Design System (tema escuro)
    DARK MODE ONLY. No light mode. No theme toggle.
    ============================================================================= */
 
 @theme {
-  /* Base surface */
-  --color-bg-primary: #0A0A0F;
-  --color-bg-card: rgba(15, 18, 35, 0.6);
+  /* Superficies. Fundo grafite frio, cards um tom acima. */
+  --color-bg-primary: #0F1115;
+  --color-bg-card: rgba(22, 25, 32, 0.72);
 
-  /* Accents — troque estas variaveis para aplicar a identidade do seu negocio. */
-  --color-accent-primary: #D4A574;
-  --color-accent-secondary: #E8C89A;
+  /* Destaque. Verde-agua neutro: nao e de nenhuma marca, funciona sobre escuro
+     e da contraste sem gritar. Troque os quatro valores abaixo para aplicar a
+     identidade do seu negocio; o resto do app segue. */
+  --color-accent-primary: #4FB6A0;
+  --color-accent-secondary: #8AD6C4;
 
-  /* Text */
-  --color-text-primary: #F8FAFC;
-  --color-text-secondary: #94A3B8;
-  --color-text-label: #CBD5E1;
+  /* Texto */
+  --color-text-primary: #F1F3F5;
+  --color-text-secondary: #9AA3AD;
+  --color-text-label: #C7CDD3;
 
   /* Status */
-  --color-success: #10B981;
+  --color-success: #22C55E;
   --color-error: #EF4444;
 
-  /* Borders */
-  --color-border-card: rgba(212, 165, 116, 0.15);
-  --color-border-soft: rgba(212, 165, 116, 0.12);
-  --color-border-divider: rgba(212, 165, 116, 0.08);
+  /* Bordas (derivam do destaque) */
+  --color-border-card: rgba(79, 182, 160, 0.16);
+  --color-border-soft: rgba(79, 182, 160, 0.12);
+  --color-border-divider: rgba(79, 182, 160, 0.08);
 
-  /* Typography */
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  /* Tipografia. Sans humanista no corpo, um peso mais leve nos titulos. */
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
 
-  /* Radii */
-  --radius-card: 16px;
+  /* Raios menores: menos "app de consumo", mais ferramenta de trabalho. */
+  --radius-card: 12px;
 }
 
 /* -----------------------------------------------------------------------------
    Static accent tokens.
    Components reference var(--accent-primary) / var(--accent-secondary) instead
-   of hard-coding #D4A574 so any future palette swap is one-file.
+   of hard-coding a color so any future palette swap is one-file.
    ----------------------------------------------------------------------------- */
 :root {
-  --accent-primary: #D4A574;
-  --accent-secondary: #E8C89A;
+  /* Os quatro tokens que definem a identidade. Tudo no app deriva daqui.
+     --accent-rgb e o triplo RGB de --accent-primary, usado em rgba(...) com
+     opacidades variadas (bordas, brilhos, fundos suaves). Mantenha em sincronia. */
+  --accent-primary: #4FB6A0;
+  --accent-secondary: #8AD6C4;
+  --accent-deep: #1D3B36;
+  --accent-rgb: 79, 182, 160;
 }
 
 /* -----------------------------------------------------------------------------
@@ -55,7 +62,7 @@ html, body, #root {
 body {
   background-color: var(--color-bg-primary);
   background-image:
-    radial-gradient(ellipse at 20% 0%, rgba(212, 165, 116, 0.06), transparent 50%),
+    radial-gradient(ellipse at 20% 0%, rgba(var(--accent-rgb), 0.05), transparent 50%),
     radial-gradient(ellipse at 80% 100%, rgba(37, 99, 235, 0.04), transparent 50%);
   background-attachment: fixed;
   color: var(--color-text-primary);
@@ -77,11 +84,11 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(212, 165, 116, 0.18);
+  background: rgba(var(--accent-rgb), 0.18);
   border-radius: 8px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(212, 165, 116, 0.32);
+  background: rgba(var(--accent-rgb), 0.32);
 }
 
 /* -----------------------------------------------------------------------------
@@ -91,33 +98,33 @@ body {
   .glass-card {
     background: linear-gradient(
       135deg,
-      rgba(212, 165, 116, 0.08),
-      rgba(212, 165, 116, 0.02)
+      rgba(var(--accent-rgb), 0.08),
+      rgba(var(--accent-rgb), 0.02)
     );
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
-    border: 1px solid rgba(212, 165, 116, 0.25);
+    border: 1px solid rgba(var(--accent-rgb), 0.25);
     border-radius: var(--radius-card);
     box-shadow:
-      0 0 20px rgba(212, 165, 116, 0.06),
-      inset 0 1px 0 rgba(212, 165, 116, 0.1);
+      0 0 20px rgba(var(--accent-rgb), 0.06),
+      inset 0 1px 0 rgba(var(--accent-rgb), 0.1);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .glass-card-hover:hover,
   .glass-card:hover {
-    border-color: rgba(212, 165, 116, 0.45);
+    border-color: rgba(var(--accent-rgb), 0.45);
     box-shadow:
-      0 0 30px rgba(212, 165, 116, 0.12),
-      0 0 60px rgba(212, 165, 116, 0.04),
-      inset 0 1px 0 rgba(212, 165, 116, 0.2);
+      0 0 30px rgba(var(--accent-rgb), 0.12),
+      0 0 60px rgba(var(--accent-rgb), 0.04),
+      inset 0 1px 0 rgba(var(--accent-rgb), 0.2);
   }
 
   .glass-surface {
     background: rgba(15, 18, 35, 0.6);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(212, 165, 116, 0.12);
+    border: 1px solid rgba(var(--accent-rgb), 0.12);
   }
 
   .text-display {

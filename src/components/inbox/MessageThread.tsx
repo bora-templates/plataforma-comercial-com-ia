@@ -32,7 +32,7 @@ function StatusTicks({ status }: { status: Message['meta_status'] }) {
       </span>
     );
   }
-  if (status === 'read') return <CheckCheck className="h-3 w-3 text-[#D4A574]" />;
+  if (status === 'read') return <CheckCheck className="h-3 w-3 text-[var(--accent-primary)]" />;
   if (status === 'delivered') return <CheckCheck className="h-3 w-3 opacity-60" />;
   return <Check className="h-3 w-3 opacity-60" />;
 }
@@ -68,11 +68,11 @@ function formatDayLabel(iso: string): string {
 function DateSeparator({ iso }: { iso: string }) {
   return (
     <div className="flex items-center gap-3 py-2">
-      <div className="h-px flex-1 bg-[rgba(212,165,116,0.08)]" />
-      <span className="rounded-full border border-[rgba(212,165,116,0.15)] bg-white/[0.03] px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-[var(--text-secondary,#94A3B8)]">
+      <div className="h-px flex-1 bg-[rgba(var(--accent-rgb),0.08)]" />
+      <span className="rounded-full border border-[rgba(var(--accent-rgb),0.15)] bg-white/[0.03] px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-[var(--text-secondary,#94A3B8)]">
         {formatDayLabel(iso)}
       </span>
-      <div className="h-px flex-1 bg-[rgba(212,165,116,0.08)]" />
+      <div className="h-px flex-1 bg-[rgba(var(--accent-rgb),0.08)]" />
     </div>
   );
 }

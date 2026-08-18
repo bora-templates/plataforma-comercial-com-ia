@@ -235,7 +235,7 @@ export default function ContactsPage() {
                 setPage(1);
                 setSearch(e.target.value);
               }}
-              className="w-full h-10 pl-10 pr-4 rounded-lg bg-white/[0.03] border border-[rgba(212,165,116,0.12)] text-sm placeholder:text-[var(--color-text-secondary)] focus:outline-none focus:border-[var(--accent-primary)]"
+              className="w-full h-10 pl-10 pr-4 rounded-lg bg-white/[0.03] border border-[rgba(var(--accent-rgb),0.12)] text-sm placeholder:text-[var(--color-text-secondary)] focus:outline-none focus:border-[var(--accent-primary)]"
             />
           </div>
           <select
@@ -244,7 +244,7 @@ export default function ContactsPage() {
               setPage(1);
               setTagFilter(e.target.value || null);
             }}
-            className="h-10 rounded-lg border border-[rgba(212,165,116,0.12)] bg-white/[0.03] px-3 text-sm text-[var(--color-text-primary)]"
+            className="h-10 rounded-lg border border-[rgba(var(--accent-rgb),0.12)] bg-white/[0.03] px-3 text-sm text-[var(--color-text-primary)]"
           >
             <option value="">Todas as tags</option>
             {tags.map((t) => (
@@ -259,7 +259,7 @@ export default function ContactsPage() {
               setPage(1);
               setLeadTypeFilter((e.target.value || null) as LeadTypeFilter | null);
             }}
-            className="h-10 rounded-lg border border-[rgba(212,165,116,0.12)] bg-white/[0.03] px-3 text-sm text-[var(--color-text-primary)]"
+            className="h-10 rounded-lg border border-[rgba(var(--accent-rgb),0.12)] bg-white/[0.03] px-3 text-sm text-[var(--color-text-primary)]"
           >
             <option value="">Leads e clientes</option>
             <option value="Lead">Somente leads</option>
@@ -271,7 +271,7 @@ export default function ContactsPage() {
               setPage(1);
               setSourceFilter(e.target.value || null);
             }}
-            className="h-10 rounded-lg border border-[rgba(212,165,116,0.12)] bg-white/[0.03] px-3 text-sm text-[var(--color-text-primary)]"
+            className="h-10 rounded-lg border border-[rgba(var(--accent-rgb),0.12)] bg-white/[0.03] px-3 text-sm text-[var(--color-text-primary)]"
           >
             <option value="">Todos os canais</option>
             {SOURCE_OPTIONS.map((s) => (
@@ -286,7 +286,7 @@ export default function ContactsPage() {
               setPage(1);
               setSort(e.target.value as ContactSort);
             }}
-            className="h-10 rounded-lg border border-[rgba(212,165,116,0.12)] bg-white/[0.03] px-3 text-sm text-[var(--color-text-primary)]"
+            className="h-10 rounded-lg border border-[rgba(var(--accent-rgb),0.12)] bg-white/[0.03] px-3 text-sm text-[var(--color-text-primary)]"
           >
             <option value="recent">Mais recentes</option>
             <option value="oldest">Mais antigos</option>
@@ -296,7 +296,7 @@ export default function ContactsPage() {
         </div>
 
         {selected.size > 0 && (
-          <div className="flex items-center gap-2 rounded-lg border border-[rgba(212,165,116,0.25)] bg-[rgba(212,165,116,0.06)] px-4 py-2">
+          <div className="flex items-center gap-2 rounded-lg border border-[rgba(var(--accent-rgb),0.25)] bg-[rgba(var(--accent-rgb),0.06)] px-4 py-2">
             <span className="text-sm font-medium">
               {selected.size} selecionado{selected.size > 1 ? 's' : ''}
             </span>
@@ -333,7 +333,7 @@ export default function ContactsPage() {
             </div>
           ) : (
             contacts.map((c) => (
-              <div key={c.id} className="rounded-lg border border-[rgba(212,165,116,0.1)] bg-white/[0.02] p-3">
+              <div key={c.id} className="rounded-lg border border-[rgba(var(--accent-rgb),0.1)] bg-white/[0.02] p-3">
                 <div className="flex items-start gap-2">
                   <input
                     type="checkbox"
@@ -386,7 +386,7 @@ export default function ContactsPage() {
         </div>
 
         {/* Desktop (md+): tabela. */}
-        <div className="hidden md:block rounded-lg border border-[rgba(212,165,116,0.08)] overflow-x-auto">
+        <div className="hidden md:block rounded-lg border border-[rgba(var(--accent-rgb),0.08)] overflow-x-auto">
           <table className="w-full min-w-[920px] text-sm">
             <thead>
               <tr className="bg-white/[0.02] text-left">
@@ -427,7 +427,7 @@ export default function ContactsPage() {
                 contacts.map((c) => (
                   <tr
                     key={c.id}
-                    className="border-t border-[rgba(212,165,116,0.06)] hover:bg-white/[0.02]"
+                    className="border-t border-[rgba(var(--accent-rgb),0.06)] hover:bg-white/[0.02]"
                   >
                     <td className="p-3">
                       <input
@@ -517,7 +517,7 @@ export default function ContactsPage() {
                   setPage(1);
                   setPageSize(Number(e.target.value));
                 }}
-                className="h-8 rounded-lg border border-[rgba(212,165,116,0.12)] bg-white/[0.03] px-2 text-xs text-[var(--color-text-primary)]"
+                className="h-8 rounded-lg border border-[rgba(var(--accent-rgb),0.12)] bg-white/[0.03] px-2 text-xs text-[var(--color-text-primary)]"
               >
                 {PAGE_SIZE_OPTIONS.map((n) => (
                   <option key={n} value={n}>

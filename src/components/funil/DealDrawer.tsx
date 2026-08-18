@@ -39,7 +39,7 @@ interface DealDrawerProps {
 }
 
 const inputCls =
-  'w-full rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.03] px-3 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--accent-primary)]';
+  'w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.03] px-3 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--accent-primary)]';
 
 export function DealDrawer({ deal, stages, pipelines, isAdmin, onClose, onStageChange, onChanged }: DealDrawerProps) {
   const detail = useDealDetail(deal);
@@ -128,10 +128,10 @@ export function DealDrawer({ deal, stages, pipelines, isAdmin, onClose, onStageC
     <div className="fixed inset-0 z-50 flex justify-end" role="dialog" aria-label="Detalhe do lead">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <aside
-        className="relative z-10 flex h-full w-full max-w-full flex-col overflow-y-auto border-l border-[rgba(212,165,116,0.25)] bg-[#0A0A0F] shadow-[0_0_60px_rgba(212,165,116,0.12)] transition-transform duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)] sm:w-[460px]"
+        className="relative z-10 flex h-full w-full max-w-full flex-col overflow-y-auto border-l border-[rgba(var(--accent-rgb),0.25)] bg-[#0A0A0F] shadow-[0_0_60px_rgba(var(--accent-rgb),0.12)] transition-transform duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)] sm:w-[460px]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="sticky top-0 z-10 flex items-start justify-between gap-3 border-b border-[rgba(212,165,116,0.12)] bg-[#0A0A0F]/95 px-5 py-4 backdrop-blur">
+        <div className="sticky top-0 z-10 flex items-start justify-between gap-3 border-b border-[rgba(var(--accent-rgb),0.12)] bg-[#0A0A0F]/95 px-5 py-4 backdrop-blur">
           <div className="min-w-0 flex-1">
             <div className="text-label">Lead</div>
             {/* Título = nome do lead (contato), editável */}
@@ -238,7 +238,7 @@ export function DealDrawer({ deal, stages, pipelines, isAdmin, onClose, onStageC
                   )}
                 </div>
               ) : (
-                <div className="space-y-2 rounded-lg border border-[rgba(212,165,116,0.12)] bg-white/[0.02] p-3">
+                <div className="space-y-2 rounded-lg border border-[rgba(var(--accent-rgb),0.12)] bg-white/[0.02] p-3">
                   <div className="flex items-center justify-between gap-2">
                     <span
                       className={
@@ -319,7 +319,7 @@ export function DealDrawer({ deal, stages, pipelines, isAdmin, onClose, onStageC
             <section className="space-y-2">
               <div className="text-label">Origem do lead (UTM)</div>
               {origin ? (
-                <div className="space-y-3 rounded-lg border border-[rgba(212,165,116,0.12)] bg-white/[0.02] p-3">
+                <div className="space-y-3 rounded-lg border border-[rgba(var(--accent-rgb),0.12)] bg-white/[0.02] p-3">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${TRAFFIC_TYPE_STYLE[origin.traffic ?? ''] ?? ''}`}>
                       {origin.highlight}
@@ -343,7 +343,7 @@ export function DealDrawer({ deal, stages, pipelines, isAdmin, onClose, onStageC
               )}
             </section>
 
-            <Link to={`/inbox?contact=${deal.contact_id}`} className="flex items-center justify-center gap-2 rounded-lg border border-[rgba(212,165,116,0.2)] py-2.5 text-sm font-medium text-[var(--accent-secondary)] transition hover:border-[var(--accent-primary)] hover:bg-white/5">
+            <Link to={`/inbox?contact=${deal.contact_id}`} className="flex items-center justify-center gap-2 rounded-lg border border-[rgba(var(--accent-rgb),0.2)] py-2.5 text-sm font-medium text-[var(--accent-secondary)] transition hover:border-[var(--accent-primary)] hover:bg-white/5">
               <MessageSquare className="h-4 w-4" /> Abrir conversa no inbox
             </Link>
 
@@ -386,7 +386,7 @@ export function DealDrawer({ deal, stages, pipelines, isAdmin, onClose, onStageC
               <div className="text-label">Notas internas</div>
               <div className="flex gap-2">
                 <input value={note} onChange={(e) => setNote(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && void submitNote()} placeholder="Anotar algo sobre este lead…" className={inputCls} />
-                <button onClick={submitNote} disabled={savingNote || !note.trim()} className="rounded-lg bg-gradient-to-br from-[#182940] to-[#D4A574] px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-60">
+                <button onClick={submitNote} disabled={savingNote || !note.trim()} className="rounded-lg bg-gradient-to-br from-[var(--accent-deep)] to-[var(--accent-primary)] px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-60">
                   {savingNote ? '…' : 'Anotar'}
                 </button>
               </div>
@@ -443,7 +443,7 @@ function ProductMultiSelect({
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute z-20 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border border-[rgba(212,165,116,0.25)] bg-[#0A0A0F] p-1 shadow-[0_0_30px_rgba(212,165,116,0.15)]">
+          <div className="absolute z-20 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border border-[rgba(var(--accent-rgb),0.25)] bg-[#0A0A0F] p-1 shadow-[0_0_30px_rgba(var(--accent-rgb),0.15)]">
             {catalog.length === 0 ? (
               <div className="px-3 py-2 text-xs text-[var(--color-text-secondary)]">
                 Nenhum produto no catálogo. Cadastre em Configurações → Produtos.
@@ -462,7 +462,7 @@ function ProductMultiSelect({
                       className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border ${
                         active
                           ? 'border-[var(--accent-primary)] bg-[var(--accent-primary)]'
-                          : 'border-[rgba(212,165,116,0.35)]'
+                          : 'border-[rgba(var(--accent-rgb),0.35)]'
                       }`}
                     >
                       {active && <Check className="h-3 w-3 text-white" />}
@@ -552,7 +552,7 @@ function InlineText({
         onBlur={commit}
         onKeyDown={(e) => { if (e.key === 'Enter') commit(); if (e.key === 'Escape') { setLocal(value); setErr(null); setEditing(false); } }}
         placeholder={placeholder}
-        className="w-full rounded border border-[rgba(212,165,116,0.3)] bg-white/[0.05] px-2 py-1 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--accent-primary)]"
+        className="w-full rounded border border-[rgba(var(--accent-rgb),0.3)] bg-white/[0.05] px-2 py-1 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--accent-primary)]"
       />
       {err && <div className="mt-1 text-xs text-[#EF4444]">{err}</div>}
     </div>
@@ -618,7 +618,7 @@ function ChipEditor({
         {open && (q.trim() || suggestions.length > 0) && (
           <>
             <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-            <div className="absolute z-20 mt-1 w-full rounded-lg border border-[rgba(212,165,116,0.25)] bg-[#0A0A0F] p-1 shadow-[0_0_30px_rgba(212,165,116,0.15)]">
+            <div className="absolute z-20 mt-1 w-full rounded-lg border border-[rgba(var(--accent-rgb),0.25)] bg-[#0A0A0F] p-1 shadow-[0_0_30px_rgba(var(--accent-rgb),0.15)]">
               {suggestions.map((s) => (
                 <button key={s.id} onClick={() => void add(s.name)} className="flex w-full items-center gap-2 rounded-md px-3 py-1.5 text-left text-sm text-[var(--color-text-primary)] hover:bg-white/5">
                   {s.name}
@@ -655,7 +655,7 @@ function CustomFieldInput({ field, value, onSave }: { field: CustomField; value:
       </div>
       {field.field_type === 'boolean' ? (
         <label className="inline-flex cursor-pointer items-center gap-2 text-sm text-[var(--color-text-primary)]">
-          <input type="checkbox" checked={local === 'true'} onChange={(e) => { const v = e.target.checked ? 'true' : 'false'; setLocal(v); commit(v); }} className="h-4 w-4 accent-[#D4A574]" />
+          <input type="checkbox" checked={local === 'true'} onChange={(e) => { const v = e.target.checked ? 'true' : 'false'; setLocal(v); commit(v); }} className="h-4 w-4 accent-[var(--accent-primary)]" />
           {local === 'true' ? 'Sim' : 'Não'}
         </label>
       ) : field.field_type === 'select' ? (
@@ -699,7 +699,7 @@ function CustomFieldModal({ onClose, onCreate }: {
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm" onClick={onClose}>
-      <div onClick={(e) => e.stopPropagation()} className="w-full max-w-sm rounded-2xl border border-[rgba(212,165,116,0.25)] bg-[#0A0A0F] p-5 shadow-[0_0_40px_rgba(212,165,116,0.15)]">
+      <div onClick={(e) => e.stopPropagation()} className="w-full max-w-sm rounded-2xl border border-[rgba(var(--accent-rgb),0.25)] bg-[#0A0A0F] p-5 shadow-[0_0_40px_rgba(var(--accent-rgb),0.15)]">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-base font-bold text-display">Novo campo personalizado</h3>
           <button onClick={onClose} aria-label="Fechar" className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"><X className="h-5 w-5" /></button>
@@ -722,15 +722,15 @@ function CustomFieldModal({ onClose, onCreate }: {
             </div>
           )}
           <label className="flex cursor-pointer items-center gap-2 text-sm text-[var(--color-text-primary)]">
-            <input type="checkbox" checked={required} onChange={(e) => setRequired(e.target.checked)} className="h-4 w-4 accent-[#D4A574]" /> Obrigatório
+            <input type="checkbox" checked={required} onChange={(e) => setRequired(e.target.checked)} className="h-4 w-4 accent-[var(--accent-primary)]" /> Obrigatório
           </label>
           {err && <div className="text-xs text-[#EF4444]">{err}</div>}
         </div>
         <div className="mt-5 flex gap-2">
-          <button onClick={submit} disabled={busy} className="flex-1 inline-flex items-center justify-center gap-1 rounded-lg bg-gradient-to-br from-[#182940] to-[#D4A574] px-3 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-60">
+          <button onClick={submit} disabled={busy} className="flex-1 inline-flex items-center justify-center gap-1 rounded-lg bg-gradient-to-br from-[var(--accent-deep)] to-[var(--accent-primary)] px-3 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-60">
             <Check className="h-4 w-4" /> {busy ? 'Criando…' : 'Criar campo'}
           </button>
-          <button onClick={onClose} className="rounded-lg border border-[rgba(212,165,116,0.2)] px-3 py-2 text-sm text-[var(--color-text-secondary)]">Cancelar</button>
+          <button onClick={onClose} className="rounded-lg border border-[rgba(var(--accent-rgb),0.2)] px-3 py-2 text-sm text-[var(--color-text-secondary)]">Cancelar</button>
         </div>
       </div>
     </div>

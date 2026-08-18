@@ -57,8 +57,8 @@ function PrimaryButton(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
       {...props}
       className={[
         'min-h-12 rounded-xl px-8 py-4 text-base font-medium text-white transition-[box-shadow,opacity,transform] duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]',
-        'bg-[linear-gradient(135deg,#182940_0%,#D4A574_100%)] shadow-[0_8px_40px_rgba(212,165,116,0.4),0_0_60px_rgba(212,165,116,0.2)]',
-        'hover:shadow-[0_8px_50px_rgba(212,165,116,0.6),0_0_80px_rgba(212,165,116,0.3)] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none',
+        'bg-[linear-gradient(135deg,var(--accent-deep)_0%,var(--accent-primary)_100%)] shadow-[0_8px_40px_rgba(var(--accent-rgb),0.4),0_0_60px_rgba(var(--accent-rgb),0.2)]',
+        'hover:shadow-[0_8px_50px_rgba(var(--accent-rgb),0.6),0_0_80px_rgba(var(--accent-rgb),0.3)] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none',
         'w-full sm:w-auto',
         props.className ?? '',
       ].join(' ')}
@@ -80,10 +80,10 @@ function StepIndicator({ step }: { step: Step }) {
                 className={[
                   'flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold',
                   active
-                    ? 'bg-[#D4A574] text-white shadow-[0_0_30px_rgba(212,165,116,0.5)]'
+                    ? 'bg-[var(--accent-primary)] text-white shadow-[0_0_30px_rgba(var(--accent-rgb),0.5)]'
                     : complete
-                      ? 'bg-[#182940] text-white'
-                      : 'border border-[rgba(212,165,116,0.3)] bg-transparent text-[#94A3B8]',
+                      ? 'bg-[var(--accent-deep)] text-white'
+                      : 'border border-[rgba(var(--accent-rgb),0.3)] bg-transparent text-[#94A3B8]',
                 ].join(' ')}
               >
                 {complete ? <Check className="h-4 w-4" /> : n}
@@ -98,7 +98,7 @@ function StepIndicator({ step }: { step: Step }) {
               </div>
             </div>
             {index < STEP_LABELS.length - 1 ? (
-              <div className="mx-2 mt-5 h-px w-8 border-t border-[rgba(212,165,116,0.2)] sm:mx-5 sm:w-20" />
+              <div className="mx-2 mt-5 h-px w-8 border-t border-[rgba(var(--accent-rgb),0.2)] sm:mx-5 sm:w-20" />
             ) : null}
           </div>
         );
@@ -109,7 +109,7 @@ function StepIndicator({ step }: { step: Step }) {
 
 function SetupCard({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-[rgba(212,165,116,0.15)] bg-white/[0.02] p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-[40px] md:p-12">
+    <div className="rounded-2xl border border-[rgba(var(--accent-rgb),0.15)] bg-white/[0.02] p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-[40px] md:p-12">
       {children}
     </div>
   );
@@ -129,9 +129,9 @@ function PrepItem({
   pills: string[];
 }) {
   return (
-    <div className="relative rounded-xl border border-[rgba(212,165,116,0.12)] bg-white/[0.02] p-5">
+    <div className="relative rounded-xl border border-[rgba(var(--accent-rgb),0.12)] bg-white/[0.02] p-5">
       <div className="flex gap-4 pr-16">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[rgba(212,165,116,0.4)] text-sm font-medium text-[#E8C89A]">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[rgba(var(--accent-rgb),0.4)] text-sm font-medium text-[var(--accent-secondary)]">
           {n}
         </div>
         <div>
@@ -141,7 +141,7 @@ function PrepItem({
             {pills.map((pill) => (
               <span
                 key={pill}
-                className="rounded-full border border-[rgba(212,165,116,0.3)] bg-[rgba(30,58,138,0.4)] px-3 py-1 font-mono text-[11px] uppercase tracking-[0.05em] text-[#E8C89A]"
+                className="rounded-full border border-[rgba(var(--accent-rgb),0.3)] bg-[rgba(30,58,138,0.4)] px-3 py-1 font-mono text-[11px] uppercase tracking-[0.05em] text-[var(--accent-secondary)]"
               >
                 {pill}
               </span>
@@ -153,7 +153,7 @@ function PrepItem({
         href={href}
         target="_blank"
         rel="noreferrer"
-        className="absolute right-5 top-5 inline-flex items-center gap-1 text-sm text-[#E8C89A] hover:text-[#85B7EB]"
+        className="absolute right-5 top-5 inline-flex items-center gap-1 text-sm text-[var(--accent-secondary)] hover:text-[#85B7EB]"
       >
         abrir
         <ExternalLink className="h-3.5 w-3.5" />
@@ -421,7 +421,7 @@ export default function SetupPage() {
                             setCore((prev) => ({ ...prev, [key]: next }));
                           }}
                           autoComplete={key === 'owner_password' ? 'new-password' : 'off'}
-                          className="w-full rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.03] px-4 py-3 pr-16 text-sm text-[#F8FAFC] placeholder:text-[#94A3B8] focus:border-[#D4A574] focus:outline-none focus:shadow-[0_0_20px_rgba(212,165,116,0.2)]"
+                          className="w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.03] px-4 py-3 pr-16 text-sm text-[#F8FAFC] placeholder:text-[#94A3B8] focus:border-[var(--accent-primary)] focus:outline-none focus:shadow-[0_0_20px_rgba(var(--accent-rgb),0.2)]"
                         />
                         <div className="absolute right-3 top-1/2 flex -translate-y-1/2 items-center gap-2">
                           {isSecret ? (
@@ -450,7 +450,7 @@ export default function SetupPage() {
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="min-h-11 w-full rounded-lg border border-[rgba(212,165,116,0.25)] bg-white/[0.03] px-5 text-sm font-medium text-[#F8FAFC] transition hover:border-[#D4A574] sm:w-auto"
+                  className="min-h-11 w-full rounded-lg border border-[rgba(var(--accent-rgb),0.25)] bg-white/[0.03] px-5 text-sm font-medium text-[#F8FAFC] transition hover:border-[var(--accent-primary)] sm:w-auto"
                 >
                   Voltar
                 </button>
@@ -469,8 +469,8 @@ export default function SetupPage() {
               </p>
               <div className="space-y-3">
                 {TIMELINE_STEPS.map((entry) => (
-                  <div key={entry.label} className="flex items-center gap-3 rounded-xl border border-[rgba(212,165,116,0.12)] bg-white/[0.02] p-4">
-                    {timeline.includes(entry.label) ? <Check className="h-5 w-5 text-[#10B981]" /> : <Loader2 className="h-5 w-5 animate-spin text-[#E8C89A]" />}
+                  <div key={entry.label} className="flex items-center gap-3 rounded-xl border border-[rgba(var(--accent-rgb),0.12)] bg-white/[0.02] p-4">
+                    {timeline.includes(entry.label) ? <Check className="h-5 w-5 text-[#10B981]" /> : <Loader2 className="h-5 w-5 animate-spin text-[var(--accent-secondary)]" />}
                     <span className="text-sm text-[#F8FAFC]">{entry.label}</span>
                   </div>
                 ))}
@@ -504,7 +504,7 @@ export default function SetupPage() {
                       href="https://vercel.com/dashboard"
                       target="_blank"
                       rel="noreferrer"
-                      className="text-[#E8C89A] underline hover:text-[#85B7EB]"
+                      className="text-[var(--accent-secondary)] underline hover:text-[#85B7EB]"
                     >
                       vercel.com/dashboard
                     </a>
@@ -514,7 +514,7 @@ export default function SetupPage() {
                     <button
                       type="button"
                       onClick={() => void waitForAppLive()}
-                      className="min-h-11 rounded-lg border border-[rgba(212,165,116,0.25)] bg-white/[0.03] px-5 text-sm font-medium text-[#F8FAFC] transition hover:border-[#D4A574]"
+                      className="min-h-11 rounded-lg border border-[rgba(var(--accent-rgb),0.25)] bg-white/[0.03] px-5 text-sm font-medium text-[#F8FAFC] transition hover:border-[var(--accent-primary)]"
                     >
                       Verificar de novo
                     </button>
@@ -536,7 +536,7 @@ export default function SetupPage() {
                         onChange={(event) => setCore((prev) => ({ ...prev, owner_password: event.target.value }))}
                         placeholder="senha do owner"
                         autoComplete="current-password"
-                        className="w-full rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.03] px-4 py-3 text-sm text-[#F8FAFC] placeholder:text-[#94A3B8] focus:border-[#D4A574] focus:outline-none focus:shadow-[0_0_20px_rgba(212,165,116,0.2)]"
+                        className="w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.03] px-4 py-3 text-sm text-[#F8FAFC] placeholder:text-[#94A3B8] focus:border-[var(--accent-primary)] focus:outline-none focus:shadow-[0_0_20px_rgba(var(--accent-rgb),0.2)]"
                       />
                     </div>
                   ) : null}

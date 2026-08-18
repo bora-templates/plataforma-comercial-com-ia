@@ -214,7 +214,7 @@ export default function InboxPage() {
             selectedId ? 'hidden lg:flex' : 'flex'
           }`}
         >
-          <div className="p-3 border-b border-[rgba(212,165,116,0.08)] space-y-2">
+          <div className="p-3 border-b border-[rgba(var(--accent-rgb),0.08)] space-y-2">
             {/* Filtros + ordenação (os campos de nome/telefone/email vivem dentro
                 do popover de Filtros — por isso não há mais busca solta aqui). */}
             <InboxFilters
@@ -253,7 +253,7 @@ export default function InboxPage() {
         >
           {selected ? (
             <>
-              <div className="p-3 border-b border-[rgba(212,165,116,0.08)] flex items-center gap-2">
+              <div className="p-3 border-b border-[rgba(var(--accent-rgb),0.08)] flex items-center gap-2">
                 <button
                   onClick={() => setSelectedId(null)}
                   aria-label="Voltar à lista"
@@ -320,7 +320,7 @@ export default function InboxPage() {
             </button>
           ) : selected ? (
             <>
-              <div className="flex items-center justify-between px-4 py-2 border-b border-[rgba(212,165,116,0.08)]">
+              <div className="flex items-center justify-between px-4 py-2 border-b border-[rgba(var(--accent-rgb),0.08)]">
                 <span className="text-label">Detalhes</span>
                 <button
                   onClick={togglePanel}
@@ -378,7 +378,7 @@ export default function InboxPage() {
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={() => setShowPanelMobile(false)}
           />
-          <div className="absolute right-0 top-0 h-full w-80 max-w-[85vw] glass-surface border-l border-[rgba(212,165,116,0.15)] overflow-y-auto">
+          <div className="absolute right-0 top-0 h-full w-80 max-w-[85vw] glass-surface border-l border-[rgba(var(--accent-rgb),0.15)] overflow-y-auto">
             <div className="flex justify-end p-2">
               <button
                 onClick={() => setShowPanelMobile(false)}

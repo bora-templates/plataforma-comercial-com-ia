@@ -38,7 +38,7 @@ const ACTION_TYPES: { value: string; label: string }[] = [
 ];
 
 const inputCls =
-  'w-full rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.03] px-3 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--accent-primary)]';
+  'w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.03] px-3 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--accent-primary)]';
 const labelCls = 'mb-1 block text-[10px] font-semibold uppercase tracking-wider text-[var(--color-text-secondary)]';
 
 export function FunnelAutomationsTab() {
@@ -103,7 +103,7 @@ export function FunnelAutomationsTab() {
         </div>
         <button
           onClick={() => setCreating(true)}
-          className="ml-auto inline-flex items-center gap-2 self-end rounded-lg bg-gradient-to-br from-[#182940] to-[#D4A574] px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
+          className="ml-auto inline-flex items-center gap-2 self-end rounded-lg bg-gradient-to-br from-[var(--accent-deep)] to-[var(--accent-primary)] px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
         >
           <Plus className="h-4 w-4" /> Nova automação
         </button>
@@ -239,7 +239,7 @@ function AutomationForm({
       <div className="space-y-3">
         <span className={labelCls}>Ações</span>
         {actions.map((a, i) => (
-          <div key={i} className="rounded-lg border border-[rgba(212,165,116,0.15)] bg-white/[0.02] p-3">
+          <div key={i} className="rounded-lg border border-[rgba(var(--accent-rgb),0.15)] bg-white/[0.02] p-3">
             <div className="flex items-center gap-2">
               <select value={a.type} onChange={(e) => setAction(i, { type: e.target.value })} className={inputCls}>
                 {ACTION_TYPES.map((t) => (
@@ -316,16 +316,16 @@ function AutomationForm({
             </div>
           </div>
         ))}
-        <button onClick={addAction} className="inline-flex items-center gap-1 rounded-lg border border-dashed border-[rgba(212,165,116,0.3)] px-3 py-1.5 text-xs text-[var(--color-text-secondary)] transition hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)]">
+        <button onClick={addAction} className="inline-flex items-center gap-1 rounded-lg border border-dashed border-[rgba(var(--accent-rgb),0.3)] px-3 py-1.5 text-xs text-[var(--color-text-secondary)] transition hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)]">
           <Plus className="h-3 w-3" /> Adicionar ação
         </button>
       </div>
 
       <div className="flex justify-end gap-2">
-        <button onClick={onCancel} className="rounded-lg border border-[rgba(212,165,116,0.2)] px-4 py-2 text-sm text-[var(--color-text-secondary)]">
+        <button onClick={onCancel} className="rounded-lg border border-[rgba(var(--accent-rgb),0.2)] px-4 py-2 text-sm text-[var(--color-text-secondary)]">
           Cancelar
         </button>
-        <button onClick={() => void save()} disabled={saving} className="rounded-lg bg-gradient-to-br from-[#182940] to-[#D4A574] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">
+        <button onClick={() => void save()} disabled={saving} className="rounded-lg bg-gradient-to-br from-[var(--accent-deep)] to-[var(--accent-primary)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">
           {saving ? 'Salvando…' : 'Salvar automação'}
         </button>
       </div>

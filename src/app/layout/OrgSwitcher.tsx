@@ -95,11 +95,11 @@ export function OrgSwitcher() {
 
   // Membro comum: apenas o nome da própria org, sem dropdown.
   if (!isSuperAdmin) {
-    return <div className="hidden md:block pr-2 border-r border-[rgba(212,165,116,0.1)]">{label}</div>;
+    return <div className="hidden md:block pr-2 border-r border-[rgba(var(--accent-rgb),0.1)]">{label}</div>;
   }
 
   return (
-    <div ref={rootRef} className="relative hidden md:block pr-2 border-r border-[rgba(212,165,116,0.1)]">
+    <div ref={rootRef} className="relative hidden md:block pr-2 border-r border-[rgba(var(--accent-rgb),0.1)]">
       <button
         onClick={() => setOpen((v) => !v)}
         aria-label="Trocar de organização"
@@ -112,7 +112,7 @@ export function OrgSwitcher() {
       </button>
 
       {open ? (
-        <div className="absolute right-2 top-[calc(100%+10px)] z-50 w-64 overflow-hidden rounded-2xl border border-[rgba(212,165,116,0.25)] bg-[#0F1223] p-1.5 shadow-[0_0_40px_rgba(0,0,0,0.6)]">
+        <div className="absolute right-2 top-[calc(100%+10px)] z-50 w-64 overflow-hidden rounded-2xl border border-[rgba(var(--accent-rgb),0.25)] bg-[#0F1223] p-1.5 shadow-[0_0_40px_rgba(0,0,0,0.6)]">
           <div className="px-2.5 py-1.5 text-[0.65rem] uppercase tracking-[0.12em] text-[var(--color-text-secondary)]">
             Organizações
           </div>

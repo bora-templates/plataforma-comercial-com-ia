@@ -260,7 +260,7 @@ export function ContactPanel({
           src={contact?.profile_pic_url}
           name={displayName}
           size="lg"
-          className="mx-auto shadow-[0_0_30px_rgba(212,165,116,0.25)]"
+          className="mx-auto shadow-[0_0_30px_rgba(var(--accent-rgb),0.25)]"
         />
         <div className="mt-3 text-lg font-bold text-display text-[var(--color-text-primary)]">
           {displayName}
@@ -332,7 +332,7 @@ export function ContactPanel({
               toast.error('Falha', { description: err instanceof Error ? err.message : String(err) });
             }
           }}
-          className="h-11 w-full rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.03] px-3 text-sm text-[var(--color-text-primary)]"
+          className="h-11 w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.03] px-3 text-sm text-[var(--color-text-primary)]"
         >
           <option value="">Ninguém</option>
           {operators.map((op) => (
@@ -357,7 +357,7 @@ export function ContactPanel({
                 toast.error('Falha', { description: err instanceof Error ? err.message : String(err) });
               }
             }}
-            className="h-11 w-full rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.03] px-3 text-sm text-[var(--color-text-primary)]"
+            className="h-11 w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.03] px-3 text-sm text-[var(--color-text-primary)]"
           >
             <option value="">Nenhum</option>
             {openDeals.map((d) => (
@@ -405,7 +405,7 @@ export function ContactPanel({
                 onChange={(e) => setLostReason(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && void markOutcome('lost')}
                 placeholder="Motivo da perda (opcional)"
-                className="h-11 w-full rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.03] px-3 text-sm text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
+                className="h-11 w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.03] px-3 text-sm text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
                 autoFocus
               />
               <button
@@ -528,7 +528,7 @@ export function ContactPanel({
         </Button>
       </div>
 
-      <div className="pt-3 border-t border-[rgba(212,165,116,0.08)] text-[10px] text-[var(--color-text-secondary)] opacity-70 space-y-0.5">
+      <div className="pt-3 border-t border-[rgba(var(--accent-rgb),0.08)] text-[10px] text-[var(--color-text-secondary)] opacity-70 space-y-0.5">
         <div>Status: {conversation.status}</div>
         <div>IA: {conversation.ai_paused ? 'pausada' : 'ativa'}</div>
         <div>Criada: {new Date(conversation.created_at).toLocaleString('pt-BR')}</div>

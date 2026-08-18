@@ -160,7 +160,7 @@ export function AgentMediaSettings() {
               disabled={saving}
             />
             {file ? (
-              <div className="flex items-center gap-2 rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.03] px-3 h-11 text-sm">
+              <div className="flex items-center gap-2 rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.03] px-3 h-11 text-sm">
                 <Paperclip className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
                 <span className="truncate text-[var(--color-text-primary)]">{file.name}</span>
                 <span className="text-[var(--color-text-secondary)] text-xs">{(file.size / 1024 / 1024).toFixed(1)}MB</span>
@@ -194,7 +194,7 @@ export function AgentMediaSettings() {
           ) : items.length === 0 ? (
             <div className="text-sm text-[var(--color-text-secondary)] opacity-60">Nenhuma mídia ainda.</div>
           ) : (
-            <ul className="divide-y divide-[rgba(212,165,116,0.08)] rounded-lg border border-[rgba(212,165,116,0.1)] bg-white/[0.02]">
+            <ul className="divide-y divide-[rgba(var(--accent-rgb),0.08)] rounded-lg border border-[rgba(var(--accent-rgb),0.1)] bg-white/[0.02]">
               {items.map((m) => (
                 <li key={m.id} className="flex items-center justify-between gap-3 p-3">
                   <div className="min-w-0">

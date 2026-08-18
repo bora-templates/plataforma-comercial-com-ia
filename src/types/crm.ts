@@ -14,7 +14,7 @@ export type Temperature = 'Frio' | 'Morno' | 'Quente';
 
 // Cores dos badges de temperatura (frio = azul/cinza, morno = amarelo, quente = laranja/vermelho).
 export const TEMPERATURE_STYLE: Record<Temperature, { label: string; className: string; dot: string }> = {
-  Frio: { label: 'Frio', className: 'bg-[rgba(232,200,154,0.14)] text-[#E8C89A]', dot: 'bg-[#E8C89A]' },
+  Frio: { label: 'Frio', className: 'bg-[rgba(232,200,154,0.14)] text-[var(--accent-secondary)]', dot: 'bg-[var(--accent-secondary)]' },
   Morno: { label: 'Morno', className: 'bg-[rgba(245,158,11,0.14)] text-[#FBBF24]', dot: 'bg-[#FBBF24]' },
   Quente: { label: 'Quente', className: 'bg-[rgba(239,68,68,0.14)] text-[#F87171]', dot: 'bg-[#F87171]' },
 };
@@ -129,7 +129,7 @@ export const TRAFFIC_TYPE_LABEL: Record<string, string> = {
 
 export const TRAFFIC_TYPE_STYLE: Record<string, string> = {
   organico: 'bg-[rgba(16,185,129,0.14)] text-[#10B981]',
-  pago: 'bg-[rgba(232,200,154,0.14)] text-[#E8C89A]',
+  pago: 'bg-[rgba(232,200,154,0.14)] text-[var(--accent-secondary)]',
   manual: 'bg-white/5 text-[var(--color-text-secondary)]',
 };
 
@@ -274,7 +274,7 @@ export function dueTone(dueAt: string | null): DueTone {
 export const DUE_TONE_STYLE: Record<DueTone, string> = {
   overdue: 'bg-[rgba(239,68,68,0.14)] text-[var(--color-error)]',
   today: 'bg-[rgba(245,158,11,0.14)] text-[#FBBF24]',
-  future: 'bg-[rgba(212,165,116,0.14)] text-[var(--accent-secondary)]',
+  future: 'bg-[rgba(var(--accent-rgb),0.14)] text-[var(--accent-secondary)]',
 };
 
 // ---- Campos customizáveis (definições + valores por deal) ----

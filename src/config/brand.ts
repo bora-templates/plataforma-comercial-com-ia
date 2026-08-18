@@ -2,8 +2,9 @@
 // abaixo; cada instalação troca aqui e no logo em
 // public/brand-mark.png, sem caçar string espalhada por componente.
 export const BRAND = {
-  /** Assinatura de quem opera a instalação. Aparece acima do nome do produto. */
-  owner: 'Plataforma Comercial',
+  /** Assinatura de quem opera a instalação, acima do nome do produto.
+      Deixe vazio para mostrar só o produto. */
+  owner: '',
   /** Nome do produto. É o que ganha o destaque visual na sidebar e no login. */
   product: 'Plataforma Comercial',
   /** Arquivo em public/. Troque a imagem mantendo o nome. */

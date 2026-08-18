@@ -77,13 +77,13 @@ export function ContactTagsEditor({ contactId }: { contactId: string }) {
           <button
             type="button"
             onClick={() => setAdding((v) => !v)}
-            className="inline-flex items-center gap-1 rounded-full border border-[rgba(212,165,116,0.25)] px-2.5 py-1 text-[11px] font-semibold text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
+            className="inline-flex items-center gap-1 rounded-full border border-[rgba(var(--accent-rgb),0.25)] px-2.5 py-1 text-[11px] font-semibold text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
           >
             <Plus className="h-3 w-3" />
             Tag
           </button>
           {adding && (
-            <div className="absolute z-20 mt-1 w-48 rounded-lg border border-[rgba(212,165,116,0.25)] bg-[#0F1223] shadow-2xl overflow-hidden max-h-56 overflow-y-auto">
+            <div className="absolute z-20 mt-1 w-48 rounded-lg border border-[rgba(var(--accent-rgb),0.25)] bg-[#0F1223] shadow-2xl overflow-hidden max-h-56 overflow-y-auto">
               {available.length === 0 ? (
                 <div className="px-3 py-2 text-xs text-[var(--color-text-secondary)] opacity-70">
                   Sem tags disponíveis. Crie em Contatos.
@@ -94,7 +94,7 @@ export function ContactTagsEditor({ contactId }: { contactId: string }) {
                     key={t.id}
                     type="button"
                     onClick={() => attach(t.id)}
-                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-[rgba(212,165,116,0.12)]"
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-[rgba(var(--accent-rgb),0.12)]"
                   >
                     <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: t.color }} />
                     <span className="text-[var(--color-text-primary)]">{t.name}</span>

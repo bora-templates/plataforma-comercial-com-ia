@@ -225,7 +225,7 @@ export function ImportContactsDialog({
       {step === 'upload' && (
         <label
           htmlFor="contacts_file"
-          className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-[rgba(212,165,116,0.25)] bg-white/[0.02] p-10 cursor-pointer hover:border-[rgba(212,165,116,0.5)]"
+          className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-[rgba(var(--accent-rgb),0.25)] bg-white/[0.02] p-10 cursor-pointer hover:border-[rgba(var(--accent-rgb),0.5)]"
         >
           <FileUp className="h-8 w-8 text-[var(--accent-primary)]" />
           <div className="text-center">
@@ -268,12 +268,12 @@ export function ImportContactsDialog({
             </label>
           </div>
 
-          <div className="rounded-lg border border-[rgba(212,165,116,0.1)] overflow-auto max-h-[340px]">
+          <div className="rounded-lg border border-[rgba(var(--accent-rgb),0.1)] overflow-auto max-h-[340px]">
             <table className="w-full text-xs">
               <thead className="bg-white/[0.03] sticky top-0">
                 <tr>
                   {headers.map((h, i) => (
-                    <th key={i} className="p-2 text-left border-b border-[rgba(212,165,116,0.08)] min-w-[140px]">
+                    <th key={i} className="p-2 text-left border-b border-[rgba(var(--accent-rgb),0.08)] min-w-[140px]">
                       <div className="font-semibold text-[var(--color-text-primary)] mb-1 truncate">
                         {h || `Coluna ${i + 1}`}
                       </div>
@@ -298,7 +298,7 @@ export function ImportContactsDialog({
                             return next;
                           });
                         }}
-                        className="w-full rounded border border-[rgba(212,165,116,0.15)] bg-black/20 px-2 py-1 text-xs text-[var(--color-text-primary)]"
+                        className="w-full rounded border border-[rgba(var(--accent-rgb),0.15)] bg-black/20 px-2 py-1 text-xs text-[var(--color-text-primary)]"
                       >
                         <option value="skip">— ignorar —</option>
                         <option value="phone">📞 telefone</option>
@@ -317,7 +317,7 @@ export function ImportContactsDialog({
               </thead>
               <tbody>
                 {previewBody.map((r, i) => (
-                  <tr key={i} className="border-b border-[rgba(212,165,116,0.04)]">
+                  <tr key={i} className="border-b border-[rgba(var(--accent-rgb),0.04)]">
                     {headers.map((_, j) => (
                       <td key={j} className="p-2 text-[var(--color-text-secondary)] truncate max-w-[200px]">
                         {r[j] ?? ''}

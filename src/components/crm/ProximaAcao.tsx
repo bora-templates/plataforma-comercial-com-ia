@@ -12,7 +12,7 @@ import {
 } from '@/types/crm';
 
 const inputCls =
-  'w-full rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.03] px-3 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--accent-primary)]';
+  'w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.03] px-3 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--accent-primary)]';
 
 const TONE_LABEL: Record<string, string> = { overdue: 'Atrasada', today: 'Hoje', future: 'Agendada' };
 
@@ -133,8 +133,8 @@ export function ProximaAcao({ dealId, contactId, deals }: ProximaAcaoProps) {
                 key={a.id}
                 className={`rounded-lg border p-3 ${
                   i === 0
-                    ? 'border-[rgba(212,165,116,0.4)] bg-[rgba(212,165,116,0.06)]'
-                    : 'border-[rgba(212,165,116,0.12)] bg-white/[0.02]'
+                    ? 'border-[rgba(var(--accent-rgb),0.4)] bg-[rgba(var(--accent-rgb),0.06)]'
+                    : 'border-[rgba(var(--accent-rgb),0.12)] bg-white/[0.02]'
                 }`}
               >
                 <div className="flex items-start justify-between gap-2">
@@ -182,7 +182,7 @@ export function ProximaAcao({ dealId, contactId, deals }: ProximaAcaoProps) {
       )}
 
       {/* Formulário de agendamento */}
-      <div className="space-y-2 rounded-lg border border-[rgba(212,165,116,0.12)] bg-white/[0.02] p-3">
+      <div className="space-y-2 rounded-lg border border-[rgba(var(--accent-rgb),0.12)] bg-white/[0.02] p-3">
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}

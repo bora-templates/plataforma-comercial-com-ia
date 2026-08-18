@@ -256,7 +256,7 @@ export function TemplateFormDialog({
               value={category}
               onChange={(e) => setCategory(e.target.value as TemplateCategory)}
               disabled={saving}
-              className="h-11 w-full rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.03] px-4 text-sm text-[var(--color-text-primary)]"
+              className="h-11 w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.03] px-4 text-sm text-[var(--color-text-primary)]"
             >
               {CATEGORIES.map((c) => (
                 <option key={c.value} value={c.value}>
@@ -291,7 +291,7 @@ export function TemplateFormDialog({
               value={headerType}
               onChange={(e) => setHeaderType(e.target.value as HeaderType)}
               disabled={saving}
-              className="h-11 w-full rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.03] px-4 text-sm text-[var(--color-text-primary)]"
+              className="h-11 w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.03] px-4 text-sm text-[var(--color-text-primary)]"
             >
               {HEADER_TYPES.map((h) => (
                 <option key={h.value} value={h.value}>
@@ -334,7 +334,7 @@ export function TemplateFormDialog({
             placeholder="Olá! Seu pedido foi confirmado e já está em separação."
             rows={5}
             disabled={saving}
-            className="w-full rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.03] px-4 py-3 text-sm font-mono text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
+            className="w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.03] px-4 py-3 text-sm font-mono text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
           />
           <div className="flex items-center justify-between gap-2">
             <p className="text-[11px] text-[var(--color-text-secondary)] opacity-70">
@@ -344,7 +344,7 @@ export function TemplateFormDialog({
               type="button"
               onClick={() => setBody((cur) => `${cur}{{${extractVariables(cur).length + 1}}}`)}
               disabled={saving}
-              className="shrink-0 rounded-md border border-[rgba(212,165,116,0.25)] px-2 py-1 text-[11px] text-[var(--accent-secondary)] transition hover:border-[var(--accent-primary)]"
+              className="shrink-0 rounded-md border border-[rgba(var(--accent-rgb),0.25)] px-2 py-1 text-[11px] text-[var(--accent-secondary)] transition hover:border-[var(--accent-primary)]"
             >
               + Variável
             </button>
@@ -352,7 +352,7 @@ export function TemplateFormDialog({
         </div>
 
         {detectedVars.length > 0 && (
-          <div className="space-y-2 rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.02] p-3">
+          <div className="space-y-2 rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.02] p-3">
             <div className="text-xs font-semibold text-[var(--color-text-primary)]">
               Exemplos das variáveis (exigidos pela Meta para aprovação)
             </div>

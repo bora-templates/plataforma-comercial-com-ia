@@ -165,7 +165,7 @@ export default function AdminPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-label border-b border-[rgba(212,165,116,0.12)]">
+                <tr className="text-label border-b border-[rgba(var(--accent-rgb),0.12)]">
                   <th className="text-left font-semibold pb-3 pr-4">Organização</th>
                   <th className="text-left font-semibold pb-3 pr-4">Slug</th>
                   <th className="text-left font-semibold pb-3 pr-4">Status</th>
@@ -174,7 +174,7 @@ export default function AdminPage() {
                   <th className="text-right font-semibold pb-3">Ações</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[rgba(212,165,116,0.08)]">
+              <tbody className="divide-y divide-[rgba(var(--accent-rgb),0.08)]">
                 {orgs.map((org) => (
                   <tr key={org.id} className="text-[var(--color-text-primary)]">
                     <td className="py-3 pr-4 font-medium">{org.name}</td>

@@ -22,7 +22,7 @@ export function Header({ onMenuClick }: HeaderProps) {
 
   return (
     <header
-      className="h-16 shrink-0 glass-surface border-b border-[rgba(212,165,116,0.08)] flex items-center justify-between px-4 sm:px-6 gap-4"
+      className="h-16 shrink-0 glass-surface border-b border-[rgba(var(--accent-rgb),0.08)] flex items-center justify-between px-4 sm:px-6 gap-4"
       role="banner"
     >
       <div className="flex items-center gap-2">

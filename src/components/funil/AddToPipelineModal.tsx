@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import type { Pipeline, Stage } from '@/types/crm';
 
 const inputCls =
-  'w-full rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.03] px-3 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--accent-primary)]';
+  'w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.03] px-3 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--accent-primary)]';
 
 interface AddToPipelineModalProps {
   contactId: string;
@@ -89,7 +89,7 @@ export function AddToPipelineModal({ contactId, contactName, onClose, onCreated 
 
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm" onClick={onClose}>
-      <div onClick={(e) => e.stopPropagation()} className="w-full max-w-sm rounded-2xl border border-[rgba(212,165,116,0.25)] bg-[#0A0A0F] p-5 shadow-[0_0_40px_rgba(212,165,116,0.15)]">
+      <div onClick={(e) => e.stopPropagation()} className="w-full max-w-sm rounded-2xl border border-[rgba(var(--accent-rgb),0.25)] bg-[#0A0A0F] p-5 shadow-[0_0_40px_rgba(var(--accent-rgb),0.15)]">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-base font-bold text-display">Adicionar no pipeline</h3>
           <button onClick={onClose} aria-label="Fechar" className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"><X className="h-5 w-5" /></button>
@@ -121,7 +121,7 @@ export function AddToPipelineModal({ contactId, contactName, onClose, onCreated 
           <Button className="flex-1" onClick={submit} disabled={busy || !pipelineId || !stageId}>
             {busy ? 'Adicionando…' : 'Adicionar'}
           </Button>
-          <button onClick={onClose} className="rounded-lg border border-[rgba(212,165,116,0.2)] px-3 py-2 text-sm text-[var(--color-text-secondary)]">Cancelar</button>
+          <button onClick={onClose} className="rounded-lg border border-[rgba(var(--accent-rgb),0.2)] px-3 py-2 text-sm text-[var(--color-text-secondary)]">Cancelar</button>
         </div>
       </div>
     </div>

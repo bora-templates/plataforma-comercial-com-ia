@@ -58,7 +58,7 @@ export function InstagramCard({ onSaved }: { onSaved?: () => void }) {
   };
 
   return (
-    <div className="rounded-xl border border-[rgba(212,165,116,0.15)] bg-white/[0.02] p-5 backdrop-blur-[40px]">
+    <div className="rounded-xl border border-[rgba(var(--accent-rgb),0.15)] bg-white/[0.02] p-5 backdrop-blur-[40px]">
       <div className="flex items-start gap-4">
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[rgba(225,48,108,0.25)] bg-[rgba(225,48,108,0.08)]">
           <Instagram className="h-5 w-5 text-[#E1306C]" />
@@ -93,12 +93,12 @@ export function InstagramCard({ onSaved }: { onSaved?: () => void }) {
               value={token}
               onChange={(e) => setToken(e.target.value)}
               placeholder={connected ? 'Colar novo token para reconectar…' : 'Instagram Access Token (via Zernio)'}
-              className="flex-1 rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.03] px-3 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--accent-primary)]"
+              className="flex-1 rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-white/[0.03] px-3 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--accent-primary)]"
             />
             <button
               onClick={save}
               disabled={saving || !token.trim()}
-              className="rounded-lg bg-gradient-to-br from-[#182940] to-[#D4A574] px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
+              className="rounded-lg bg-gradient-to-br from-[var(--accent-deep)] to-[var(--accent-primary)] px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
             >
               {saving ? 'Salvando…' : connected ? 'Reconectar' : 'Conectar'}
             </button>
