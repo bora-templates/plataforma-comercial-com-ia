@@ -111,7 +111,7 @@ export default function DashboardPage() {
           <div>
             <div className="text-label">Seção</div>
             <h1 className="text-2xl font-bold text-display">{VOCAB.dashboard}</h1>
-            <p className="text-sm text-[var(--color-text-secondary)]">Vendas e atendimento</p>
+            <p className="text-sm text-[var(--color-text-secondary)]">Como está o comercial agora</p>
           </div>
         </div>
 
@@ -131,7 +131,7 @@ export default function DashboardPage() {
             className="flex items-center gap-1.5 rounded-lg border border-[rgba(var(--accent-rgb),0.2)] px-3 py-2 text-xs font-semibold text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
           >
             <SlidersHorizontal className="h-3.5 w-3.5" />
-            Personalizar dashboard
+            Escolher o que ver
           </button>
         </div>
       </div>
@@ -220,13 +220,13 @@ export default function DashboardPage() {
         <>
         {/* Fileira 1 — KPIs de vendas */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {show('forecast') && <ForecastWidget value={metrics.forecast.value} openCount={metrics.forecast.openCount} />}
           {show('vendas_ganhas') && (
-            <SalesKpiWidget title="Vendas ganhas" count={metrics.won.count} value={metrics.won.value} series={metrics.won.series} color="#10B981" netValue={wonNet} />
+            <SalesKpiWidget title="Fechamentos" count={metrics.won.count} value={metrics.won.value} series={metrics.won.series} color="#10B981" netValue={wonNet} />
           )}
           {show('oportunidades_perdidas') && (
-            <SalesKpiWidget title="Oportunidades perdidas" count={metrics.lost.count} value={metrics.lost.value} series={metrics.lost.series} color="#EF4444" />
+            <SalesKpiWidget title="Não fecharam" count={metrics.lost.count} value={metrics.lost.value} series={metrics.lost.series} color="#EF4444" />
           )}
-          {show('forecast') && <ForecastWidget value={metrics.forecast.value} openCount={metrics.forecast.openCount} />}
         </div>
 
         {/* Demais widgets */}
@@ -238,8 +238,8 @@ export default function DashboardPage() {
           )}
           {show('tempo_primeira_resposta') && (
             <DurationWidget
-              title="Tempo médio de 1ª resposta"
-              subtitle="Do 1º contato do lead à 1ª resposta humana"
+              title="Tempo até a 1ª resposta"
+              subtitle="Da primeira mensagem da pessoa até alguém do time responder"
               avgMs={metrics.firstResponse.avgMs}
               byOwner={metrics.firstResponse.byOwner}
               ownerName={ownerName}
@@ -247,8 +247,8 @@ export default function DashboardPage() {
           )}
           {show('tempo_conclusao') && (
             <DurationWidget
-              title="Tempo médio para concluir venda"
-              subtitle="Da criação do negócio até marcar ganho"
+              title="Tempo até fechar"
+              subtitle="Da abertura da oportunidade até o fechamento"
               avgMs={metrics.closeTime.avgMs}
               byOwner={metrics.closeTime.byOwner}
               ownerName={ownerName}
@@ -326,12 +326,12 @@ function SalesCostsForm({
     });
     setSaving(false);
     if (err) toast.error('Não foi possível salvar os custos.', { description: err });
-    else toast.success('Custos salvos. "Vendas ganhas" agora exibe o faturamento líquido.');
+    else toast.success('Custos salvos. "Fechamentos" agora mostra o valor líquido.');
   };
 
   return (
     <div className="mt-4 border-t border-[rgba(var(--accent-rgb),0.08)] pt-4">
-      <div className="text-label mb-1">Faturamento líquido (Vendas ganhas)</div>
+      <div className="text-label mb-1">Valor líquido (Fechamentos)</div>
       <p className="mb-3 text-xs text-[var(--color-text-secondary)]">
         Custos abatidos do valor bruto das vendas ganhas. Deixe em 0 para exibir só o bruto.
         {!canEdit && ' Somente administradores podem alterar.'}

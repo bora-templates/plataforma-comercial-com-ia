@@ -187,7 +187,7 @@ export function RankingWidget({
 }) {
   const data = ranking.map((r) => ({ name: ownerName(r.owner_id), value: r.value, count: r.count }));
   return (
-    <WidgetCard title="Ranking de vendedores" subtitle="Por valor ganho no período">
+    <WidgetCard title="Quem mais fechou" subtitle="Por valor no período">
       <div className="h-64">
         {data.length === 0 ? (
           <EmptyState text="Nenhuma venda no período." />
@@ -210,7 +210,7 @@ export function RankingWidget({
 export function ForecastWidget({ value, openCount }: { value: number; openCount: number }) {
   return (
     <WidgetCard
-      title="Forecast"
+      title="Previsão de caixa"
       titleExtra={
         <span className="group relative mr-auto flex items-center">
           <HelpCircle className="h-3.5 w-3.5 cursor-help text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]" />
@@ -222,7 +222,7 @@ export function ForecastWidget({ value, openCount }: { value: number; openCount:
     >
       <div className="text-stat text-[var(--accent-secondary)]">{brl(value)}</div>
       <div className="mt-1 text-sm text-[var(--color-text-secondary)]">
-        {openCount.toLocaleString('pt-BR')} negócio{openCount !== 1 ? 's' : ''} aberto{openCount !== 1 ? 's' : ''} · Σ valor × probabilidade do estágio
+        {openCount.toLocaleString('pt-BR')} oportunidade{openCount !== 1 ? 's' : ''} em aberto · valor × chance de fechar em cada etapa
       </div>
     </WidgetCard>
   );
