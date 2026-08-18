@@ -2,7 +2,7 @@
 
 Mudanças relevantes deste projeto ficam registradas aqui.
 
-## [1.0.0] — 2026-08-16
+## [1.0.0] · 2026-08-16
 
 Primeira versão do template de instalação.
 

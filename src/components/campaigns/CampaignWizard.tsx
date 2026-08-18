@@ -358,7 +358,7 @@ export function CampaignWizard({ open, onClose, onSaved }: CampaignWizardProps) 
                 disabled={submitting}
                 className="h-11 w-full rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.03] px-4 text-sm text-[var(--color-text-primary)]"
               >
-                <option value="">— selecione —</option>
+                <option value="">(selecione)</option>
                 {approvedTemplates.map((t) => (
                   <option key={t.id} value={t.id}>
                     {t.name} · {t.category} · {t.language}
@@ -402,7 +402,7 @@ export function CampaignWizard({ open, onClose, onSaved }: CampaignWizardProps) 
                       disabled={submitting}
                       className="h-9 w-52 shrink-0 rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.03] px-2 text-xs text-[var(--color-text-primary)]"
                     >
-                      <option value="">— preencher com —</option>
+                      <option value="">(preencher com)</option>
                       <option value="name">Nome do contato</option>
                       {DEAL_FIELD_OPTIONS.map((o) => (
                         <option key={o.field} value={`deal:${o.field}`}>
@@ -572,7 +572,7 @@ export function CampaignWizard({ open, onClose, onSaved }: CampaignWizardProps) 
                     onChange={(e) => setFunnelPipelineId(e.target.value)}
                     className="h-11 w-full rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.03] px-4 text-sm text-[var(--color-text-primary)]"
                   >
-                    <option value="">— selecione um funil —</option>
+                    <option value="">(selecione um funil)</option>
                     {pipelines.map((p) => (
                       <option key={p.id} value={p.id}>
                         {p.name}
@@ -643,7 +643,7 @@ export function CampaignWizard({ open, onClose, onSaved }: CampaignWizardProps) 
           )}
           {audienceCount === 0 && (
             <p className="text-xs text-[var(--color-text-secondary)] text-center">
-              Nenhum contato corresponde a este filtro — a campanha não pode avançar.
+              Nenhum contato corresponde a este filtro. A campanha não pode avançar.
             </p>
           )}
         </div>
@@ -689,7 +689,7 @@ export function CampaignWizard({ open, onClose, onSaved }: CampaignWizardProps) 
               />
               {scheduleAt && scheduleInPast && (
                 <p className="text-xs text-[#EF4444]">
-                  A data escolhida já passou — escolha um horário futuro (a campanha
+                  A data escolhida já passou. Escolha um horário futuro (a campanha
                   dispararia imediatamente).
                 </p>
               )}
@@ -699,9 +699,9 @@ export function CampaignWizard({ open, onClose, onSaved }: CampaignWizardProps) 
           <div className="rounded-lg border border-[rgba(212,165,116,0.1)] bg-white/[0.02] p-4 space-y-2 text-sm">
             <div className="text-label mb-1">Revisão</div>
             <div><span className="text-[var(--color-text-secondary)]">Campanha:</span> <span className="font-mono">{name}</span></div>
-            <div><span className="text-[var(--color-text-secondary)]">Template:</span> <span className="font-mono">{selectedTemplate?.name ?? '—'}</span></div>
+            <div><span className="text-[var(--color-text-secondary)]">Template:</span> <span className="font-mono">{selectedTemplate?.name ?? '-'}</span></div>
             <div><span className="text-[var(--color-text-secondary)]">Destinatários:</span> {audienceCount ?? 0}</div>
-            <div><span className="text-[var(--color-text-secondary)]">Quando:</span> {scheduleNow ? 'Imediato' : scheduleAt || '—'}</div>
+            <div><span className="text-[var(--color-text-secondary)]">Quando:</span> {scheduleNow ? 'Imediato' : scheduleAt || '-'}</div>
           </div>
         </div>
       )}

@@ -164,7 +164,7 @@ export const FUNIL_SORT_LABEL: Record<FunilSort, string> = {
   recente: 'Mais recentes',
   valor_desc: 'Maior valor',
   valor_asc: 'Menor valor',
-  alfabetica: 'Ordem alfabética (A–Z)',
+  alfabetica: 'Ordem alfabética (A a Z)',
 };
 
 // Nome exibido no card (mesma regra do DealCard: nome do lead → telefone → título).

@@ -123,7 +123,7 @@ export default function SignupPage() {
   return (
     <AuthShell
       title="Criar owner desta instância"
-      subtitle="Você é o primeiro usuário — sua conta vira o owner automaticamente."
+      subtitle="Você é o primeiro usuário: sua conta vira o owner automaticamente."
       footer={
         <>
           Já tem conta?{' '}

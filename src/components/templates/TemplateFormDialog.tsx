@@ -114,7 +114,7 @@ export function TemplateFormDialog({
     setFooter(gen.footer ?? '');
     if (headerType === 'text') setHeaderContent(gen.header_content ?? '');
     setButtons(gen.buttons ?? []);
-    toast.success(`Gerado (${data.model}) — revise antes de salvar.`);
+    toast.success(`Gerado (${data.model}). Revise antes de salvar.`);
   };
 
   const addButton = (kind: TemplateButton['type']) => {
@@ -369,7 +369,7 @@ export function TemplateFormDialog({
             ))}
             <p className="text-[11px] leading-relaxed text-[var(--color-text-secondary)] opacity-80">
               Em campanhas, cada variável pode ser o nome do contato (personalizado por
-              destinatário) ou um valor fixo igual para todos — você escolhe ao criar a
+              destinatário) ou um valor fixo igual para todos. Você escolhe ao criar a
               campanha. Em envios 1:1 (inbox e automações) você preenche os valores na hora.
             </p>
           </div>

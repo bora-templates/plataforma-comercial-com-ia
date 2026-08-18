@@ -63,7 +63,7 @@ export function TemplatesList() {
       return;
     }
     toast.success('Enviado para aprovação.', {
-      description: `meta_template_id: ${data.meta_template_id ?? '—'}`,
+      description: `meta_template_id: ${data.meta_template_id ?? '-'}`,
     });
     await reload();
   };
@@ -177,7 +177,7 @@ export function TemplatesList() {
                         )}
                       </td>
                       <td className="p-3 font-mono text-xs text-[var(--color-text-secondary)]">
-                        {t.meta_template_id || <span className="opacity-40">—</span>}
+                        {t.meta_template_id || <span className="opacity-40">-</span>}
                       </td>
                       <td className="p-3">
                         <div className="flex flex-nowrap items-center justify-end gap-2">

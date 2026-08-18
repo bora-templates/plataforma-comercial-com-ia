@@ -366,7 +366,7 @@ export default function SetupPage() {
       const throttled = raw.includes('429') || raw.includes('ThrottlerException');
       toast.error('Setup falhou', {
         description: throttled
-          ? 'Limite de requisições do Supabase atingido. Aguarde ~1 minuto e clique em "Tentar de novo" — o progresso é retomado de onde parou.'
+          ? 'Limite de requisições do Supabase atingido. Aguarde ~1 minuto e clique em "Tentar de novo". O progresso é retomado de onde parou.'
           : raw,
       });
     } finally {

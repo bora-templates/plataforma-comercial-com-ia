@@ -1,4 +1,4 @@
-# CLAUDE.md — Plataforma Comercial com IA
+# CLAUDE.md: Plataforma Comercial com IA
 
 ## Visão geral
 
@@ -18,7 +18,7 @@ com RAG, inbox em tempo real com handoff IA ↔ humano, dashboard analítico.
 - **Backend.** Supabase Cloud (Postgres, Auth, Realtime, Edge Functions,
   Storage, pgvector).
 - **Jobs & Cron.** `pg_cron` + `pg_net` para disparos em batch e follow-ups.
-- **API WhatsApp.** Zernio (`https://zernio.com/api/v1`) — intermediário que
+- **API WhatsApp.** Zernio (`https://zernio.com/api/v1`): intermediário que
   relaya para a Meta Cloud API. Toda comunicação (templates, broadcasts, inbox,
   mídia) passa pelo Zernio; o aluno conecta o WhatsApp no Zernio (Embedded
   Signup) e informa apenas a `ZERNIO_API_KEY`. Webhooks entram assinados com
@@ -50,12 +50,12 @@ próprio schema PostgreSQL.
 
 ### Schemas ativos
 
-- `public` — reservado para extensions e tipos compartilhados (NÃO usar para
+- `public`: reservado para extensions e tipos compartilhados (NÃO usar para
   dados de aplicação).
 - `outro_app`
 - `prospector`
 - `crm_sofia`
-- `whatsapp_hub` — **este projeto**.
+- `whatsapp_hub`: **este projeto**.
 
 ### Regras de schema
 
@@ -99,8 +99,8 @@ Nunca usar o schema `public` para lógica de aplicação.
 - `app_users` é a tabela de membros da instância (substitui `tenant_members`
   do build SaaS antigo). UNIQUE por `user_id`.
 - Policies RLS gateiam por `whatsapp_hub.current_user_role()`:
-  - `'admin'` — controla templates, campanhas, knowledge, settings, equipe.
-  - `'operator'` — opera inbox + contatos + tags do dia a dia.
+  - `'admin'`: controla templates, campanhas, knowledge, settings, equipe.
+  - `'operator'`: opera inbox + contatos + tags do dia a dia.
 
 ---
 
@@ -228,10 +228,10 @@ CREATE EXTENSION IF NOT EXISTS pg_net;     -- HTTP a partir do Postgres
 
 ### RPCs notáveis
 
-- `whatsapp_hub.knowledge_search(p_query_embedding vector, p_top_k int)` —
+- `whatsapp_hub.knowledge_search(p_query_embedding vector, p_top_k int)` -
   similarity search (cosine) no corpus, retornando `(id, knowledge_base_id,
   content, similarity)`.
-- `whatsapp_hub.current_user_role()` — usado nas policies RLS.
+- `whatsapp_hub.current_user_role()`: usado nas policies RLS.
 
 ### Credenciais e bootstrap (schema `public`)
 
@@ -258,12 +258,12 @@ public._bootstrap_state           <- checkpoints idempotentes do wizard /setup
 - Ambas têm RLS habilitado **sem nenhuma policy** → inacessíveis a `anon` e
   `authenticated`. Só a service role (API Routes Vercel + Edge Functions) lê e
   escreve. O frontend nunca consulta `app_settings` diretamente.
-- **Leitura — `getCredential(key)` é o único acessador**, sobre `app_settings`:
+- **Leitura: `getCredential(key)` é o único acessador**, sobre `app_settings`:
   - Node (API Routes): `src/lib/credentials.ts`
     (`encrypt`/`decrypt`/`getCredential`/`setCredential`).
   - Deno (Edge Functions): `_shared/credentials.ts` (decrypt-only + cache 60s).
   - `_shared/tenant-credentials.ts::loadAppCredentials()` é apenas um **wrapper
-    tipado** sobre `getCredential` — não é fonte de verdade e não lê env vars.
+    tipado** sobre `getCredential`; não é fonte de verdade e não lê env vars.
 - **Escrita** só via `api/credentials.ts` (`setCredential`), que valida cada
   valor server-side e exige sessão de owner/admin.
 - `CRYPTO_KEY` (env core) decifra os valores; sem ela os dados em
@@ -278,7 +278,7 @@ public._bootstrap_state           <- checkpoints idempotentes do wizard /setup
 | `dispatch-campaigns`    | 30 segundos  | `dispatch-campaign`     |
 | `check-follow-ups`      | a cada 15min | `check-follow-ups`      |
 
-> O antigo `check-template-status` (polling 5min) foi removido — o status do
+> O antigo `check-template-status` (polling 5min) foi removido: o status do
 > template chega pelo webhook `whatsapp.template.status_updated`.
 
 Os jobs invocam Edge Functions via `pg_net.http_post`. URL do projeto e
@@ -293,7 +293,7 @@ service role key vêm de Vault entries (`whatsapp_hub_supabase_url`,
 
 1. Operador escolhe categoria (Marketing / Utility / Authentication), descreve
    o objetivo, marca variáveis e tipo de header. ("Service" não é categoria de
-   template — atendimento livre é resposta dentro da janela de 24h.)
+   template; atendimento livre é resposta dentro da janela de 24h.)
 2. Frontend chama `generate-template`. A função lê o provider de
    `app_settings` (`getCredential('llm_provider')`), monta o prompt e devolve
    o template estruturado.
@@ -301,7 +301,7 @@ service role key vêm de Vault entries (`whatsapp_hub_supabase_url`,
    Zernio: `POST /whatsapp/templates` com `{accountId, name,
    category(MARKETING|UTILITY|AUTHENTICATION), language, components}`.
 4. O status (`approved` / `rejected`) chega pelo webhook
-   `whatsapp.template.status_updated` — sem polling.
+   `whatsapp.template.status_updated`, sem polling.
 
 ### Disparos em massa
 
@@ -312,7 +312,7 @@ service role key vêm de Vault entries (`whatsapp_hub_supabase_url`,
 5. `dispatch-campaign` (cron 30s) lê batch de `campaign_contacts.pending`,
    agrupa por template e cria **Broadcasts** no Zernio (criar → adicionar
    destinatários em lotes de 100 → `send`). Batching, retry e rate-limit ficam
-   por conta do Zernio — sem loop de tier/backoff próprio. Grava
+   por conta do Zernio, sem loop de tier/backoff próprio. Grava
    `zernio_broadcast_id` por linha para correlação dos status.
 6. `zernio-webhook` ingere statuses (sent / delivered / read / failed) e
    incrementa contadores agregados na campanha.
@@ -349,7 +349,7 @@ service role key vêm de Vault entries (`whatsapp_hub_supabase_url`,
   populados pelos webhooks do Zernio (`message.received` + status).
 - Mídia do operador: `send-operator-media` sobe o arquivo via Zernio
   `/media/upload-direct` (máx 25MB) e envia com `attachmentUrl`.
-- Notas privadas (`is_private_note = true`) — fundo diferenciado, locais, nunca
+- Notas privadas (`is_private_note = true`): fundo diferenciado, locais, nunca
   enviadas ao Zernio.
 - Atribuição automática round-robin entre operadores com `is_online = true`.
 - Filtros: status, assigned_to, tags, período.
@@ -358,7 +358,7 @@ service role key vêm de Vault entries (`whatsapp_hub_supabase_url`,
 
 - Cards de métricas (mensagens enviadas / entregues / lidas / respondidas,
   com trend %).
-- Métricas secundárias: custo por conversa (pricing Meta por categoria + país —
+- Métricas secundárias: custo por conversa (pricing Meta por categoria + país,
   o Zernio repassa o preço da Meta, zero markup), tempo médio de resposta da IA,
   tempo médio do humano, distribuição de status das conversas.
 - Widget de saúde do número (tier / quality / health) via `zernio-number-status`
@@ -426,7 +426,7 @@ supabase/functions/
 │   ├── tenant-credentials.ts loadAppCredentials() → wrapper tipado de getCredential
 │   └── zernio.ts             client Zernio (inbox, broadcasts, templates, mídia, number-info)
 ├── zernio-webhook/           ingestão (X-Zernio-Signature) de statuses + inbound; idempotência via webhook_events
-├── dispatch-campaign/        consumido por pg_cron 30s — cria Broadcasts no Zernio
+├── dispatch-campaign/        consumido por pg_cron 30s: cria Broadcasts no Zernio
 ├── check-follow-ups/         consumido por pg_cron 15min
 ├── process-ai-message/       RAG → LLM → resposta via Zernio (inbox 1:1)
 ├── process-knowledge/        upload → chunk → embed → store
@@ -436,7 +436,7 @@ supabase/functions/
 ├── send-operator-message/    operador envia texto / nota privada pela inbox
 ├── send-operator-media/      operador envia mídia (upload-direct → attachmentUrl)
 ├── zernio-number-status/     status cacheado do número (tier/quality/health) p/ dashboard
-├── simulate-inbound/         dev only — finge mensagem inbound
+├── simulate-inbound/         dev only: finge mensagem inbound
 ├── test-zernio-connection/   valida a conexão Zernio (GET /whatsapp/number-info)
 └── invite-team-member/       convite nativo do Supabase Auth (inviteUserByEmail + invited_role)
 ```
@@ -463,19 +463,19 @@ supabase/functions/
 - Credenciais de aplicação têm como **fonte de verdade** `public.app_settings`
   e são lidas via `getCredential` (`_shared/credentials.ts`).
   `_shared/tenant-credentials.ts::loadAppCredentials()` é só um wrapper tipado
-  sobre ele — nunca lê env vars de aplicação. `Deno.env.get(...)` fica restrito
+  sobre ele e nunca lê env vars de aplicação. `Deno.env.get(...)` fica restrito
   a envs core (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `CRYPTO_KEY`).
 - Resposta padrão: `{ data, error, message }` via `jsonResponse`.
 - Logging estruturado: `console.log(JSON.stringify({ event, ... }))`.
 
 ### Segurança
 - HMAC-SHA256 (timing-safe) na validação do webhook Meta.
-- Tokens / API keys nunca trafegam pelo frontend — todas as chamadas a
+- Tokens / API keys nunca trafegam pelo frontend: todas as chamadas a
   Meta / OpenAI / Claude / Gemini saem das Edge Functions.
 
 ---
 
-## Design System — Dark Mode Glassmorphism (OBRIGATÓRIO)
+## Design System: Dark Mode Glassmorphism (OBRIGATÓRIO)
 
 A plataforma é **dark mode only**. Não implementar light mode. Não criar
 toggle de tema.
@@ -572,7 +572,7 @@ fallback default.
 - A fonte de verdade das credenciais de aplicação é `public.app_settings`
   (KV criptografado), acessada por `getCredential`/`setCredential`.
   `_shared/tenant-credentials.ts` mantém o nome histórico, mas hoje é só um
-  wrapper tipado sobre `getCredential` — não lê env vars nem é fonte própria.
+  wrapper tipado sobre `getCredential`; não lê env vars nem é fonte própria.
 - `campaign_contacts.template_id_override` é per-row e existe para que o
   dispatcher use um template diferente do template-pai da campanha em
   follow-ups.
@@ -593,7 +593,7 @@ fallback default.
     `campaign_contacts.zernio_conversation_id/zernio_broadcast_id`,
     `campaigns.zernio_broadcast_id`. Tabela `webhook_events` (idempotência).
   - Disparo em massa usa **Broadcasts** do Zernio (não o loop por-contato na
-    Meta); o motor de follow-up próprio (pg_cron) foi mantido — não migrou para
+    Meta); o motor de follow-up próprio (pg_cron) foi mantido e não migrou para
     Sequences do Zernio.
   - Convites são 100% Supabase Auth nativo (`invite-team-member` →
     `inviteUserByEmail`); o Resend, a tabela `invites` e o link com token foram
@@ -602,4 +602,4 @@ fallback default.
     cacheado na credencial `zernio_number_info`.
   - Vários shapes de payload do Zernio (webhook inbound/status, `upload-direct`,
     corpo do send message, endpoint de registro de webhook) estão marcados
-    `ASSUMIDO` no código — confirmar contra a API real no 1º teste de integração.
+    `ASSUMIDO` no código; confirmar contra a API real no 1º teste de integração.

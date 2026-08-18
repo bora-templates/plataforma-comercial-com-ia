@@ -301,8 +301,8 @@ function buildScheduleVars(
     .replace(/\{horario_final_weekend\}/g, weFirst.end ?? '');
 
   const readable = [
-    wdOn.length ? `${DAY_LABELS[wdOn[0]]} a ${DAY_LABELS[wdOn[wdOn.length - 1]]} ${wkFirst.start}–${wkFirst.end}` : '',
-    weOn.length ? `${weOn.map((k) => DAY_LABELS[k]).join(' e ')} ${weFirst.start}–${weFirst.end}` : '',
+    wdOn.length ? `${DAY_LABELS[wdOn[0]]} a ${DAY_LABELS[wdOn[wdOn.length - 1]]} ${wkFirst.start} às ${wkFirst.end}` : '',
+    weOn.length ? `${weOn.map((k) => DAY_LABELS[k]).join(' e ')} ${weFirst.start} às ${weFirst.end}` : '',
   ].filter(Boolean).join('; ');
 
   return {
@@ -596,7 +596,7 @@ Deno.serve(async (req) => {
   const mediaByLabel = new Map(mediaList.map((m) => [m.label.toLowerCase(), m]));
   const midiasDisponiveis = mediaList.length
     ? mediaList
-        .map((m) => `[MEDIA:${m.label}] (${m.content_type})${m.usage_note ? ' — ' + m.usage_note : ''}`)
+        .map((m) => `[MEDIA:${m.label}] (${m.content_type})${m.usage_note ? ': ' + m.usage_note : ''}`)
         .join('; ')
     : 'nenhuma';
 

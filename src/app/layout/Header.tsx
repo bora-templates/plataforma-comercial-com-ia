@@ -49,7 +49,7 @@ export function Header({ onMenuClick }: HeaderProps) {
               Conectado
             </div>
             <div className="text-xs font-medium text-[var(--color-text-primary)] max-w-[140px] lg:max-w-[200px] truncate">
-              {user?.email ?? '—'}
+              {user?.email ?? '-'}
             </div>
           </div>
           <Button

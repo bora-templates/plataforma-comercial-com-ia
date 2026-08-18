@@ -516,7 +516,7 @@ async function redeploy(projectId: string, token: string, teamId: string | null)
   };
   const latest = json.deployments?.[0];
   if (!latest?.uid) {
-    throw new Error('Projeto Vercel sem deployment de produção anterior — não há base para redeploy');
+    throw new Error('Projeto Vercel sem deployment de produção anterior: não há base para redeploy');
   }
   // A Vercel não expõe um endpoint /redeploy. Redeploy = criar um novo
   // deployment referenciando o `deploymentId` anterior (reusa o mesmo commit

@@ -1,4 +1,4 @@
-# Guia de Instalação — Plataforma Comercial com IA
+# Guia de Instalação da Plataforma Comercial com IA
 
 White-label self-hosted: **Plataforma Comercial com IA + CRM** (funil comercial, entrega de
 projetos e educação) numa instância só, para uma organização.
@@ -44,7 +44,7 @@ instância já abre com **funil comercial e funil de entrega prontos** (seed).
 
 Use quando for desenvolver, ou instalar sem o wizard.
 
-### 2.1. Banco de dados — criar as tabelas (o "SQL de instalação")
+### 2.1. Banco de dados: criar as tabelas (o "SQL de instalação")
 
 Toda a estrutura vive no schema **`whatsapp_hub`** e está versionada em
 `supabase/migrations/`. A camada CRM é a migration
@@ -52,7 +52,7 @@ Toda a estrutura vive no schema **`whatsapp_hub`** e está versionada em
 matrículas, atividades, log de IA).
 
 Aplique tudo com um comando, via a Management API (precisa só de um
-**Personal Access Token** do Supabase — sem senha de banco):
+**Personal Access Token** do Supabase, sem senha de banco):
 
 ```bash
 # Gere um PAT em https://supabase.com/dashboard/account/tokens
@@ -69,7 +69,7 @@ O script `scripts/push-migrations.mjs` aplica cada migration em ordem, registra
 o que já rodou (idempotente) e substitui os placeholders de segredo no momento
 do push (nada sensível fica no git).
 
-> Alternativa oficial: `supabase db push` (Supabase CLI) — requer a senha do
+> Alternativa oficial: `supabase db push` (Supabase CLI), que requer a senha do
 > banco. O `npm run db:push` evita isso usando o PAT.
 
 ### 2.2. Edge Functions
@@ -128,7 +128,7 @@ Personalize por cliente sem tocar na lógica:
 | Logo e ajustes visuais | `src/customizations/` |
 | Buckets de storage | prefixo `whatsapp-hub-*` |
 
-> O schema permanece `whatsapp_hub` (não renomear — o código todo referencia
+> O schema permanece `whatsapp_hub` (não renomear: o código todo referencia
 > `.schema('whatsapp_hub')`). É o schema único do produto, agora incluindo a
 > camada CRM.
 
@@ -149,13 +149,13 @@ Personalize por cliente sem tocar na lógica:
 `supabase/migrations/20260630120000_crm_layer.sql` cria, no schema
 `whatsapp_hub`, ancorado em `contacts`:
 
-- `pipelines` + `stages` — funis customizáveis (comercial / projeto / turma)
-- `deals` — negócios (funil comercial)
-- `projects` + `project_tasks` — entrega
-- `courses` + `classes` + `enrollments` — educação
-- `crm_activities` — tarefas / notas / follow-ups do funil
-- `crm_ai_actions` — log auditável das ações da IA
-- RPC `crm_promote_deal_to_project(deal_id)` — promove negócio ganho a projeto
+- `pipelines` + `stages`: funis customizáveis (comercial / projeto / turma)
+- `deals`: negócios (funil comercial)
+- `projects` + `project_tasks`: entrega
+- `courses` + `classes` + `enrollments`: educação
+- `crm_activities`: tarefas / notas / follow-ups do funil
+- `crm_ai_actions`: log auditável das ações da IA
+- RPC `crm_promote_deal_to_project(deal_id)`: promove negócio ganho a projeto
 
 RLS no padrão do hub: leitura para qualquer autenticado; escrita para
 `admin`/`operator`.

@@ -54,7 +54,7 @@ export function FollowUpsTab() {
       .catch(() => setUazapiOk(false));
   }, [session]);
 
-  const templateName = (id: string | null) => templates.find((t) => t.id === id)?.name ?? '—';
+  const templateName = (id: string | null) => templates.find((t) => t.id === id)?.name ?? '-';
 
   const describe = (r: FollowUpRule): string => {
     const params = r.params ?? {};
@@ -243,7 +243,7 @@ function RuleForm({
 
       {trigger === 'no_reply' && (
         <div>
-          <span className={labelCls}>Campanha (opcional — vazio = todas)</span>
+          <span className={labelCls}>Campanha (opcional; vazio = todas)</span>
           <select value={campaignId} onChange={(e) => setCampaignId(e.target.value)} className={inputCls}>
             <option value="">Todas as campanhas</option>
             {campaigns.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -257,7 +257,7 @@ function RuleForm({
         <div className="flex flex-wrap gap-2">
           <label className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm ${effectiveProvider === 'zernio' ? 'border-[#D4A574] bg-[rgba(212,165,116,0.08)]' : 'border-[rgba(212,165,116,0.2)]'}`}>
             <input type="radio" checked={effectiveProvider === 'zernio'} onChange={() => setProvider('zernio')} className="accent-[var(--accent-primary)]" />
-            API Oficial (Meta) — template aprovado
+            API Oficial (Meta): template aprovado
           </label>
           <label
             className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm ${!uazapiOk || trigger === 'no_reply' ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'} ${effectiveProvider === 'uazapi' ? 'border-[#2DD4BF] bg-[rgba(45,212,191,0.08)]' : 'border-[rgba(212,165,116,0.2)]'}`}
@@ -270,7 +270,7 @@ function RuleForm({
               onChange={() => setProvider('uazapi')}
               className="accent-[#2DD4BF]"
             />
-            API Não Oficial (UAZAPI) — texto livre
+            API Não Oficial (UAZAPI): texto livre
           </label>
         </div>
         {effectiveProvider === 'uazapi' && (

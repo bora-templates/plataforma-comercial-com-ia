@@ -263,7 +263,7 @@ export default function InboxPage() {
                 </button>
                 <div className="min-w-0 flex-1">
                   <div className="font-semibold text-[var(--color-text-primary)] text-sm truncate">
-                    {selected.contact?.name?.trim() || selected.contact?.phone || '—'}
+                    {selected.contact?.name?.trim() || selected.contact?.phone || '-'}
                   </div>
                   <div className="text-[10px] font-mono text-[var(--color-text-secondary)] truncate">
                     {selected.contact?.phone}

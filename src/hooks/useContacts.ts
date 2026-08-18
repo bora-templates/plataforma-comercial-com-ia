@@ -399,13 +399,13 @@ function translateContactError(message: string): string {
     return 'Já existe um contato com este telefone.';
   }
   if (lower.includes('duplicate key')) {
-    return 'Registro duplicado — verifique os dados informados.';
+    return 'Registro duplicado. Verifique os dados informados.';
   }
   if (lower.includes('row-level security') || lower.includes('permission denied')) {
     return 'Você não tem permissão para esta ação.';
   }
   if (lower.includes('violates check constraint') || lower.includes('invalid input')) {
-    return 'Dados inválidos — revise os campos e tente novamente.';
+    return 'Dados inválidos. Revise os campos e tente novamente.';
   }
   return message || 'Não foi possível concluir a operação.';
 }

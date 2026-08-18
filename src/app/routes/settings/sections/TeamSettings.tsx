@@ -341,7 +341,7 @@ function LeadQueueManager() {
                 <li>
                   <span className="text-[var(--color-text-label)]">Número com operador vinculado</span>{' '}
                   (em {VOCAB.settings} → Canais): a conversa que chega por aquele número já nasce
-                  atribuída ao operador — não passa pelo rodízio.
+                  atribuída ao operador e não passa pelo rodízio.
                 </li>
                 <li>
                   <span className="text-[var(--color-text-label)]">Rodízio no handoff</span>: quando a
@@ -373,7 +373,7 @@ function LeadQueueManager() {
             <div className="text-sm text-[var(--color-text-secondary)] opacity-60">Carregando...</div>
           ) : queue.length === 0 ? (
             <div className="text-sm text-[var(--color-text-secondary)] opacity-70">
-              Fila vazia — enquanto assim, o handoff continua notificando toda a equipe.
+              Fila vazia. Enquanto assim, o handoff continua notificando toda a equipe.
             </div>
           ) : (
             <ul className="space-y-1.5">

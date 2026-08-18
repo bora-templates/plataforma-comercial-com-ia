@@ -50,7 +50,7 @@ export function UtmBuilder() {
   const handleCopy = async (text: string) => {
     const ok = await copyToClipboard(text);
     if (ok) toast.success('URL copiada.');
-    else toast.error('Não foi possível copiar — copie manualmente.');
+    else toast.error('Não foi possível copiar. Copie manualmente.');
   };
 
   const handleSave = async () => {

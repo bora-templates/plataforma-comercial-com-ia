@@ -124,7 +124,7 @@ export function LeadAssignmentSettings() {
         <header className="space-y-1">
           <h2 className="text-xl font-bold text-display">Distribuição automática de conversas</h2>
           <p className="text-sm text-[var(--color-text-secondary)]">
-            No handoff (IA pausada), o próximo da fila vira responsável pela conversa — em sequência.
+            No handoff (IA pausada), o próximo da fila vira responsável pela conversa, em sequência.
             Só atribui quando a conversa está sem responsável.
           </p>
         </header>

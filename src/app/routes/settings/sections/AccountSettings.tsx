@@ -215,7 +215,7 @@ export function AccountSettings() {
             <p className="text-sm text-[var(--color-text-secondary)]">
               Atual:{' '}
               <span className="font-mono text-[var(--color-text-primary)]">
-                {user?.email ?? '—'}
+                {user?.email ?? '-'}
               </span>
             </p>
           </header>

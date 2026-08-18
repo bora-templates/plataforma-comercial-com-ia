@@ -44,7 +44,7 @@ const SYSTEM_PROMPT = `Você é um especialista em copywriting para templates do
  - "Atendimento/service" NÃO é categoria de template: resposta livre a uma conversa iniciada pelo cliente acontece dentro da janela de 24h, sem template.
  - NÃO use variáveis/placeholders ({{1}}, {{2}}...). O texto é fixo e igual para todos os contatos.
  - Em português brasileiro (pt_BR) a menos que o usuário peça outro idioma.
- - Responda SEMPRE em JSON estrito no schema fornecido — sem markdown, sem prosa adicional.`;
+ - Responda SEMPRE em JSON estrito no schema fornecido, sem markdown e sem prosa adicional.`;
 
 function buildUserPrompt(input: GeneratePayload): string {
   return [

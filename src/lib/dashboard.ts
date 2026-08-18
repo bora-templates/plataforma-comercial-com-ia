@@ -125,7 +125,7 @@ export function inRange(iso: string | null, r: PeriodRange): boolean {
 
 // Formata uma duração (ms) em texto curto pt-BR (min / h / d).
 export function formatDuration(ms: number | null): string {
-  if (ms === null || !Number.isFinite(ms) || ms < 0) return '—';
+  if (ms === null || !Number.isFinite(ms) || ms < 0) return '-';
   const min = ms / 60000;
   if (min < 60) return `${Math.round(min)} min`;
   const h = min / 60;
@@ -140,9 +140,9 @@ export const brl = (n: number) =>
 export const brl2 = (n: number) =>
   n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 2 });
 
-// Percentual pt-BR com 1 casa: 12.5 → "12,5%". null → "—".
+// Percentual pt-BR com 1 casa: 12.5 → "12,5%". null → "-".
 export function formatPct(n: number | null): string {
-  if (n === null || !Number.isFinite(n)) return '—';
+  if (n === null || !Number.isFinite(n)) return '-';
   return `${n.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%`;
 }
 

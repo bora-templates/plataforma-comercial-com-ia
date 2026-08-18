@@ -76,9 +76,9 @@ export function useFollowUpRules(): UseFollowUpRulesResult {
 // Maps the most common Postgres/PostgREST errors to actionable pt-BR messages.
 function translateDbError(message: string): string {
   const lower = message.toLowerCase();
-  if (lower.includes('duplicate key')) return 'Registro duplicado — verifique os dados informados.';
+  if (lower.includes('duplicate key')) return 'Registro duplicado. Verifique os dados informados.';
   if (lower.includes('row-level security') || lower.includes('permission denied')) return 'Você não tem permissão para esta ação.';
   if (lower.includes('violates foreign key')) return 'Não é possível concluir: há registros vinculados.';
-  if (lower.includes('violates check constraint') || lower.includes('invalid input')) return 'Dados inválidos — revise os campos e tente novamente.';
+  if (lower.includes('violates check constraint') || lower.includes('invalid input')) return 'Dados inválidos. Revise os campos e tente novamente.';
   return message || 'Não foi possível concluir a operação.';
 }

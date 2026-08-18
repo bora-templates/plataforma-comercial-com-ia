@@ -60,7 +60,7 @@ export const PRODUCT_TYPE_LABELS: Record<string, string> = {
 
 // Label exibível de um tipo (padrão ou personalizado — capitaliza o valor cru).
 export function productTypeLabel(type: string | null | undefined): string {
-  if (!type) return '—';
+  if (!type) return '-';
   return PRODUCT_TYPE_LABELS[type] ?? type.charAt(0).toUpperCase() + type.slice(1);
 }
 

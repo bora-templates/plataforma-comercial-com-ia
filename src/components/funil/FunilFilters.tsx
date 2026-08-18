@@ -38,7 +38,7 @@ function DateRange({ de, ate, onDe, onAte }: { de: string; ate: string; onDe: (v
   return (
     <div className="flex items-center gap-1">
       <input type="date" value={de} onChange={(e) => onDe(e.target.value)} className={inputCls} />
-      <span className="text-xs text-[var(--color-text-secondary)]">–</span>
+      <span className="text-xs text-[var(--color-text-secondary)]">a</span>
       <input type="date" value={ate} onChange={(e) => onAte(e.target.value)} className={inputCls} />
     </div>
   );
@@ -171,7 +171,7 @@ export function FunilFilters({
             <Field label="Valor (R$)">
               <div className="flex items-center gap-1">
                 <input type="number" step="0.01" value={filters.valorMin} onChange={(e) => set('valorMin', e.target.value)} placeholder="Mín" className={inputCls} />
-                <span className="text-xs text-[var(--color-text-secondary)]">–</span>
+                <span className="text-xs text-[var(--color-text-secondary)]">a</span>
                 <input type="number" step="0.01" value={filters.valorMax} onChange={(e) => set('valorMax', e.target.value)} placeholder="Máx" className={inputCls} />
               </div>
             </Field>

@@ -115,7 +115,7 @@ export default function ContactDetailPage() {
             <div>
               <div className="mb-1 text-[0.65rem] uppercase tracking-[0.1em] text-[var(--color-text-secondary)]">Canal / Origem</div>
               <select value={contact.source ?? ''} onChange={(e) => saveField({ source: e.target.value || null })} className={inputCls}>
-                <option value="">—</option>
+                <option value="">-</option>
                 {Object.entries(CONTACT_SOURCE_LABEL).map(([k, v]) => (
                   <option key={k} value={k}>{v}</option>
                 ))}
@@ -200,7 +200,7 @@ function InlineField({ label, value, onSave }: { label: string; value: string; o
         onChange={(e) => setLocal(e.target.value)}
         onBlur={commit}
         onKeyDown={(e) => { if (e.key === 'Enter') { commit(); ref.current?.blur(); } if (e.key === 'Escape') setLocal(value); }}
-        placeholder="—"
+        placeholder="-"
         className={inputCls}
       />
     </div>
@@ -268,7 +268,7 @@ function TimelineGrouped({
               )}
 
               {g.entries.length === 0 ? (
-                <p className="text-xs text-[var(--color-text-secondary)] opacity-60">Sem atividade — use "Nota" para registrar algo.</p>
+                <p className="text-xs text-[var(--color-text-secondary)] opacity-60">Sem atividade. Use "Nota" para registrar algo.</p>
               ) : (
                 <ul className="space-y-2">
                   {g.entries.map((e) => (

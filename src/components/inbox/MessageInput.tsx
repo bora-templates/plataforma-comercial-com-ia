@@ -188,7 +188,7 @@ export function MessageInput({ conversationId, disabled, withinWindow = true, on
         </button>
         {isPrivate && (
           <span className="text-[10px] text-[var(--color-text-secondary)] opacity-70">
-            Visível só para operadores — não vai pro contato
+            Visível só para operadores, não vai pro contato
           </span>
         )}
       </div>
@@ -197,7 +197,7 @@ export function MessageInput({ conversationId, disabled, withinWindow = true, on
         <div className="flex flex-col gap-2 rounded-lg border border-[rgba(245,158,11,0.3)] bg-[rgba(245,158,11,0.05)] p-3">
           <div className="flex items-center gap-2 text-sm text-[#FBBF24]">
             <Clock className="h-4 w-4" />
-            Fora da janela de 24h — só é possível reiniciar com um template aprovado.
+            Fora da janela de 24h. Só é possível reiniciar com um template aprovado.
           </div>
           <p className="text-[11px] leading-relaxed text-[var(--color-text-secondary)]">
             O template é entregue agora, mas a janela de 24h só reabre quando o

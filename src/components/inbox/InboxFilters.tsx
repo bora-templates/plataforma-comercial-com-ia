@@ -69,7 +69,7 @@ function DateRange({
   return (
     <div className="flex min-w-0 items-center gap-1">
       <input type="date" value={de} onChange={(e) => onDe(e.target.value)} className={`${inputCls} min-w-0`} />
-      <span className="shrink-0 text-xs text-[var(--color-text-secondary)]">–</span>
+      <span className="shrink-0 text-xs text-[var(--color-text-secondary)]">a</span>
       <input type="date" value={ate} onChange={(e) => onAte(e.target.value)} className={`${inputCls} min-w-0`} />
     </div>
   );

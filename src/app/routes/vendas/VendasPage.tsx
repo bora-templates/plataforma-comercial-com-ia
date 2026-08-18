@@ -202,7 +202,7 @@ export default function VendasPage() {
   const openContact = async (p: Prediction) => {
     const phone = (p.customer_phone ?? '').trim();
     if (!phone) {
-      toast.error('Predição sem telefone — não há contato para abrir.');
+      toast.error('Predição sem telefone: não há contato para abrir.');
       return;
     }
     const supabase = getSupabase();
@@ -508,7 +508,7 @@ export default function VendasPage() {
                     onChange={(e) => setMapping((m) => ({ ...m, [f.key]: e.target.value === '' ? undefined : Number(e.target.value) }))}
                     className={selectCls}
                   >
-                    <option value="">— não importar —</option>
+                    <option value="">(não importar)</option>
                     {sheet.headers.map((h, i) => (
                       <option key={i} value={i}>{h || `Coluna ${i + 1}`}</option>
                     ))}

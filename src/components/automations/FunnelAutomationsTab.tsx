@@ -73,7 +73,7 @@ export function FunnelAutomationsTab() {
 
   const pipelineStages = stages.filter((s) => s.pipeline_id === selectedPipeline);
   const pipelineAutomations = automations.filter((a) => a.pipeline_id === selectedPipeline);
-  const stageName = (id: string) => stages.find((s) => s.id === id)?.name ?? '—';
+  const stageName = (id: string) => stages.find((s) => s.id === id)?.name ?? '-';
 
   const toggleActive = async (a: Automation) => {
     const supabase = getSupabase();
@@ -289,7 +289,7 @@ function AutomationForm({
                 </select>
               )}
               {a.type === 'send_text' && (
-                <textarea value={String(a.text ?? '')} onChange={(e) => setAction(i, { text: e.target.value })} rows={2} placeholder="Mensagem de texto (sai pelo canal da conversa — Zernio ou UAZAPI; na API oficial exige janela de 24h aberta)" className={`${inputCls} sm:col-span-2 resize-none`} />
+                <textarea value={String(a.text ?? '')} onChange={(e) => setAction(i, { text: e.target.value })} rows={2} placeholder="Mensagem de texto (sai pelo canal da conversa, Zernio ou UAZAPI; na API oficial exige janela de 24h aberta)" className={`${inputCls} sm:col-span-2 resize-none`} />
               )}
               {a.type === 'assign' && (
                 <select value={String(a.user_id ?? '')} onChange={(e) => setAction(i, { user_id: e.target.value })} className={inputCls}>

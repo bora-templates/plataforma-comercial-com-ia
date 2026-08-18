@@ -282,7 +282,7 @@ function ArchivedPanel({
   onRestore: (dealId: string) => void;
   onOpen: (dealId: string) => void;
 }) {
-  const stageName = (id: string | null) => stages.find((s) => s.id === id)?.name ?? '—';
+  const stageName = (id: string | null) => stages.find((s) => s.id === id)?.name ?? '-';
   return (
     <>
       <div className="fixed inset-0 z-40 bg-black/50" onClick={onClose} />

@@ -62,7 +62,7 @@ export function ContactPanel({
   onPauseAI, onResumeAI, onClose, onReopen, onAssign, onSetActiveDeal, onPinNote, onArchive, onContactRefresh,
 }: ContactPanelProps) {
   const contact = conversation.contact;
-  const displayName = contact?.name?.trim() || contact?.phone || '—';
+  const displayName = contact?.name?.trim() || contact?.phone || '-';
   const [noteDraft, setNoteDraft] = useState(conversation.pinned_note ?? '');
   const [savingNote, setSavingNote] = useState(false);
   const [showPipelineModal, setShowPipelineModal] = useState(false);
@@ -136,7 +136,7 @@ export function ContactPanel({
   const handlePause = async () => {
     try {
       await onPauseAI();
-      toast.success('IA pausada — você assumiu esta conversa.');
+      toast.success('IA pausada. Você assumiu esta conversa.');
     } catch (err) {
       toast.error('Falha', { description: err instanceof Error ? err.message : String(err) });
     }
@@ -164,7 +164,7 @@ export function ContactPanel({
   const handleReopen = async () => {
     try {
       await onReopen();
-      toast.success('Conversa reaberta — você assumiu o atendimento.');
+      toast.success('Conversa reaberta. Você assumiu o atendimento.');
     } catch (err) {
       toast.error('Falha', { description: err instanceof Error ? err.message : String(err) });
     }
@@ -467,7 +467,7 @@ export function ContactPanel({
           ) : null}
           <div className="flex items-center gap-2 text-[var(--color-text-secondary)]">
             <Phone className="h-3.5 w-3.5" />
-            <span className="font-mono">{contact?.phone ?? '—'}</span>
+            <span className="font-mono">{contact?.phone ?? '-'}</span>
           </div>
         </div>
       </div>

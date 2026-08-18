@@ -88,7 +88,7 @@ export function OrgSwitcher() {
         Organização
       </div>
       <div className="text-sm font-semibold text-[var(--color-text-primary)] max-w-[180px] truncate">
-        {orgName ?? '—'}
+        {orgName ?? '-'}
       </div>
     </div>
   );

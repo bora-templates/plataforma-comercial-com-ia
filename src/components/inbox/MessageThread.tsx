@@ -138,7 +138,7 @@ function MediaContent({ message }: { message: Message }) {
   return (
     <div className="italic opacity-80">
       {received}
-      {caption ? `: ${caption}` : ' — visualização indisponível nesta versão.'}
+      {caption ? `: ${caption}` : ' (visualização indisponível nesta versão).'}
     </div>
   );
 }

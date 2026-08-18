@@ -42,7 +42,7 @@ export function TemplateRestartDialog({ open, onClose, conversationId, onSent }:
       toast.error('Falha ao enviar template', { description: await functionErrorMessage(error, data, 'Erro') });
       return;
     }
-    toast.success('Template enviado — conversa reiniciada.');
+    toast.success('Template enviado. Conversa reiniciada.');
     setTemplateId('');
     setValues({});
     onSent?.();

@@ -23,7 +23,7 @@ interface AvatarProps {
 // primeiras palavras; senão, os dois primeiros caracteres.
 function initialsFrom(name: string | null | undefined): string {
   const value = name?.trim();
-  if (!value) return '—';
+  if (!value) return '-';
   const parts = value.split(/\s+/).filter(Boolean);
   if (parts.length >= 2) {
     return (parts[0][0] + parts[1][0]).toUpperCase();

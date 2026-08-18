@@ -101,7 +101,7 @@ export function FunilManager({ funil, onClose }: { funil: FunilController; onClo
 
           {/* Coluna: estágios do funil selecionado */}
           <section className="space-y-3">
-            <div className="text-label">Etapas de “{pipelines.find((p) => p.id === selectedId)?.name ?? '—'}”</div>
+            <div className="text-label">Etapas de “{pipelines.find((p) => p.id === selectedId)?.name ?? '-'}”</div>
             <div className="space-y-2">
               {stages.map((s, i) => (
                 <StageRow

@@ -180,7 +180,7 @@ export function ProductsSettings() {
           <header className="space-y-1">
             <h2 className="text-xl font-bold text-display">Produtos</h2>
             <p className="text-sm text-[var(--color-text-secondary)]">
-              Cadastre o catálogo da sua operação — incluindo classes personalizadas
+              Cadastre o catálogo da sua operação, incluindo classes personalizadas
               (ex.: imóveis). Os produtos podem ser vinculados às oportunidades no funil.
             </p>
           </header>
@@ -234,7 +234,7 @@ export function ProductsSettings() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
-              placeholder="Opcional — descrição do produto (aparece no catálogo)"
+              placeholder="Opcional: descrição do produto (aparece no catálogo)"
               disabled={saving}
               className="w-full resize-none rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.03] px-4 py-2.5 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--accent-primary)]"
             />

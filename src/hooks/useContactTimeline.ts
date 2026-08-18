@@ -137,7 +137,7 @@ export function useContactTimeline(contactId: string) {
         id: `hist-${h.id}`,
         kind: 'mudanca_estagio',
         label: `Mudança de etapa · ${who}`,
-        text: `${from ? `${from} → ` : ''}${to}${h.reason ? ` — ${h.reason}` : ''}`,
+        text: `${from ? `${from} → ` : ''}${to}${h.reason ? `: ${h.reason}` : ''}`,
         at: h.created_at,
       });
     }
@@ -153,7 +153,7 @@ export function useContactTimeline(contactId: string) {
       } else if (d.status === 'lost' && d.lost_at) {
         push(d.lost_at.slice(0, 10), {
           id: `lost-${d.id}`, kind: 'perdido', label: 'Oportunidade não fechada',
-          text: d.lost_reason ? `${d.title} — ${d.lost_reason}` : d.title, at: d.lost_at,
+          text: d.lost_reason ? `${d.title}: ${d.lost_reason}` : d.title, at: d.lost_at,
         });
       }
     }
@@ -189,7 +189,7 @@ export function useContactTimeline(contactId: string) {
         id: `act-${a.id}`,
         kind: 'acao_agendada',
         label: `Ação agendada · ${label}`,
-        text: `${what}${a.due_at ? ` — para ${fmtDue(a.due_at)}` : ''}${dealTitle ? ` (${dealTitle})` : ''}`,
+        text: `${what}${a.due_at ? `, para ${fmtDue(a.due_at)}` : ''}${dealTitle ? ` (${dealTitle})` : ''}`,
         at: a.created_at,
       });
       if (a.done) {

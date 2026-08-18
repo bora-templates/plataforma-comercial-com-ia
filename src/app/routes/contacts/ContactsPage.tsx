@@ -32,7 +32,7 @@ const PAGE_SIZE_OPTIONS = [25, 50, 100, 1000] as const;
 const SOURCE_OPTIONS = ['whatsapp', 'instagram', 'import', 'manual'];
 
 const fmtDate = (s: string | null | undefined) =>
-  s ? new Date(s).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '—';
+  s ? new Date(s).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-';
 
 // CSV com separador ';' + BOM UTF-8 (padrão que o Excel pt-BR abre com acentos e
 // colunas corretas). Campos: Nome, Telefone, E-mail, Canal, Origem, Tags,
@@ -291,7 +291,7 @@ export default function ContactsPage() {
             <option value="recent">Mais recentes</option>
             <option value="oldest">Mais antigos</option>
             <option value="first_seen">Primeiro registro</option>
-            <option value="name">Nome (A–Z)</option>
+            <option value="name">Nome (A a Z)</option>
           </select>
         </div>
 
@@ -329,7 +329,7 @@ export default function ContactsPage() {
             <div className="p-6 text-center text-[var(--color-text-secondary)] opacity-60">
               {search || tagFilter || sourceFilter || leadTypeFilter
                 ? 'Nenhum contato encontrado com estes filtros.'
-                : 'Nenhum contato ainda — crie um manualmente ou importe CSV/XLSX.'}
+                : 'Nenhum contato ainda. Crie um manualmente ou importe CSV/XLSX.'}
             </div>
           ) : (
             contacts.map((c) => (
@@ -344,10 +344,10 @@ export default function ContactsPage() {
                   />
                   <div className="min-w-0 flex-1">
                     <Link to={`/contacts/${c.id}`} className="block truncate font-medium text-[var(--color-text-primary)] hover:text-[var(--accent-primary)]">
-                      {c.name || '— ver ficha'}
+                      {c.name || 'ver ficha'}
                     </Link>
                     <div className="truncate font-mono text-xs text-[var(--color-text-secondary)]">
-                      {c.phone || '—'}
+                      {c.phone || '-'}
                     </div>
                   </div>
                   <Button
@@ -420,7 +420,7 @@ export default function ContactsPage() {
                   <td colSpan={8} className="p-8 text-center text-[var(--color-text-secondary)] opacity-60">
                     {search || tagFilter || sourceFilter || leadTypeFilter
                       ? 'Nenhum contato encontrado com estes filtros.'
-                      : 'Nenhum contato ainda — crie um manualmente ou importe CSV/XLSX.'}
+                      : 'Nenhum contato ainda. Crie um manualmente ou importe CSV/XLSX.'}
                   </td>
                 </tr>
               ) : (
@@ -442,11 +442,11 @@ export default function ContactsPage() {
                         to={`/contacts/${c.id}`}
                         className="font-medium text-[var(--color-text-primary)] hover:text-[var(--accent-primary)]"
                       >
-                        {c.name || <span className="opacity-40">— ver ficha</span>}
+                        {c.name || <span className="opacity-40">ver ficha</span>}
                       </Link>
                     </td>
                     <td className="p-3 font-mono text-xs text-[var(--color-text-secondary)]">
-                      {c.phone || <span className="opacity-40">—</span>}
+                      {c.phone || <span className="opacity-40">-</span>}
                     </td>
                     <td className="p-3 text-[var(--color-text-secondary)]">
                       {c.source ? (
@@ -454,14 +454,14 @@ export default function ContactsPage() {
                           {CONTACT_SOURCE_LABEL[c.source] ?? c.source}
                         </span>
                       ) : (
-                        <span className="opacity-40">—</span>
+                        <span className="opacity-40">-</span>
                       )}
                     </td>
                     <td className="p-3 text-[var(--color-text-secondary)]">
                       {c.traffic_type ? (
                         <span className="text-xs">{TRAFFIC_LABEL[c.traffic_type] ?? c.traffic_type}</span>
                       ) : (
-                        <span className="opacity-40">—</span>
+                        <span className="opacity-40">-</span>
                       )}
                     </td>
                     <td className="p-3 text-xs text-[var(--color-text-secondary)]">

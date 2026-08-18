@@ -580,7 +580,7 @@ Deno.serve(async (req) => {
           if (missingParts.length > 0) {
             await admin
               .from('campaign_contacts')
-              .update({ status: 'failed', claimed_at: null, error_message: `Variaveis sem valor — ${missingParts.join('; ')}` })
+              .update({ status: 'failed', claimed_at: null, error_message: `Variaveis sem valor: ${missingParts.join('; ')}` })
               .eq('id', r.id);
             campaignFailed += 1;
             return;

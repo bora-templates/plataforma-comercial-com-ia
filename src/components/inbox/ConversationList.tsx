@@ -99,7 +99,7 @@ export function ConversationList({
         const ChanIcon = chan.Icon;
         const isActive = c.id === selectedId;
         const contact = c.contact;
-        const displayName = contact?.name?.trim() || contact?.phone || '—';
+        const displayName = contact?.name?.trim() || contact?.phone || '-';
         return (
           <li key={c.id}>
             <button
@@ -134,7 +134,7 @@ export function ConversationList({
                     </div>
                   </div>
                   <div className="text-xs text-[var(--color-text-secondary)] truncate mt-0.5">
-                    {locked ? <span className="italic opacity-70">Conversa em atendimento</span> : (c.lastMessagePreview ?? <span className="opacity-40">—</span>)}
+                    {locked ? <span className="italic opacity-70">Conversa em atendimento</span> : (c.lastMessagePreview ?? <span className="opacity-40">-</span>)}
                   </div>
                   {/* Fontes reduzidas + nowrap para os badges não quebrarem em 2
                       linhas na coluna estreita; o rótulo do operador trunca. */}

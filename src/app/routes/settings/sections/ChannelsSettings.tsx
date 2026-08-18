@@ -216,7 +216,7 @@ export function ChannelsSettings() {
     }
     toast.success(
       channel.ai_enabled
-        ? 'IA desligada neste número — conversas novas vão direto para o humano.'
+        ? 'IA desligada neste número: conversas novas vão direto para o humano.'
         : 'IA ligada neste número.',
     );
     void loadChannels();
@@ -356,7 +356,7 @@ export function ChannelsSettings() {
             disabled={busy === channel.id}
             onChange={(e) => void setAssignedMember(channel, e.target.value || null)}
             className="min-w-0 flex-1 rounded-lg border border-[rgba(212,165,116,0.2)] bg-[rgba(15,18,35,0.8)] px-3 py-1.5 text-xs text-[var(--color-text-primary)] focus:border-[var(--accent-primary)] focus:outline-none"
-            title="Operador responsável — conversas deste número são atribuídas a ele"
+            title="Operador responsável: conversas deste número são atribuídas a ele"
           >
             <option value="">Sem operador fixo (round-robin da equipe)</option>
             {operators.map((op) => (
@@ -422,10 +422,10 @@ export function ChannelsSettings() {
         <div className="glass-card p-4">
           <div className="text-label">Ativos</div>
           <div className="mt-1 text-2xl font-extrabold text-[var(--color-text-primary)]">
-            {loading ? '—' : activeCount}
+            {loading ? '-' : activeCount}
           </div>
           <div className="text-[11px] text-[var(--color-text-secondary)]">
-            de {loading ? '—' : channels.length} números
+            de {loading ? '-' : channels.length} números
           </div>
         </div>
         <div className="glass-card p-4">
@@ -433,7 +433,7 @@ export function ChannelsSettings() {
             <MessageCircle className="h-3 w-3" style={{ color: ZERNIO_COLOR }} /> Oficial
           </div>
           <div className="mt-1 text-2xl font-extrabold" style={{ color: ZERNIO_COLOR }}>
-            {loading ? '—' : zernioChannels.length}
+            {loading ? '-' : zernioChannels.length}
           </div>
           <div className="text-[11px] text-[var(--color-text-secondary)]">via Zernio (Meta)</div>
         </div>
@@ -442,7 +442,7 @@ export function ChannelsSettings() {
             <Zap className="h-3 w-3" style={{ color: UAZAPI_COLOR }} /> UAZAPI
           </div>
           <div className="mt-1 text-2xl font-extrabold" style={{ color: UAZAPI_COLOR }}>
-            {loading ? '—' : uazapiChannels.length}
+            {loading ? '-' : uazapiChannels.length}
           </div>
           <div className="text-[11px] text-[var(--color-text-secondary)]">sem janela de 24h</div>
         </div>
@@ -464,7 +464,7 @@ export function ChannelsSettings() {
                   Zernio · WhatsApp Oficial e Instagram
                 </h3>
                 <p className="text-[11px] text-[var(--color-text-secondary)]">
-                  Os canais são conectados e gerenciados no painel do Zernio — aqui você só
+                  Os canais são conectados e gerenciados no painel do Zernio. Aqui você só
                   informa a API Key.
                 </p>
               </div>
@@ -473,7 +473,7 @@ export function ChannelsSettings() {
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-[rgba(37,211,102,0.1)] px-2.5 py-1 text-[11px] font-semibold" style={{ color: ZERNIO_COLOR }}>
                 <MessageCircle className="h-3 w-3" />
-                {loading ? '—' : `${zernioChannels.filter((c) => c.is_active).length} de ${zernioChannels.length}`} números ativos
+                {loading ? '-' : `${zernioChannels.filter((c) => c.is_active).length} de ${zernioChannels.length}`} números ativos
               </span>
               <span
                 className={
@@ -581,7 +581,7 @@ export function ChannelsSettings() {
           ) : zernioChannels.length === 0 ? (
             <div className="rounded-xl border border-dashed border-[rgba(148,163,184,0.25)] p-4 text-sm text-[var(--color-text-secondary)]">
               {zernioKeyExists
-                ? 'Nenhum número oficial sincronizado ainda. Conecte o WhatsApp no painel do Zernio — ele aparecerá aqui.'
+                ? 'Nenhum número oficial sincronizado ainda. Conecte o WhatsApp no painel do Zernio e ele aparecerá aqui.'
                 : 'Configure a Zernio API Key acima para sincronizar os números da sua conta Zernio.'}
             </div>
           ) : (
@@ -616,7 +616,7 @@ export function ChannelsSettings() {
                 style={{ background: 'rgba(45,212,191,0.1)', color: UAZAPI_COLOR }}
               >
                 <Zap className="h-3 w-3" />
-                {loading ? '—' : `${uazapiChannels.filter((c) => c.is_active).length} de ${uazapiChannels.length}`} instâncias ativas
+                {loading ? '-' : `${uazapiChannels.filter((c) => c.is_active).length} de ${uazapiChannels.length}`} instâncias ativas
               </span>
               <button
                 onClick={() => setShowUazapiForm((v) => !v)}

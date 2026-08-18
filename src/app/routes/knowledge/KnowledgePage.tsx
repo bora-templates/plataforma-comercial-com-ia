@@ -47,7 +47,7 @@ export default function KnowledgePage() {
             <div className="text-label">Seção</div>
             <h1 className="text-2xl font-bold text-display">Base de Conhecimento</h1>
             <p className="text-sm text-[var(--color-text-secondary)]">
-              Texto indexado com embeddings — consumido pelo agente IA via RAG
+              Texto indexado com embeddings, consumido pelo agente IA via RAG
             </p>
           </div>
         </div>
@@ -88,7 +88,7 @@ export default function KnowledgePage() {
                   <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px]">
                     <span className="uppercase tracking-wide text-[var(--color-text-secondary)]">{it.type}</span>
                     <span className="text-[var(--color-text-secondary)]">
-                      {it.file_size_bytes > 0 ? `${Math.round(it.file_size_bytes / 1024)} KB` : '—'}
+                      {it.file_size_bytes > 0 ? `${Math.round(it.file_size_bytes / 1024)} KB` : '-'}
                     </span>
                     <span className={`inline-flex items-center rounded-full px-2 py-0.5 font-semibold ${STATUS_COLORS[it.status]}`}>
                       {STATUS_LABEL[it.status]}
@@ -148,7 +148,7 @@ export default function KnowledgePage() {
                       <td className="p-3 text-[var(--color-text-secondary)]">
                         {it.file_size_bytes > 0
                           ? `${Math.round(it.file_size_bytes / 1024)} KB`
-                          : '—'}
+                          : '-'}
                       </td>
                       <td className="p-3">
                         <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${STATUS_COLORS[it.status]}`}>
@@ -180,7 +180,7 @@ export default function KnowledgePage() {
           } else if (res?.error) {
             toast.error('Processamento falhou', { description: res.error });
           } else if (res) {
-            toast.warning('Entrada criada mas processamento falhou — veja status "Erro" na lista.');
+            toast.warning('Entrada criada, mas o processamento falhou. Veja o status "Erro" na lista.');
           }
         }}
       />

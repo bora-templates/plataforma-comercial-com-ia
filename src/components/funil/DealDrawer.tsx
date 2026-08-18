@@ -24,7 +24,7 @@ import {
 
 const brl = (n: number) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 const fmtDate = (s: string | null) =>
-  s ? new Date(s).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—';
+  s ? new Date(s).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
 
 const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 const isE164ish = (v: string) => /^\+?\d{8,15}$/.test(v.replace(/[\s()-]/g, ''));
@@ -308,7 +308,7 @@ export function DealDrawer({ deal, stages, pipelines, isAdmin, onClose, onStageC
               </Field>
               <Field label="Origem">
                 <select value={contact?.source ?? ''} onChange={(e) => saveContactField({ source: e.target.value || null })} className={inputCls}>
-                  <option value="">—</option>
+                  <option value="">-</option>
                   {Object.entries(CONTACT_SOURCE_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
                 </select>
               </Field>
@@ -435,7 +435,7 @@ function ProductMultiSelect({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        title="Produtos comprados — clique para editar"
+        title="Produtos comprados (clique para editar)"
         className="flex w-full items-start gap-1 text-left text-sm text-[var(--color-text-secondary)] hover:opacity-80"
       >
         <span className={`min-w-0 flex-1 break-words ${selected.length === 0 ? 'opacity-70' : ''}`}>{label}</span>
@@ -480,13 +480,13 @@ function ProductMultiSelect({
   );
 }
 
-// Linha "rótulo → valor" de um parâmetro de origem. Mostra "—" quando ausente.
+// Linha "rótulo → valor" de um parâmetro de origem. Mostra "-" quando ausente.
 function OriginRow({ label, value }: { label: string; value: string | null }) {
   return (
     <div className="min-w-0">
       <dt className="text-[0.6rem] uppercase tracking-[0.1em] text-[var(--color-text-secondary)]">{label}</dt>
       <dd className={`truncate text-sm ${value ? 'text-[var(--color-text-primary)]' : 'text-[var(--color-text-secondary)] opacity-60'}`}>
-        {value || '—'}
+        {value || '-'}
       </dd>
     </div>
   );
@@ -530,7 +530,7 @@ function InlineText({
   };
 
   if (!editing) {
-    const shown = value ? (render ? render(value) : value) : (placeholder ?? '—');
+    const shown = value ? (render ? render(value) : value) : (placeholder ?? '-');
     return (
       <button
         type="button"

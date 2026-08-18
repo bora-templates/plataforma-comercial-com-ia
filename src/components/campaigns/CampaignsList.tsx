@@ -143,7 +143,7 @@ export function CampaignsList() {
                     <span>Progresso</span>
                     {/* done clampado ao total: follow-ups antigos inflaram `sent`
                         sem bumpar total_contacts (corrigido no check-follow-ups). */}
-                    <span>{pct}% — {Math.min(c.sent + c.failed, c.total_contacts)}/{c.total_contacts}</span>
+                    <span>{pct}% · {Math.min(c.sent + c.failed, c.total_contacts)}/{c.total_contacts}</span>
                   </div>
                   <div className="h-2.5 rounded-full bg-white/5 overflow-hidden">
                     <div

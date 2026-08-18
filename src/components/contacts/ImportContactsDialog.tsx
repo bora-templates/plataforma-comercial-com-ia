@@ -316,7 +316,7 @@ export function ImportContactsDialog({
                         }}
                         className="w-full rounded border border-[rgba(212,165,116,0.15)] bg-black/20 px-2 py-1 text-xs text-[var(--color-text-primary)]"
                       >
-                        <option value="skip">— ignorar —</option>
+                        <option value="skip">(ignorar)</option>
                         <option value="phone">📞 telefone</option>
                         <option value="name">👤 nome</option>
                         <option value="email">📧 e-mail</option>

@@ -163,7 +163,7 @@ export const INBOX_SORT_LABEL: Record<InboxSort, string> = {
   recente: 'Mais recentes',
   antiga: 'Mais antigas',
   nao_lidas: 'Não lidas primeiro',
-  alfabetica: 'Ordem alfabética (A–Z)',
+  alfabetica: 'Ordem alfabética (A a Z)',
 };
 
 function lastAt(c: ConversationWithContact): number {

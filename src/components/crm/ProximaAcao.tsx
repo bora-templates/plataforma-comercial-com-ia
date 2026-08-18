@@ -24,7 +24,7 @@ const fmtDue = (s: string | null) =>
         hour: '2-digit',
         minute: '2-digit',
       })
-    : '—';
+    : '-';
 
 interface ProximaAcaoProps {
   // Escopo por negócio (drawer do funil / inbox com negócio ativo).
@@ -148,7 +148,7 @@ export function ProximaAcao({ dealId, contactId, deals }: ProximaAcaoProps) {
                       </span>
                     </div>
                     <p className="mt-1 whitespace-pre-wrap break-words text-sm text-[var(--color-text-primary)]">
-                      {a.body ?? a.title ?? '—'}
+                      {a.body ?? a.title ?? '-'}
                     </p>
                     {a.dealTitle && (
                       <div className="mt-0.5 truncate text-[11px] text-[var(--color-text-secondary)]">
