@@ -68,3 +68,6 @@ tests/.artifacts/
 .env.tracking-dev
 
 .env*
+
+# arquivos de preview local, nunca versionar
+public/__preview-*
