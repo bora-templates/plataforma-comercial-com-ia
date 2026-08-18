@@ -1,78 +1,48 @@
 @import "tailwindcss";
 
 /* =============================================================================
-   Plataforma Comercial · Design System (claro por padrao, escuro em [data-theme=dark])
+   WhatsApp Hub · Design System (Dark Mode Glassmorphism, per CLAUDE.md)
    DARK MODE ONLY. No light mode. No theme toggle.
    ============================================================================= */
 
 @theme {
-  /* Todos apontam para variaveis de :root, que mudam com [data-theme].
-     Assim as classes utilitarias (bg-bg-card, text-text-primary...) seguem o tema. */
-  --color-bg-primary: var(--bg-primary);
-  --color-bg-card: var(--bg-card);
-  --color-accent-primary: var(--accent-primary);
-  --color-accent-secondary: var(--accent-secondary);
-  --color-text-primary: var(--text-primary);
-  --color-text-secondary: var(--text-secondary);
-  --color-text-label: var(--text-label);
-  --color-success: #22C55E;
+  /* Base surface */
+  --color-bg-primary: #0A0A0F;
+  --color-bg-card: rgba(15, 18, 35, 0.6);
+
+  /* Accents — troque estas variaveis para aplicar a identidade do seu negocio. */
+  --color-accent-primary: #D4A574;
+  --color-accent-secondary: #E8C89A;
+
+  /* Text */
+  --color-text-primary: #F8FAFC;
+  --color-text-secondary: #94A3B8;
+  --color-text-label: #CBD5E1;
+
+  /* Status */
+  --color-success: #10B981;
   --color-error: #EF4444;
-  --color-border-card: var(--border-card);
-  --color-border-soft: var(--border-soft);
-  --color-border-divider: var(--border-divider);
-  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
-  --radius-card: 12px;
+
+  /* Borders */
+  --color-border-card: rgba(212, 165, 116, 0.15);
+  --color-border-soft: rgba(212, 165, 116, 0.12);
+  --color-border-divider: rgba(212, 165, 116, 0.08);
+
+  /* Typography */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* Radii */
+  --radius-card: 16px;
 }
 
 /* -----------------------------------------------------------------------------
    Static accent tokens.
    Components reference var(--accent-primary) / var(--accent-secondary) instead
-   of hard-coding a color so any future palette swap is one-file.
+   of hard-coding #D4A574 so any future palette swap is one-file.
    ----------------------------------------------------------------------------- */
 :root {
-  /* Identidade: os quatro que definem a cor do produto. */
-  --accent-primary: #2F9E86;
-  --accent-secondary: #4FB6A0;
-  --accent-deep: #1D3B36;
-  --accent-rgb: 47, 158, 134;
-
-  /* Tema claro (padrao) */
-  --bg-primary: #F6F7F9;
-  --bg-card: rgba(255, 255, 255, 0.85);
-  --text-primary: #14181D;
-  --text-secondary: #4A5361;
-  --text-label: #2E3640;
-  --border-card: rgba(var(--accent-rgb), 0.18);
-  --border-soft: rgba(var(--accent-rgb), 0.14);
-  --border-divider: rgba(20, 24, 29, 0.08);
-
-  /* Superficie translucida: relevo sobre o fundo. No claro e um veu escuro,
-     no escuro e um veu claro. --surface-rgb e o triplo usado em rgba(). */
-  --surface-rgb: 20, 24, 29;
-  /* Contraste sobre o accent (texto de botao primario) */
-  --on-accent: #FFFFFF;
-  /* Sombra */
-  --shadow-rgb: 20, 24, 29;
-}
-
-:root[data-theme="dark"] {
-  --accent-primary: #4FB6A0;
-  --accent-secondary: #8AD6C4;
-  --accent-deep: #1D3B36;
-  --accent-rgb: 79, 182, 160;
-
-  --bg-primary: #0F1115;
-  --bg-card: rgba(22, 25, 32, 0.72);
-  --text-primary: #F1F3F5;
-  --text-secondary: #9AA3AD;
-  --text-label: #C7CDD3;
-  --border-card: rgba(var(--accent-rgb), 0.16);
-  --border-soft: rgba(var(--accent-rgb), 0.12);
-  --border-divider: rgba(var(--accent-rgb), 0.08);
-
-  --surface-rgb: 255, 255, 255;
-  --on-accent: #0F1115;
-  --shadow-rgb: 0, 0, 0;
+  --accent-primary: #D4A574;
+  --accent-secondary: #E8C89A;
 }
 
 /* -----------------------------------------------------------------------------
@@ -83,11 +53,10 @@ html, body, #root {
 }
 
 body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
+  background-color: var(--color-bg-primary);
   background-image:
-    radial-gradient(ellipse at 20% 0%, rgba(var(--accent-rgb), 0.05), transparent 50%),
-    radial-gradient(ellipse at 80% 100%, rgba(var(--accent-rgb), 0.03), transparent 50%);
+    radial-gradient(ellipse at 20% 0%, rgba(212, 165, 116, 0.06), transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(37, 99, 235, 0.04), transparent 50%);
   background-attachment: fixed;
   color: var(--color-text-primary);
   font-family: var(--font-sans);
@@ -108,11 +77,11 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(var(--accent-rgb), 0.18);
+  background: rgba(212, 165, 116, 0.18);
   border-radius: 8px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(var(--accent-rgb), 0.32);
+  background: rgba(212, 165, 116, 0.32);
 }
 
 /* -----------------------------------------------------------------------------
@@ -122,33 +91,33 @@ body {
   .glass-card {
     background: linear-gradient(
       135deg,
-      rgba(var(--accent-rgb), 0.08),
-      rgba(var(--accent-rgb), 0.02)
+      rgba(212, 165, 116, 0.08),
+      rgba(212, 165, 116, 0.02)
     );
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
-    border: 1px solid rgba(var(--accent-rgb), 0.25);
+    border: 1px solid rgba(212, 165, 116, 0.25);
     border-radius: var(--radius-card);
     box-shadow:
-      0 0 20px rgba(var(--accent-rgb), 0.06),
-      inset 0 1px 0 rgba(var(--accent-rgb), 0.1);
+      0 0 20px rgba(212, 165, 116, 0.06),
+      inset 0 1px 0 rgba(212, 165, 116, 0.1);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .glass-card-hover:hover,
   .glass-card:hover {
-    border-color: rgba(var(--accent-rgb), 0.45);
+    border-color: rgba(212, 165, 116, 0.45);
     box-shadow:
-      0 0 30px rgba(var(--accent-rgb), 0.12),
-      0 0 60px rgba(var(--accent-rgb), 0.04),
-      inset 0 1px 0 rgba(var(--accent-rgb), 0.2);
+      0 0 30px rgba(212, 165, 116, 0.12),
+      0 0 60px rgba(212, 165, 116, 0.04),
+      inset 0 1px 0 rgba(212, 165, 116, 0.2);
   }
 
   .glass-surface {
-    background: var(--bg-card);
+    background: rgba(15, 18, 35, 0.6);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(var(--accent-rgb), 0.12);
+    border: 1px solid rgba(212, 165, 116, 0.12);
   }
 
   .text-display {

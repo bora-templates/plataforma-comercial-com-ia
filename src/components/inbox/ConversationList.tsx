@@ -88,7 +88,7 @@ export function ConversationList({
   }
 
   return (
-    <ul className="divide-y divide-[rgba(var(--accent-rgb),0.06)]">
+    <ul className="divide-y divide-[rgba(212,165,116,0.06)]">
       {conversations.map((c) => {
         const locked = isLocked?.(c) ?? false;
         const assignedName = operatorName?.(c.assigned_to) ?? null;
@@ -108,8 +108,8 @@ export function ConversationList({
               title={locked ? `Conversa atribuída a ${assignedName ?? 'outro operador'}` : undefined}
               className={cn(
                 'w-full text-left p-3 transition-colors',
-                locked ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[rgba(var(--surface-rgb),0.03)]',
-                isActive && !locked && 'bg-[rgba(var(--accent-rgb),0.08)] border-l-2 border-[var(--accent-primary)]',
+                locked ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/[0.03]',
+                isActive && !locked && 'bg-[rgba(212,165,116,0.08)] border-l-2 border-[var(--accent-primary)]',
                 (!isActive || locked) && 'border-l-2 border-transparent',
               )}
             >
@@ -118,7 +118,7 @@ export function ConversationList({
                   <Avatar src={contact?.profile_pic_url} name={displayName} size="md" />
                   <span
                     title={chan.label}
-                    className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[var(--bg-primary)] ring-1 ring-[rgba(var(--accent-rgb),0.2)]"
+                    className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#0A0A0F] ring-1 ring-[rgba(212,165,116,0.2)]"
                   >
                     <ChanIcon className={cn('h-2.5 w-2.5', chan.color)} />
                   </span>
@@ -156,7 +156,7 @@ export function ConversationList({
                       </span>
                     )}
                     {c.unread_count > 0 && (
-                      <span className="ml-auto shrink-0 text-[10px] font-bold bg-[var(--accent-primary)] text-[var(--on-accent)] rounded-full px-2 py-0.5">
+                      <span className="ml-auto shrink-0 text-[10px] font-bold bg-[var(--accent-primary)] text-white rounded-full px-2 py-0.5">
                         {c.unread_count}
                       </span>
                     )}

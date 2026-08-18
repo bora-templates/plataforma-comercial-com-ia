@@ -32,7 +32,7 @@ function StatusTicks({ status }: { status: Message['meta_status'] }) {
       </span>
     );
   }
-  if (status === 'read') return <CheckCheck className="h-3 w-3 text-[var(--accent-primary)]" />;
+  if (status === 'read') return <CheckCheck className="h-3 w-3 text-[#D4A574]" />;
   if (status === 'delivered') return <CheckCheck className="h-3 w-3 opacity-60" />;
   return <Check className="h-3 w-3 opacity-60" />;
 }
@@ -68,11 +68,11 @@ function formatDayLabel(iso: string): string {
 function DateSeparator({ iso }: { iso: string }) {
   return (
     <div className="flex items-center gap-3 py-2">
-      <div className="h-px flex-1 bg-[rgba(var(--accent-rgb),0.08)]" />
-      <span className="rounded-full border border-[rgba(var(--accent-rgb),0.15)] bg-[rgba(var(--surface-rgb),0.03)] px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-[var(--text-secondary,#94A3B8)]">
+      <div className="h-px flex-1 bg-[rgba(212,165,116,0.08)]" />
+      <span className="rounded-full border border-[rgba(212,165,116,0.15)] bg-white/[0.03] px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-[var(--text-secondary,#94A3B8)]">
         {formatDayLabel(iso)}
       </span>
-      <div className="h-px flex-1 bg-[rgba(var(--accent-rgb),0.08)]" />
+      <div className="h-px flex-1 bg-[rgba(212,165,116,0.08)]" />
     </div>
   );
 }
@@ -155,7 +155,7 @@ function FailedActions({
   inverse?: boolean;
 }) {
   // inverse=true → dentro do balão azul (texto claro); senão card claro.
-  const base = inverse ? 'text-[var(--on-accent)]/90' : 'text-[var(--color-error)]';
+  const base = inverse ? 'text-white/90' : 'text-[var(--color-error)]';
   return (
     <div className={cn('mt-1 flex items-center gap-2 text-[10px]', base)}>
       <span className="font-semibold">Não enviou.</span>
@@ -248,8 +248,8 @@ export function MessageThread({ messages, loading, onRetry, onDismiss }: Message
               className={cn(
                 'max-w-[70%] rounded-2xl px-4 py-2.5 text-sm shadow-sm transition-opacity',
                 isInbound
-                  ? 'bg-[rgba(var(--surface-rgb),0.04)] text-[var(--color-text-primary)] rounded-bl-md'
-                  : 'bg-[var(--accent-primary)] text-[var(--on-accent)] rounded-br-md',
+                  ? 'bg-white/[0.04] text-[var(--color-text-primary)] rounded-bl-md'
+                  : 'bg-[var(--accent-primary)] text-white rounded-br-md',
                 m._state === 'pending' && 'opacity-70',
                 (m._state === 'failed' || m.meta_status === 'failed') &&
                   'ring-1 ring-[var(--color-error)]',
@@ -277,7 +277,7 @@ export function MessageThread({ messages, loading, onRetry, onDismiss }: Message
                 <MediaContent message={m} />
               )}
               {!isInbound && m.meta_status === 'failed' && m.error_reason && (
-                <div className="mt-1.5 rounded-md bg-[rgba(var(--shadow-rgb),0.25)] px-2 py-1.5 text-[11px] leading-snug text-[#FCA5A5]">
+                <div className="mt-1.5 rounded-md bg-black/25 px-2 py-1.5 text-[11px] leading-snug text-[#FCA5A5]">
                   <span className="font-semibold">Motivo: </span>
                   {m.error_reason}
                 </div>

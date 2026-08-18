@@ -19,7 +19,7 @@ export function AuthShell({ title, subtitle, children, footer }: AuthShellProps)
             <img
               src={BRAND.mark}
               alt={BRAND.product}
-              className="h-12 w-12 rounded-xl shadow-[0_0_30px_rgba(var(--accent-rgb),0.35)]"
+              className="h-12 w-12 rounded-xl shadow-[0_0_30px_rgba(212,165,116,0.35)]"
             />
             <div>
               {BRAND.owner ? <div className="text-label">{BRAND.owner}</div> : null}

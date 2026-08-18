@@ -292,17 +292,17 @@ export function CampaignWizard({ open, onClose, onSaved }: CampaignWizardProps) 
               key={label}
               className={cn(
                 'flex items-center gap-2 rounded-lg p-2 border text-xs font-semibold uppercase tracking-wide',
-                state === 'current' && 'border-[var(--accent-primary)] bg-[rgba(var(--accent-rgb),0.08)] text-[var(--color-text-primary)]',
+                state === 'current' && 'border-[var(--accent-primary)] bg-[rgba(212,165,116,0.08)] text-[var(--color-text-primary)]',
                 state === 'done' && 'border-[rgba(16,185,129,0.3)] bg-[rgba(16,185,129,0.04)] text-[var(--color-text-secondary)]',
-                state === 'pending' && 'border-[rgba(var(--accent-rgb),0.12)] text-[var(--color-text-secondary)] opacity-60',
+                state === 'pending' && 'border-[rgba(212,165,116,0.12)] text-[var(--color-text-secondary)] opacity-60',
               )}
             >
               <span
                 className={cn(
                   'h-5 w-5 rounded-full flex items-center justify-center text-[10px]',
-                  state === 'current' && 'bg-[var(--accent-primary)] text-[var(--on-accent)]',
-                  state === 'done' && 'bg-[var(--color-success)] text-[var(--on-accent)]',
-                  state === 'pending' && 'bg-[rgba(var(--surface-rgb),0.05)]',
+                  state === 'current' && 'bg-[var(--accent-primary)] text-white',
+                  state === 'done' && 'bg-[var(--color-success)] text-white',
+                  state === 'pending' && 'bg-white/5',
                 )}
               >
                 {state === 'done' ? <Check className="h-3 w-3" /> : idx + 1}
@@ -334,7 +334,7 @@ export function CampaignWizard({ open, onClose, onSaved }: CampaignWizardProps) 
                 value={channelId}
                 onChange={(e) => setChannelId(e.target.value)}
                 disabled={submitting}
-                className="h-11 w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-[rgba(var(--surface-rgb),0.03)] px-4 text-sm text-[var(--color-text-primary)]"
+                className="h-11 w-full rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.03] px-4 text-sm text-[var(--color-text-primary)]"
               >
                 {zernioChannels.map((ch) => (
                   <option key={ch.id} value={ch.id}>
@@ -356,7 +356,7 @@ export function CampaignWizard({ open, onClose, onSaved }: CampaignWizardProps) 
                 value={templateId}
                 onChange={(e) => setTemplateId(e.target.value)}
                 disabled={submitting}
-                className="h-11 w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-[rgba(var(--surface-rgb),0.03)] px-4 text-sm text-[var(--color-text-primary)]"
+                className="h-11 w-full rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.03] px-4 text-sm text-[var(--color-text-primary)]"
               >
                 <option value="">— selecione —</option>
                 {approvedTemplates.map((t) => (
@@ -368,13 +368,13 @@ export function CampaignWizard({ open, onClose, onSaved }: CampaignWizardProps) 
             )}
           </div>
           {selectedTemplate && (
-            <div className="rounded-lg border border-[rgba(var(--accent-rgb),0.1)] bg-[rgba(var(--surface-rgb),0.02)] p-3 text-xs font-mono text-[var(--color-text-secondary)] whitespace-pre-wrap">
+            <div className="rounded-lg border border-[rgba(212,165,116,0.1)] bg-white/[0.02] p-3 text-xs font-mono text-[var(--color-text-secondary)] whitespace-pre-wrap">
               {selectedTemplate.body}
             </div>
           )}
 
           {varCount > 0 && (
-            <div className="space-y-3 rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-[rgba(var(--surface-rgb),0.02)] p-3">
+            <div className="space-y-3 rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.02] p-3">
               <div className="text-xs font-semibold text-[var(--color-text-primary)]">
                 Variáveis do template
               </div>
@@ -400,7 +400,7 @@ export function CampaignWizard({ open, onClose, onSaved }: CampaignWizardProps) 
                         });
                       }}
                       disabled={submitting}
-                      className="h-9 w-52 shrink-0 rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-[rgba(var(--surface-rgb),0.03)] px-2 text-xs text-[var(--color-text-primary)]"
+                      className="h-9 w-52 shrink-0 rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.03] px-2 text-xs text-[var(--color-text-primary)]"
                     >
                       <option value="">— preencher com —</option>
                       <option value="name">Nome do contato</option>
@@ -485,8 +485,8 @@ export function CampaignWizard({ open, onClose, onSaved }: CampaignWizardProps) 
                 className={cn(
                   'p-3 rounded-lg border text-left text-sm font-medium transition-all',
                   audienceMode === mode
-                    ? 'border-[var(--accent-primary)] bg-[rgba(var(--accent-rgb),0.08)] text-[var(--color-text-primary)]'
-                    : 'border-[rgba(var(--accent-rgb),0.12)] bg-[rgba(var(--surface-rgb),0.02)] text-[var(--color-text-secondary)]',
+                    ? 'border-[var(--accent-primary)] bg-[rgba(212,165,116,0.08)] text-[var(--color-text-primary)]'
+                    : 'border-[rgba(212,165,116,0.12)] bg-white/[0.02] text-[var(--color-text-secondary)]',
                 )}
               >
                 {mode === 'all' && 'Todos os contatos'}
@@ -518,8 +518,8 @@ export function CampaignWizard({ open, onClose, onSaved }: CampaignWizardProps) 
                       className={cn(
                         'inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs',
                         active
-                          ? 'bg-[rgba(var(--surface-rgb),0.10)] text-[var(--color-text-primary)]'
-                          : 'bg-[rgba(var(--surface-rgb),0.03)] text-[var(--color-text-secondary)]',
+                          ? 'bg-white/10 text-[var(--color-text-primary)]'
+                          : 'bg-white/[0.03] text-[var(--color-text-secondary)]',
                       )}
                     >
                       <span
@@ -570,7 +570,7 @@ export function CampaignWizard({ open, onClose, onSaved }: CampaignWizardProps) 
                     id="c_funnel"
                     value={funnelPipelineId}
                     onChange={(e) => setFunnelPipelineId(e.target.value)}
-                    className="h-11 w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-[rgba(var(--surface-rgb),0.03)] px-4 text-sm text-[var(--color-text-primary)]"
+                    className="h-11 w-full rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.03] px-4 text-sm text-[var(--color-text-primary)]"
                   >
                     <option value="">— selecione um funil —</option>
                     {pipelines.map((p) => (
@@ -603,8 +603,8 @@ export function CampaignWizard({ open, onClose, onSaved }: CampaignWizardProps) 
                           className={cn(
                             'inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs',
                             active
-                              ? 'bg-[rgba(var(--surface-rgb),0.10)] text-[var(--color-text-primary)]'
-                              : 'bg-[rgba(var(--surface-rgb),0.03)] text-[var(--color-text-secondary)]',
+                              ? 'bg-white/10 text-[var(--color-text-primary)]'
+                              : 'bg-white/[0.03] text-[var(--color-text-secondary)]',
                           )}
                         >
                           <span
@@ -621,7 +621,7 @@ export function CampaignWizard({ open, onClose, onSaved }: CampaignWizardProps) 
             </div>
           )}
 
-          <div className="rounded-lg border border-[rgba(var(--accent-rgb),0.15)] bg-[rgba(var(--accent-rgb),0.04)] p-4 text-center">
+          <div className="rounded-lg border border-[rgba(212,165,116,0.15)] bg-[rgba(212,165,116,0.04)] p-4 text-center">
             <div className="text-label">Contatos alcançados</div>
             <div className="text-stat mt-1">{audienceCount ?? '…'}</div>
           </div>
@@ -659,8 +659,8 @@ export function CampaignWizard({ open, onClose, onSaved }: CampaignWizardProps) 
               className={cn(
                 'p-3 rounded-lg border text-left text-sm font-medium',
                 scheduleNow
-                  ? 'border-[var(--accent-primary)] bg-[rgba(var(--accent-rgb),0.08)]'
-                  : 'border-[rgba(var(--accent-rgb),0.12)] bg-[rgba(var(--surface-rgb),0.02)]',
+                  ? 'border-[var(--accent-primary)] bg-[rgba(212,165,116,0.08)]'
+                  : 'border-[rgba(212,165,116,0.12)] bg-white/[0.02]',
               )}
             >
               Disparar imediatamente
@@ -671,8 +671,8 @@ export function CampaignWizard({ open, onClose, onSaved }: CampaignWizardProps) 
               className={cn(
                 'p-3 rounded-lg border text-left text-sm font-medium',
                 !scheduleNow
-                  ? 'border-[var(--accent-primary)] bg-[rgba(var(--accent-rgb),0.08)]'
-                  : 'border-[rgba(var(--accent-rgb),0.12)] bg-[rgba(var(--surface-rgb),0.02)]',
+                  ? 'border-[var(--accent-primary)] bg-[rgba(212,165,116,0.08)]'
+                  : 'border-[rgba(212,165,116,0.12)] bg-white/[0.02]',
               )}
             >
               Agendar para depois
@@ -696,7 +696,7 @@ export function CampaignWizard({ open, onClose, onSaved }: CampaignWizardProps) 
             </div>
           )}
 
-          <div className="rounded-lg border border-[rgba(var(--accent-rgb),0.1)] bg-[rgba(var(--surface-rgb),0.02)] p-4 space-y-2 text-sm">
+          <div className="rounded-lg border border-[rgba(212,165,116,0.1)] bg-white/[0.02] p-4 space-y-2 text-sm">
             <div className="text-label mb-1">Revisão</div>
             <div><span className="text-[var(--color-text-secondary)]">Campanha:</span> <span className="font-mono">{name}</span></div>
             <div><span className="text-[var(--color-text-secondary)]">Template:</span> <span className="font-mono">{selectedTemplate?.name ?? '—'}</span></div>
@@ -706,7 +706,7 @@ export function CampaignWizard({ open, onClose, onSaved }: CampaignWizardProps) 
         </div>
       )}
 
-      <div className="flex items-center justify-between pt-6 mt-4 border-t border-[rgba(var(--accent-rgb),0.08)]">
+      <div className="flex items-center justify-between pt-6 mt-4 border-t border-[rgba(212,165,116,0.08)]">
         <Button variant="ghost" onClick={prevStep} disabled={step === 0 || submitting}>
           <ChevronLeft className="h-4 w-4" />
           Anterior

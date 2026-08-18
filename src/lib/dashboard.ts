@@ -160,6 +160,15 @@ export const ORIGIN_CHANNEL_LABEL: Record<string, string> = {
   google_ads: 'Google Ads',
   tiktok_ads: 'TikTok Ads',
   linkedin_ads: 'LinkedIn Ads',
+  youtube_ads: 'YouTube Ads',
+  // Chaves de organico e direto que o mapa UTM gera. Sem elas o painel
+  // mostrava a chave crua (instagram_organico) no lugar de um rotulo.
+  instagram_organico: 'Instagram (orgânico)',
+  facebook_organico: 'Facebook (orgânico)',
+  google_organico: 'Google (orgânico)',
+  tiktok_organico: 'TikTok (orgânico)',
+  linkedin_organico: 'LinkedIn (orgânico)',
+  whatsapp_direto: 'WhatsApp direto',
   outro: 'Outro',
 };
 

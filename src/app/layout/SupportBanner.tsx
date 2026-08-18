@@ -54,7 +54,7 @@ export function SupportBanner() {
   };
 
   return (
-    <div className="flex items-center justify-between gap-3 px-4 sm:px-6 py-2 bg-[rgba(var(--accent-rgb),0.12)] border-b border-[rgba(var(--accent-rgb),0.25)] text-sm text-[var(--color-text-primary)]">
+    <div className="flex items-center justify-between gap-3 px-4 sm:px-6 py-2 bg-[rgba(212,165,116,0.12)] border-b border-[rgba(212,165,116,0.25)] text-sm text-[var(--color-text-primary)]">
       <div className="flex items-center gap-2 min-w-0">
         <LifeBuoy className="h-4 w-4 shrink-0 text-[var(--accent-primary)]" />
         <span className="truncate">
@@ -66,7 +66,7 @@ export function SupportBanner() {
         type="button"
         onClick={() => void handleBack()}
         disabled={returning}
-        className="shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-[rgba(var(--accent-rgb),0.35)] px-3 py-1.5 text-xs font-semibold text-[var(--color-text-primary)] transition hover:border-[var(--accent-primary)] hover:bg-[rgba(var(--surface-rgb),0.05)] disabled:opacity-50"
+        className="shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-[rgba(212,165,116,0.35)] px-3 py-1.5 text-xs font-semibold text-[var(--color-text-primary)] transition hover:border-[var(--accent-primary)] hover:bg-white/5 disabled:opacity-50"
       >
         {returning ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
         Voltar

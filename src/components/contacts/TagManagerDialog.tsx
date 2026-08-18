@@ -13,7 +13,7 @@ interface TagManagerDialogProps {
 }
 
 const DEFAULT_COLORS = [
-  'var(--accent-primary)', 'var(--accent-secondary)', '#10B981', '#22C55E', '#F59E0B', '#EF4444',
+  '#D4A574', '#E8C89A', '#10B981', '#22C55E', '#F59E0B', '#EF4444',
   '#8B5CF6', '#EC4899', '#14B8A6', '#F97316',
 ];
 
@@ -136,7 +136,7 @@ export function TagManagerDialog({ open, onClose }: TagManagerDialogProps) {
             Nenhuma tag criada ainda.
           </div>
         ) : (
-          <ul className="divide-y divide-[rgba(var(--accent-rgb),0.08)] rounded-lg border border-[rgba(var(--accent-rgb),0.1)] bg-[rgba(var(--surface-rgb),0.02)]">
+          <ul className="divide-y divide-[rgba(212,165,116,0.08)] rounded-lg border border-[rgba(212,165,116,0.1)] bg-white/[0.02]">
             {tags.map((t) => {
               const isEditing = editing?.id === t.id;
               return (

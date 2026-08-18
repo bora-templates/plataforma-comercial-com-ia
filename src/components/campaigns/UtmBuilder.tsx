@@ -107,8 +107,8 @@ export function UtmBuilder() {
               className={
                 'rounded-full px-3 py-1 text-xs font-semibold border transition-colors ' +
                 (source === p.source && medium === p.medium
-                  ? 'border-[var(--accent-primary)] bg-[rgba(var(--accent-rgb),0.15)] text-[var(--color-text-primary)]'
-                  : 'border-[rgba(var(--accent-rgb),0.15)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[rgba(var(--accent-rgb),0.35)]')
+                  ? 'border-[var(--accent-primary)] bg-[rgba(212,165,116,0.15)] text-[var(--color-text-primary)]'
+                  : 'border-[rgba(212,165,116,0.15)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[rgba(212,165,116,0.35)]')
               }
             >
               {p.label}
@@ -159,7 +159,7 @@ export function UtmBuilder() {
         <div className="space-y-2">
           <Label>URL final</Label>
           <div className="flex items-start gap-2">
-            <div className="flex-1 min-w-0 rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-[rgba(var(--surface-rgb),0.03)] px-3 py-2 text-xs font-mono text-[var(--color-text-primary)] break-all min-h-[40px]">
+            <div className="flex-1 min-w-0 rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.03] px-3 py-2 text-xs font-mono text-[var(--color-text-primary)] break-all min-h-[40px]">
               {finalUrl || <span className="opacity-40">Preencha a URL base e os parâmetros obrigatórios…</span>}
             </div>
             <Button
@@ -199,7 +199,7 @@ export function UtmBuilder() {
               {links.map((l) => (
                 <div
                   key={l.id}
-                  className="flex items-start gap-3 rounded-lg border border-[rgba(var(--accent-rgb),0.08)] bg-[rgba(var(--surface-rgb),0.02)] p-3"
+                  className="flex items-start gap-3 rounded-lg border border-[rgba(212,165,116,0.08)] bg-white/[0.02] p-3"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
@@ -207,7 +207,7 @@ export function UtmBuilder() {
                         <span className="text-sm font-semibold text-[var(--color-text-primary)]">{l.label}</span>
                       )}
                       {l.utm_campaign && (
-                        <span className="rounded-full bg-[rgba(var(--surface-rgb),0.05)] px-2 py-0.5 text-[10px] text-[var(--color-text-secondary)]">
+                        <span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px] text-[var(--color-text-secondary)]">
                           {l.utm_campaign}
                         </span>
                       )}

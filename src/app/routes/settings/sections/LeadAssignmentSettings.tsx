@@ -129,7 +129,7 @@ export function LeadAssignmentSettings() {
           </p>
         </header>
 
-        <label className="flex items-center gap-3 rounded-lg border border-[rgba(var(--accent-rgb),0.15)] bg-[rgba(var(--surface-rgb),0.02)] px-4 py-3 cursor-pointer">
+        <label className="flex items-center gap-3 rounded-lg border border-[rgba(212,165,116,0.15)] bg-white/[0.02] px-4 py-3 cursor-pointer">
           <input
             type="checkbox"
             checked={enabled}
@@ -160,7 +160,7 @@ export function LeadAssignmentSettings() {
                       onDragStart={() => { dragIdx.current = i; }}
                       onDragOver={(e) => e.preventDefault()}
                       onDrop={() => onDrop(i)}
-                      className="flex items-center gap-2 rounded-lg border border-[rgba(var(--accent-rgb),0.15)] bg-[rgba(var(--surface-rgb),0.02)] px-3 py-2"
+                      className="flex items-center gap-2 rounded-lg border border-[rgba(212,165,116,0.15)] bg-white/[0.02] px-3 py-2"
                     >
                       <GripVertical className="h-4 w-4 shrink-0 cursor-grab text-[var(--color-text-secondary)]" />
                       <span className="w-5 text-xs font-semibold text-[var(--accent-primary)]">{i + 1}</span>
@@ -191,7 +191,7 @@ export function LeadAssignmentSettings() {
                   {available.map((op) => (
                     <li
                       key={op.user_id}
-                      className="flex items-center gap-2 rounded-lg border border-transparent bg-[rgba(var(--surface-rgb),0.015)] px-3 py-2"
+                      className="flex items-center gap-2 rounded-lg border border-transparent bg-white/[0.015] px-3 py-2"
                     >
                       <span className="flex-1 truncate text-sm text-[var(--color-text-secondary)]">
                         {op.email} {op.role === 'admin' ? '(admin)' : ''}
@@ -199,7 +199,7 @@ export function LeadAssignmentSettings() {
                       <button
                         type="button"
                         onClick={() => void addToQueue(op.user_id)}
-                        className="inline-flex items-center gap-1 rounded-lg border border-[rgba(var(--accent-rgb),0.2)] px-2.5 py-1 text-xs font-medium text-[var(--accent-secondary)] transition hover:border-[var(--accent-primary)] hover:bg-[rgba(var(--surface-rgb),0.05)]"
+                        className="inline-flex items-center gap-1 rounded-lg border border-[rgba(212,165,116,0.2)] px-2.5 py-1 text-xs font-medium text-[var(--accent-secondary)] transition hover:border-[var(--accent-primary)] hover:bg-white/5"
                       >
                         <Plus className="h-3 w-3" /> Adicionar
                       </button>

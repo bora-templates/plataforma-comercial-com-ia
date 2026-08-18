@@ -20,15 +20,15 @@ const fmtDay = (s: string) => new Date(s + 'T12:00:00').toLocaleDateString('pt-B
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
 const inputCls =
-  'w-full rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-[rgba(var(--surface-rgb),0.03)] px-3 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--accent-primary)]';
+  'w-full rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.03] px-3 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--accent-primary)]';
 
 const DOT: Record<string, string> = {
   conversa: 'bg-[#22C55E]',
   mudanca_estagio: 'bg-[#A78BFA]',
-  nota: 'bg-[var(--text-secondary)]',
+  nota: 'bg-[#64748B]',
   ganho: 'bg-[#10B981]',
   perdido: 'bg-[#EF4444]',
-  acao_agendada: 'bg-[var(--accent-primary)]',
+  acao_agendada: 'bg-[#D4A574]',
   acao_concluida: 'bg-[#10B981]',
 };
 
@@ -83,7 +83,7 @@ export default function ContactDetailPage() {
             <h1 className="text-2xl font-bold text-display">{contact.name ?? 'Sem nome'}</h1>
             <div className="mt-1 flex flex-wrap gap-2 text-xs text-[var(--color-text-secondary)]">
               {contact.source && (
-                <span className="rounded-full bg-[rgba(var(--surface-rgb),0.05)] px-2 py-0.5">
+                <span className="rounded-full bg-white/5 px-2 py-0.5">
                   {CONTACT_SOURCE_LABEL[contact.source] ?? contact.source}
                 </span>
               )}
@@ -273,7 +273,7 @@ function TimelineGrouped({
                 <ul className="space-y-2">
                   {g.entries.map((e) => (
                     <li key={e.id} className="flex gap-3">
-                      <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${DOT[e.kind] ?? 'bg-[var(--text-secondary)]'}`} />
+                      <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${DOT[e.kind] ?? 'bg-[#64748B]'}`} />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-2">
                           <span className="text-xs font-semibold text-[var(--color-text-primary)]">{e.label}</span>
@@ -297,7 +297,7 @@ function TimelineGrouped({
 
 function ChannelLinkRow({ link, onUnlink }: { link: ContactChannelLink; onUnlink: () => void }) {
   return (
-    <div className="flex items-center justify-between rounded-lg border border-[rgba(var(--accent-rgb),0.12)] px-3 py-2">
+    <div className="flex items-center justify-between rounded-lg border border-[rgba(212,165,116,0.12)] px-3 py-2">
       <div className="min-w-0">
         <div className="text-xs uppercase tracking-wide text-[var(--color-text-secondary)]">
           {link.channel === 'instagram' ? 'Instagram' : 'WhatsApp'}
@@ -323,8 +323,8 @@ function LinkChannelModal({
   const [busy, setBusy] = useState(false);
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-[rgba(var(--shadow-rgb),0.60)] p-4 backdrop-blur-sm" onClick={onClose}>
-      <div onClick={(e) => e.stopPropagation()} className="w-full max-w-sm rounded-2xl border border-[rgba(var(--accent-rgb),0.25)] bg-[var(--bg-primary)] p-5 shadow-[0_0_40px_rgba(var(--accent-rgb),0.15)]">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm" onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} className="w-full max-w-sm rounded-2xl border border-[rgba(212,165,116,0.25)] bg-[#0A0A0F] p-5 shadow-[0_0_40px_rgba(212,165,116,0.15)]">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-base font-bold text-display">Vincular canal</h3>
           <button onClick={onClose} aria-label="Fechar" className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"><X className="h-5 w-5" /></button>
@@ -355,7 +355,7 @@ function LinkChannelModal({
           >
             Vincular
           </Button>
-          <button onClick={onClose} className="rounded-lg border border-[rgba(var(--accent-rgb),0.2)] px-3 py-2 text-sm text-[var(--color-text-secondary)]">Cancelar</button>
+          <button onClick={onClose} className="rounded-lg border border-[rgba(212,165,116,0.2)] px-3 py-2 text-sm text-[var(--color-text-secondary)]">Cancelar</button>
         </div>
       </div>
     </div>
@@ -376,7 +376,7 @@ function SidePanel({ title, empty, children }: { title: string; empty: string; c
 function DealRow({ deal }: { deal: Deal }) {
   const origin = getDealOrigin(deal);
   return (
-    <Link to={`/funil?deal=${deal.id}`} className="block rounded-lg border border-[rgba(var(--accent-rgb),0.12)] px-3 py-2 hover:border-[var(--accent-primary)]">
+    <Link to={`/funil?deal=${deal.id}`} className="block rounded-lg border border-[rgba(212,165,116,0.12)] px-3 py-2 hover:border-[var(--accent-primary)]">
       <div className="flex items-center justify-between">
         <span className="text-sm text-[var(--color-text-primary)]">{deal.title}</span>
         <span className="text-xs font-semibold text-[var(--accent-secondary)]">{brl(Number(deal.value) || 0)}</span>

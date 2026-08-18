@@ -22,12 +22,12 @@ import { brl, formatDuration } from '@/lib/dashboard';
 
 const TOOLTIP_STYLE = {
   background: 'rgba(15,18,35,0.95)',
-  border: '1px solid rgba(var(--accent-rgb),0.25)',
+  border: '1px solid rgba(212,165,116,0.25)',
   borderRadius: 10,
   fontSize: 12,
 } as const;
 
-const PALETTE = ['var(--accent-primary)', 'var(--accent-secondary)', '#10B981', '#FBBF24', '#A78BFA', '#F87171', 'var(--text-secondary)'];
+const PALETTE = ['#D4A574', '#E8C89A', '#10B981', '#FBBF24', '#A78BFA', '#F87171', '#94A3B8'];
 
 // "2026-07-20" → "20 de julho"; pontos horários ("2026-07-20T14:00") → "14h".
 const fmtDayLabel = (d: unknown) => {
@@ -194,8 +194,8 @@ export function RankingWidget({
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data} layout="vertical" margin={{ top: 4, right: 12, left: 90, bottom: 0 }}>
-              <XAxis type="number" tick={{ fontSize: 11, fill: 'var(--text-secondary)' }} stroke="rgba(var(--accent-rgb),0.2)" tickFormatter={(v) => brl(Number(v))} />
-              <YAxis type="category" dataKey="name" width={90} tick={{ fontSize: 11, fill: 'var(--text-label)' }} stroke="rgba(var(--accent-rgb),0.2)" />
+              <XAxis type="number" tick={{ fontSize: 11, fill: '#94A3B8' }} stroke="rgba(212,165,116,0.2)" tickFormatter={(v) => brl(Number(v))} />
+              <YAxis type="category" dataKey="name" width={90} tick={{ fontSize: 11, fill: '#CBD5E1' }} stroke="rgba(212,165,116,0.2)" />
               <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v) => [brl(Number(v)), 'Ganho']} />
               <Bar dataKey="value" fill="#10B981" radius={[0, 4, 4, 0]} />
             </BarChart>
@@ -214,7 +214,7 @@ export function ForecastWidget({ value, openCount }: { value: number; openCount:
       titleExtra={
         <span className="group relative mr-auto flex items-center">
           <HelpCircle className="h-3.5 w-3.5 cursor-help text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]" />
-          <span className="pointer-events-none absolute left-0 top-full z-20 mt-1.5 w-60 rounded-lg border border-[rgba(var(--accent-rgb),0.25)] bg-[var(--bg-card)] px-3 py-2 text-xs font-normal normal-case tracking-normal text-[var(--color-text-primary)] opacity-0 shadow-[0_0_20px_rgba(0,0,0,0.5)] transition-opacity group-hover:opacity-100">
+          <span className="pointer-events-none absolute left-0 top-full z-20 mt-1.5 w-60 rounded-lg border border-[rgba(212,165,116,0.25)] bg-[#0F1223] px-3 py-2 text-xs font-normal normal-case tracking-normal text-[var(--color-text-primary)] opacity-0 shadow-[0_0_20px_rgba(0,0,0,0.5)] transition-opacity group-hover:opacity-100">
             Receita projetada de tudo que está em aberto, não depende do período selecionado
           </span>
         </span>
@@ -320,15 +320,15 @@ export function OriginBarsWidget({
   data,
   labelMap,
   emptyText,
-  unit = 'leads',
-  color = 'var(--accent-primary)',
+  unit = 'pessoas',
+  color = '#D4A574',
 }: {
   title: string;
   data: NameCount[];
   labelMap?: Record<string, string>;
   emptyText: string;
-  // Unidade das barras/subtítulo — 'leads' (origem) ou 'vendas' (conversão).
-  unit?: 'leads' | 'vendas';
+  // Unidade das barras/subtítulo: 'pessoas' (origem) ou 'vendas' (conversão).
+  unit?: 'pessoas' | 'vendas';
   color?: string;
 }) {
   const total = data.reduce((s, d) => s + d.count, 0);
@@ -337,7 +337,7 @@ export function OriginBarsWidget({
     count: d.count,
     pct: total > 0 ? Math.round((d.count / total) * 100) : 0,
   }));
-  const unitLabel = unit === 'vendas' ? 'Vendas' : 'Pessoas';
+  const unitLabel = unit === 'vendas' ? 'vendas' : 'pessoas';
   return (
     <WidgetCard title={title} subtitle={total > 0 ? `${total} ${unit}` : undefined}>
       <div style={{ height: Math.max(160, rows.length * 34) }}>
@@ -346,8 +346,8 @@ export function OriginBarsWidget({
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={rows} layout="vertical" margin={{ top: 4, right: 36, left: 100, bottom: 0 }}>
-              <XAxis type="number" tick={{ fontSize: 11, fill: 'var(--text-secondary)' }} stroke="rgba(var(--accent-rgb),0.2)" allowDecimals={false} />
-              <YAxis type="category" dataKey="name" width={100} tick={{ fontSize: 11, fill: 'var(--text-label)' }} stroke="rgba(var(--accent-rgb),0.2)" />
+              <XAxis type="number" tick={{ fontSize: 11, fill: '#94A3B8' }} stroke="rgba(212,165,116,0.2)" allowDecimals={false} />
+              <YAxis type="category" dataKey="name" width={100} tick={{ fontSize: 11, fill: '#CBD5E1' }} stroke="rgba(212,165,116,0.2)" />
               <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v, _n, item) => [`${v} (${(item?.payload as { pct: number }).pct}%)`, unitLabel]} />
               <Bar dataKey="count" fill={color} radius={[0, 4, 4, 0]} />
             </BarChart>

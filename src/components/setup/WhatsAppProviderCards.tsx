@@ -13,7 +13,7 @@ type Props = {
 // fica no SetupPage) — o badge deixa isso explícito nos dois cards.
 function OptionalBadge() {
   return (
-    <span className="rounded-full border border-[rgba(var(--accent-rgb),0.3)] bg-[rgba(var(--accent-rgb),0.1)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--accent-secondary)]">
+    <span className="rounded-full border border-[rgba(212,165,116,0.3)] bg-[rgba(212,165,116,0.1)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#E8C89A]">
       Opcional
     </span>
   );
@@ -33,10 +33,10 @@ export function WhatsAppProviderCards({
       {/* Card 1 — API Oficial (Zernio) */}
       <div className="glass-card p-5">
         <div className="mb-1 flex items-center gap-2">
-          <span className="text-base font-semibold text-[var(--text-primary)]">API Oficial do WhatsApp</span>
+          <span className="text-base font-semibold text-[#F8FAFC]">API Oficial do WhatsApp</span>
           <OptionalBadge />
         </div>
-        <p className="mb-3 text-[13px] leading-5 text-[var(--text-secondary)]">
+        <p className="mb-3 text-[13px] leading-5 text-[#94A3B8]">
           Insira a Zernio API Key. Atribuição automática via Click-to-WhatsApp (ctwa_clid) e
           conformidade Meta.
         </p>
@@ -51,10 +51,10 @@ export function WhatsAppProviderCards({
       {/* Card 2 — API Não Oficial (Uazapi) */}
       <div className="glass-card p-5">
         <div className="mb-1 flex items-center gap-2">
-          <span className="text-base font-semibold text-[var(--text-primary)]">API Não Oficial do WhatsApp</span>
+          <span className="text-base font-semibold text-[#F8FAFC]">API Não Oficial do WhatsApp</span>
           <OptionalBadge />
         </div>
-        <p className="mb-3 text-[13px] leading-5 text-[var(--text-secondary)]">
+        <p className="mb-3 text-[13px] leading-5 text-[#94A3B8]">
           Insira a URL Server e o Instance Token da Uazapi. Caminho acessível; atribuição via código
           de rastreio.
         </p>

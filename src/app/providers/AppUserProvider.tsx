@@ -169,7 +169,7 @@ function ArchivedOrgScreen() {
         <button
           type="button"
           onClick={() => void signOut()}
-          className="inline-flex items-center justify-center rounded-lg border border-[rgba(var(--accent-rgb),0.25)] px-4 py-2 text-sm font-medium text-[var(--color-text-primary)] transition hover:border-[var(--accent-primary)] hover:bg-[rgba(var(--surface-rgb),0.05)]"
+          className="inline-flex items-center justify-center rounded-lg border border-[rgba(212,165,116,0.25)] px-4 py-2 text-sm font-medium text-[var(--color-text-primary)] transition hover:border-[var(--accent-primary)] hover:bg-white/5"
         >
           Sair
         </button>

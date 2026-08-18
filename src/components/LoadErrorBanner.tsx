@@ -30,7 +30,7 @@ export function LoadErrorBanner({ message, onRetry }: LoadErrorBannerProps) {
         <button
           type="button"
           onClick={onRetry}
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-[rgba(var(--accent-rgb),0.25)] bg-[rgba(var(--surface-rgb),0.03)] px-4 text-sm font-medium text-[var(--color-text-primary)] transition-all duration-[0.4s] [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] hover:border-[var(--accent-primary)] hover:shadow-[0_0_30px_rgba(var(--accent-rgb),0.25)]"
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-[rgba(212,165,116,0.25)] bg-white/[0.03] px-4 text-sm font-medium text-[var(--color-text-primary)] transition-all duration-[0.4s] [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] hover:border-[#D4A574] hover:shadow-[0_0_30px_rgba(212,165,116,0.25)]"
         >
           <RotateCw className="h-4 w-4" />
           Tentar novamente

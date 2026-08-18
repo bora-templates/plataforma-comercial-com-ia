@@ -9,8 +9,6 @@ import { Avatar } from '@/components/ui/Avatar';
 import { getSupabase } from '@/lib/supabase';
 import { useAuth } from '@/app/providers/AuthProvider';
 import { useAppUser } from '@/app/providers/AppUserProvider';
-import { useTheme } from '@/hooks/useTheme';
-import { cn } from '@/lib/utils';
 
 const AVATAR_BUCKET = 'whatsapp-hub-avatars';
 const AVATAR_MAX_BYTES = 2 * 1024 * 1024; // 2MB
@@ -21,7 +19,6 @@ const AVATAR_MIME_EXT: Record<string, string> = {
 };
 
 export function AccountSettings() {
-  const { theme, setTheme } = useTheme();
   const { user } = useAuth();
   const { userId, orgId, displayName, avatarUrl, refreshProfile } = useAppUser();
   const [newEmail, setNewEmail] = useState('');
@@ -208,38 +205,6 @@ export function AccountSettings() {
               </Button>
             </div>
           </form>
-        </div>
-      </Card>
-
-      <Card>
-        <div className="space-y-4">
-          <header>
-            <h2 className="text-lg font-bold">Aparência</h2>
-            <p className="text-sm text-[var(--color-text-secondary)]">
-              Escolha entre claro e escuro, ou siga o sistema. Fica salvo neste navegador.
-            </p>
-          </header>
-          <div className="flex flex-wrap gap-2">
-            {([
-              ['light', 'Claro'],
-              ['dark', 'Escuro'],
-              ['system', 'Sistema'],
-            ] as const).map(([value, label]) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => setTheme(value)}
-                className={cn(
-                  'rounded-lg border px-4 py-2 text-sm transition',
-                  theme === value
-                    ? 'border-[var(--accent-primary)] bg-[rgba(var(--accent-rgb),0.12)] text-[var(--text-primary)]'
-                    : 'border-[var(--border-soft)] bg-[rgba(var(--surface-rgb),0.03)] text-[var(--text-secondary)] hover:bg-[rgba(var(--surface-rgb),0.06)]',
-                )}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
         </div>
       </Card>
 

@@ -27,7 +27,7 @@ const PERIODS: { value: DashboardPeriod; label: string }[] = [
 
 // Recharts default colors don't mix with the dark glass theme; we hand-pick
 // palette slots that echo the sidebar / status chips used elsewhere.
-const CHART_BLUE = 'var(--accent-primary)';
+const CHART_BLUE = '#D4A574';
 const CHART_GREEN = '#22C55E';
 const CHART_AMBER = '#F59E0B';
 const CHART_ROSE = '#EF4444';
@@ -78,14 +78,14 @@ export function DispatchMetrics() {
           </div>
         </div>
 
-        <div className="flex items-center gap-1 rounded-lg border border-[rgba(var(--accent-rgb),0.12)] p-1 bg-[rgba(var(--surface-rgb),0.02)]">
+        <div className="flex items-center gap-1 rounded-lg border border-[rgba(212,165,116,0.12)] p-1 bg-white/[0.02]">
           {PERIODS.map((p) => (
             <button
               key={p.value}
               onClick={() => setPeriod(p.value)}
               className={
                 period === p.value
-                  ? 'rounded-md px-3 py-1 text-xs font-semibold bg-[var(--accent-primary)] text-[var(--on-accent)]'
+                  ? 'rounded-md px-3 py-1 text-xs font-semibold bg-[var(--accent-primary)] text-white'
                   : 'rounded-md px-3 py-1 text-xs font-semibold text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
               }
             >
@@ -128,7 +128,7 @@ export function DispatchMetrics() {
                   .map(([label, v]) => (
                     <span
                       key={label}
-                      className="rounded-full border border-[rgba(var(--accent-rgb),0.2)] bg-[rgba(var(--surface-rgb),0.02)] px-3 py-1 text-[11px] text-[var(--color-text-secondary)]"
+                      className="rounded-full border border-[rgba(212,165,116,0.2)] bg-white/[0.02] px-3 py-1 text-[11px] text-[var(--color-text-secondary)]"
                     >
                       {label}: <span className="font-mono text-[var(--color-text-primary)]">{v}</span>
                     </span>
@@ -183,22 +183,22 @@ export function DispatchMetrics() {
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={volumeByDay} margin={{ top: 4, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid stroke="rgba(var(--accent-rgb),0.08)" vertical={false} />
+                  <CartesianGrid stroke="rgba(212,165,116,0.08)" vertical={false} />
                   <XAxis
                     dataKey="day"
-                    tick={{ fontSize: 11, fill: 'var(--text-secondary)' }}
+                    tick={{ fontSize: 11, fill: '#94A3B8' }}
                     tickFormatter={(d) => (typeof d === 'string' ? d.slice(5) : '')}
-                    stroke="rgba(var(--accent-rgb),0.2)"
+                    stroke="rgba(212,165,116,0.2)"
                   />
-                  <YAxis tick={{ fontSize: 11, fill: 'var(--text-secondary)' }} stroke="rgba(var(--accent-rgb),0.2)" allowDecimals={false} />
+                  <YAxis tick={{ fontSize: 11, fill: '#94A3B8' }} stroke="rgba(212,165,116,0.2)" allowDecimals={false} />
                   <Tooltip
                     contentStyle={{
                       background: 'rgba(15,18,35,0.95)',
-                      border: '1px solid rgba(var(--accent-rgb),0.25)',
+                      border: '1px solid rgba(212,165,116,0.25)',
                       borderRadius: 10,
                       fontSize: 12,
                     }}
-                    labelStyle={{ color: 'var(--text-primary)' }}
+                    labelStyle={{ color: '#F8FAFC' }}
                   />
                   <Legend wrapperStyle={{ fontSize: 11 }} />
                   <Line
@@ -257,7 +257,7 @@ export function DispatchMetrics() {
                   <Tooltip
                     contentStyle={{
                       background: 'rgba(15,18,35,0.95)',
-                      border: '1px solid rgba(var(--accent-rgb),0.25)',
+                      border: '1px solid rgba(212,165,116,0.25)',
                       borderRadius: 10,
                       fontSize: 12,
                     }}
@@ -293,19 +293,19 @@ export function DispatchMetrics() {
                 margin={{ top: 4, right: 10, left: 90, bottom: 0 }}
                 barCategoryGap={10}
               >
-                <CartesianGrid stroke="rgba(var(--accent-rgb),0.08)" horizontal={false} />
-                <XAxis type="number" tick={{ fontSize: 11, fill: 'var(--text-secondary)' }} stroke="rgba(var(--accent-rgb),0.2)" allowDecimals={false} />
+                <CartesianGrid stroke="rgba(212,165,116,0.08)" horizontal={false} />
+                <XAxis type="number" tick={{ fontSize: 11, fill: '#94A3B8' }} stroke="rgba(212,165,116,0.2)" allowDecimals={false} />
                 <YAxis
                   type="category"
                   dataKey="name"
                   width={90}
-                  tick={{ fontSize: 11, fill: 'var(--text-label)' }}
-                  stroke="rgba(var(--accent-rgb),0.2)"
+                  tick={{ fontSize: 11, fill: '#CBD5E1' }}
+                  stroke="rgba(212,165,116,0.2)"
                 />
                 <Tooltip
                   contentStyle={{
                     background: 'rgba(15,18,35,0.95)',
-                    border: '1px solid rgba(var(--accent-rgb),0.25)',
+                    border: '1px solid rgba(212,165,116,0.25)',
                     borderRadius: 10,
                     fontSize: 12,
                   }}

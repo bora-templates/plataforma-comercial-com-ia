@@ -29,18 +29,18 @@ export function MobileNav({ open, onClose }: MobileNavProps) {
       aria-hidden={!open}
     >
       <div
-        className="absolute inset-0 bg-[rgba(var(--shadow-rgb),0.60)] backdrop-blur-sm"
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
       <aside
         className={cn(
-          'absolute left-0 top-0 h-full w-72 max-w-[80vw] glass-surface border-r border-[rgba(var(--accent-rgb),0.15)] flex flex-col transition-transform duration-300',
+          'absolute left-0 top-0 h-full w-72 max-w-[80vw] glass-surface border-r border-[rgba(212,165,116,0.15)] flex flex-col transition-transform duration-300',
           open ? 'translate-x-0' : '-translate-x-full',
         )}
         role="dialog"
         aria-label="Navegação"
       >
-        <div className="h-16 shrink-0 flex items-center justify-between px-4 border-b border-[rgba(var(--accent-rgb),0.1)]">
+        <div className="h-16 shrink-0 flex items-center justify-between px-4 border-b border-[rgba(212,165,116,0.1)]">
           <div className="flex items-center gap-2">
             <img
               src={BRAND.mark}
@@ -52,7 +52,7 @@ export function MobileNav({ open, onClose }: MobileNavProps) {
           <button
             onClick={onClose}
             aria-label="Fechar menu"
-            className="h-11 w-11 flex items-center justify-center rounded-lg text-[var(--color-text-secondary)] hover:bg-[rgba(var(--surface-rgb),0.05)] hover:text-[var(--color-text-primary)] transition-all duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+            className="h-11 w-11 flex items-center justify-center rounded-lg text-[var(--color-text-secondary)] hover:bg-white/5 hover:text-[var(--color-text-primary)] transition-all duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
           >
             <X className="h-5 w-5" />
           </button>
@@ -70,8 +70,8 @@ export function MobileNav({ open, onClose }: MobileNavProps) {
                   cn(
                     'flex items-center gap-3 rounded-lg px-3 min-h-11 text-sm font-medium transition-all duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)]',
                     isActive
-                      ? 'bg-[rgba(var(--accent-rgb),0.12)] text-[var(--color-text-primary)] shadow-[0_0_30px_rgba(var(--accent-rgb),0.15)]'
-                      : 'text-[var(--color-text-secondary)] hover:bg-[rgba(var(--surface-rgb),0.05)] hover:text-[var(--color-text-primary)]',
+                      ? 'bg-[rgba(212,165,116,0.12)] text-[var(--color-text-primary)] shadow-[0_0_30px_rgba(212,165,116,0.15)]'
+                      : 'text-[var(--color-text-secondary)] hover:bg-white/5 hover:text-[var(--color-text-primary)]',
                   )
                 }
               >
