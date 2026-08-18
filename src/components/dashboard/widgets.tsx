@@ -215,7 +215,7 @@ export function ForecastWidget({ value, openCount }: { value: number; openCount:
         <span className="group relative mr-auto flex items-center">
           <HelpCircle className="h-3.5 w-3.5 cursor-help text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]" />
           <span className="pointer-events-none absolute left-0 top-full z-20 mt-1.5 w-60 rounded-lg border border-[rgba(var(--accent-rgb),0.25)] bg-[var(--bg-card)] px-3 py-2 text-xs font-normal normal-case tracking-normal text-[var(--color-text-primary)] opacity-0 shadow-[0_0_20px_rgba(0,0,0,0.5)] transition-opacity group-hover:opacity-100">
-            Receita projetada de todo o pipeline aberto, não depende do período selecionado
+            Receita projetada de tudo que está em aberto, não depende do período selecionado
           </span>
         </span>
       }
@@ -280,7 +280,7 @@ export function OriginDonutWidget({
     fill: PALETTE[i % PALETTE.length],
   }));
   return (
-    <WidgetCard title={title} subtitle={total > 0 ? `${total} leads` : undefined}>
+    <WidgetCard title={title} subtitle={total > 0 ? `${total} pessoas` : undefined}>
       <div className="h-56">
         {total === 0 ? (
           <EmptyState text={emptyText} />
@@ -337,7 +337,7 @@ export function OriginBarsWidget({
     count: d.count,
     pct: total > 0 ? Math.round((d.count / total) * 100) : 0,
   }));
-  const unitLabel = unit === 'vendas' ? 'Vendas' : 'Leads';
+  const unitLabel = unit === 'vendas' ? 'Vendas' : 'Pessoas';
   return (
     <WidgetCard title={title} subtitle={total > 0 ? `${total} ${unit}` : undefined}>
       <div style={{ height: Math.max(160, rows.length * 34) }}>

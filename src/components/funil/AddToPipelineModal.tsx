@@ -91,13 +91,13 @@ export function AddToPipelineModal({ contactId, contactName, onClose, onCreated 
     <div className="fixed inset-0 z-[70] flex items-center justify-center bg-[rgba(var(--shadow-rgb),0.60)] p-4 backdrop-blur-sm" onClick={onClose}>
       <div onClick={(e) => e.stopPropagation()} className="w-full max-w-sm rounded-2xl border border-[rgba(var(--accent-rgb),0.25)] bg-[var(--bg-primary)] p-5 shadow-[0_0_40px_rgba(var(--accent-rgb),0.15)]">
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-base font-bold text-display">Adicionar no pipeline</h3>
+          <h3 className="text-base font-bold text-display">Abrir oportunidade</h3>
           <button onClick={onClose} aria-label="Fechar" className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"><X className="h-5 w-5" /></button>
         </div>
         <div className="space-y-3">
           <div>
-            <div className="mb-1 text-[0.65rem] uppercase tracking-[0.1em] text-[var(--color-text-secondary)]">Nome do negócio</div>
-            <input autoFocus value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Título do negócio" className={inputCls} />
+            <div className="mb-1 text-[0.65rem] uppercase tracking-[0.1em] text-[var(--color-text-secondary)]">Nome da oportunidade</div>
+            <input autoFocus value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Título da oportunidade" className={inputCls} />
           </div>
           <div>
             <div className="mb-1 text-[0.65rem] uppercase tracking-[0.1em] text-[var(--color-text-secondary)]">Funil</div>

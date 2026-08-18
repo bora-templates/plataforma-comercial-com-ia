@@ -373,7 +373,7 @@ export function AIAgentSettings() {
               className="accent-[var(--accent-primary)] h-4 w-4 shrink-0"
             />
             <span className="text-sm text-[var(--color-text-primary)]">
-              Mover leads no funil automaticamente
+              Mover as pessoas pelas etapas automaticamente
               <span className="block text-[11px] text-[var(--color-text-secondary)]">
                 Com sinal claro, a IA move o card entre estágios (que tenham critério definido) e
                 registra no histórico. Reversível arrastando de volta.

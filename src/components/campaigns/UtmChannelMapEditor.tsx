@@ -116,7 +116,7 @@ export function UtmChannelMapEditor() {
         <div className="text-label">Derivação de origem</div>
         <h2 className="text-xl font-bold text-display">Regras de canal (UTM)</h2>
         <p className="text-sm text-[var(--color-text-secondary)]">
-          Cada lead novo tem <code>traffic_type</code> e <code>origin_channel</code> derivados destas
+          Cada pessoa nova tem <code>traffic_type</code> e <code>origin_channel</code> derivados destas
           regras (maior prioridade vence). Ex.: <code>ig|paid_social → pago / instagram_ads</code>.
         </p>
       </header>
@@ -175,7 +175,7 @@ export function UtmChannelMapEditor() {
           <div className="py-8 text-center text-label opacity-60">Carregando...</div>
         ) : rules.length === 0 ? (
           <div className="py-8 text-center text-sm text-[var(--color-text-secondary)] opacity-60">
-            Nenhuma regra — leads com UTM não mapeada caem em “outro”.
+            Nenhuma regra: pessoas com UTM não mapeada caem em “outro”.
           </div>
         ) : (
           <div className="space-y-1.5">

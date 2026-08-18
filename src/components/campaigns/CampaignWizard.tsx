@@ -31,9 +31,9 @@ type VarChoice =
   | { kind: 'deal'; field: DealField; fallback: string };
 
 const DEAL_FIELD_OPTIONS: Array<{ field: DealField; label: string; hint: string }> = [
-  { field: 'title', label: 'Nome do negócio', hint: 'Título do negócio mais recente do lead' },
-  { field: 'products', label: 'Produtos do negócio', hint: 'Nomes dos produtos, separados por vírgula' },
-  { field: 'value', label: 'Valor da compra', hint: 'Valor do negócio formatado em R$' },
+  { field: 'title', label: 'Nome da oportunidade', hint: 'Título da oportunidade mais recente da pessoa' },
+  { field: 'products', label: 'Produtos da oportunidade', hint: 'Nomes dos produtos, separados por vírgula' },
+  { field: 'value', label: 'Valor da compra', hint: 'Valor da oportunidade em R$' },
   { field: 'last_purchase_at', label: 'Data da última compra', hint: 'No formato dd/mm/aaaa' },
 ];
 
@@ -442,7 +442,7 @@ export function CampaignWizard({ open, onClose, onSaved }: CampaignWizardProps) 
                             [i]: { kind: 'deal', field: choice.field, fallback: e.target.value },
                           }))
                         }
-                        placeholder={`Fallback se o lead não tiver o dado (${DEAL_FIELD_OPTIONS.find((o) => o.field === choice.field)?.hint ?? ''})`}
+                        placeholder={`Fallback se a pessoa não tiver o dado (${DEAL_FIELD_OPTIONS.find((o) => o.field === choice.field)?.hint ?? ''})`}
                         disabled={submitting}
                         className="h-9 text-xs"
                       />
@@ -459,7 +459,7 @@ export function CampaignWizard({ open, onClose, onSaved }: CampaignWizardProps) 
               )}
               {Object.values(varChoices).some((ch) => ch.kind === 'deal') && (
                 <p className="text-[11px] text-[var(--color-text-secondary)] opacity-80">
-                  Variáveis de negócio usam o negócio mais recente de cada lead e são
+                  Variáveis de oportunidade usam a oportunidade mais recente de cada pessoa e são
                   enviadas individualmente (pode levar mais tempo em audiências grandes).
                 </p>
               )}

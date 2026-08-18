@@ -97,7 +97,7 @@ export function TagManagerDialog({ open, onClose }: TagManagerDialogProps) {
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Ex: lead-quente, cliente, campanha-julho"
+            placeholder="Ex: interessado, cliente, campanha-julho"
             disabled={busy}
           />
         </div>

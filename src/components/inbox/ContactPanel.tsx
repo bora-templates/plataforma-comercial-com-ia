@@ -233,7 +233,7 @@ export function ContactPanel({
       setLostReason('');
       setDealsVersion((v) => v + 1);
       onContactRefresh?.();
-      toast.success(outcome === 'won' ? 'Negócio marcado como ganho. 🎉' : 'Negócio marcado como perdido.');
+      toast.success(outcome === 'won' ? 'Oportunidade fechada. 🎉' : 'Oportunidade marcada como não fechou.');
     } catch (err) {
       toast.error('Falha', { description: err instanceof Error ? err.message : String(err) });
     } finally {
@@ -345,7 +345,7 @@ export function ContactPanel({
 
       {/* Negócio ativo da conversa (independente do responsável) */}
       <div className="space-y-2">
-        <div className="text-label flex items-center gap-1.5"><Briefcase className="h-3 w-3" /> Negócio ativo</div>
+        <div className="text-label flex items-center gap-1.5"><Briefcase className="h-3 w-3" /> Oportunidade ativa</div>
         {openDeals.length > 0 ? (
           <select
             value={conversation.active_deal_id ?? ''}
@@ -368,7 +368,7 @@ export function ContactPanel({
           </select>
         ) : (
           <p className="text-sm text-[var(--color-text-secondary)] opacity-70">
-            Nenhum negócio aberto. Use "Adicionar no pipeline" abaixo para criar um.
+            Nenhuma oportunidade aberta. Use "Abrir oportunidade" abaixo para criar uma.
           </p>
         )}
       </div>
@@ -376,7 +376,7 @@ export function ContactPanel({
       {/* Ganho / Perdido — mesmo comportamento do card do lead no funil */}
       {targetDeal && (
         <div className="space-y-2">
-          <div className="text-label">Status do negócio</div>
+          <div className="text-label">Situação</div>
           {openDeals.filter((d) => d.status === 'open').length > 1 && (
             <p className="text-[11px] text-[var(--color-text-secondary)] opacity-70 truncate">
               Aplica-se a: {targetDeal.title}
@@ -448,7 +448,7 @@ export function ContactPanel({
         <div className="space-y-2">
           <div className="text-label flex items-center gap-1.5"><Clock className="h-3 w-3" /> Próxima ação</div>
           <p className="text-sm text-[var(--color-text-secondary)] opacity-70">
-            Crie um negócio para o contato (botão "Adicionar no pipeline") para agendar a próxima ação.
+            Abra uma oportunidade para a pessoa (botão "Abrir oportunidade") para agendar a próxima ação.
           </p>
         </div>
       )}
@@ -486,7 +486,7 @@ export function ContactPanel({
         {contact?.id && (
           <Button variant="outline" className="w-full justify-start" onClick={() => setShowPipelineModal(true)}>
             <Filter className="h-4 w-4" />
-            Adicionar no pipeline
+            Abrir oportunidade
           </Button>
         )}
         {isClosed ? (

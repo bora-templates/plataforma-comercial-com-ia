@@ -177,7 +177,7 @@ export function AgentMediaSettings() {
           </div>
           <div className="space-y-2 md:col-span-2">
             <Label htmlFor="m_note">Quando enviar (instrução)</Label>
-            <Input id="m_note" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Ex: enviar quando o lead pedir o catálogo" disabled={saving} />
+            <Input id="m_note" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Ex: enviar quando a pessoa pedir o catálogo" disabled={saving} />
           </div>
           <div className="md:col-span-2 flex justify-end">
             <Button type="submit" disabled={saving || !file}>

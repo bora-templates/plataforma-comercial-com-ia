@@ -307,8 +307,8 @@ function RuleForm({
             <option value="Quente">Quente</option>
           </select>
           <select value={leadType} onChange={(e) => setLeadType(e.target.value)} className={inputCls}>
-            <option value="">Lead ou Cliente</option>
-            <option value="Lead">Somente Leads</option>
+            <option value="">Qualquer pessoa</option>
+            <option value="Lead">Ainda não compraram</option>
             <option value="Cliente">Somente Clientes</option>
           </select>
           <select value={tagId} onChange={(e) => setTagId(e.target.value)} className={inputCls}>

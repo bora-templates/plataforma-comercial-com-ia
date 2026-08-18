@@ -68,7 +68,7 @@ export function ProximaAcao({ dealId, contactId, deals }: ProximaAcaoProps) {
       return;
     }
     if (!targetDeal) {
-      toast.error('Escolha o negócio.');
+      toast.error('Escolha a oportunidade.');
       return;
     }
     setBusy(true);
@@ -109,7 +109,7 @@ export function ProximaAcao({ dealId, contactId, deals }: ProximaAcaoProps) {
       <section className="space-y-2">
         <div className="text-label flex items-center gap-1.5"><CalendarClock className="h-3 w-3" /> Próxima ação</div>
         <p className="text-sm text-[var(--color-text-secondary)] opacity-70">
-          Crie um negócio para este contato para agendar a próxima ação.
+          Abra uma oportunidade para esta pessoa para agendar a próxima ação.
         </p>
       </section>
     );
@@ -152,7 +152,7 @@ export function ProximaAcao({ dealId, contactId, deals }: ProximaAcaoProps) {
                     </p>
                     {a.dealTitle && (
                       <div className="mt-0.5 truncate text-[11px] text-[var(--color-text-secondary)]">
-                        Negócio: {a.dealTitle}
+                        Oportunidade: {a.dealTitle}
                       </div>
                     )}
                   </div>
@@ -204,7 +204,7 @@ export function ProximaAcao({ dealId, contactId, deals }: ProximaAcaoProps) {
         </div>
         {needsDealPicker && (
           <select value={dealChoice} onChange={(e) => setDealChoice(e.target.value)} className={inputCls}>
-            <option value="">Negócio…</option>
+            <option value="">Oportunidade…</option>
             {(deals ?? []).map((d) => (
               <option key={d.id} value={d.id}>{d.title}</option>
             ))}

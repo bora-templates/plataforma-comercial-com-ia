@@ -212,14 +212,14 @@ function StageRow({
           defaultValue={stage.ai_criteria ?? ''}
           onBlur={(e) => { if (e.target.value.trim() !== (stage.ai_criteria ?? '').trim()) onAiCriteria(e.target.value); }}
           rows={2}
-          placeholder="Critério p/ a IA mover o lead p/ cá (ex.: lead pediu proposta). Vazio = a IA não move para este estágio."
+          placeholder="Critério p/ a IA mover a pessoa p/ cá (ex.: pediu proposta). Vazio = a IA não move para este estágio."
           className="w-full resize-y rounded border border-[rgba(var(--accent-rgb),0.15)] bg-[rgba(var(--surface-rgb),0.02)] px-2 py-1 text-[11px] text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-secondary)] focus:border-[var(--accent-primary)]"
         />
       </div>
 
       {confirming && (
         <div className="mt-2 space-y-2 rounded-md border border-[rgba(239,68,68,0.25)] bg-[rgba(239,68,68,0.06)] p-2">
-          <div className="text-[11px] text-[var(--color-text-secondary)]">Mover negócios deste estágio para:</div>
+          <div className="text-[11px] text-[var(--color-text-secondary)]">Mover oportunidades desta etapa para:</div>
           <div className="flex items-center gap-2">
             <select value={moveTo} onChange={(e) => setMoveTo(e.target.value)} className="flex-1 rounded border border-[rgba(var(--accent-rgb),0.2)] bg-[rgba(var(--surface-rgb),0.03)] px-2 py-1 text-xs text-[var(--color-text-primary)] outline-none">
               <option value="">Selecione…</option>

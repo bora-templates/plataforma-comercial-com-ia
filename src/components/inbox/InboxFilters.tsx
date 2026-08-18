@@ -249,7 +249,7 @@ export function InboxFilters({ filters, onChange, sort, onSortChange, operators,
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <Field label="Nome">
-          <input value={filters.nome} onChange={(e) => set('nome', e.target.value)} placeholder="Nome do lead" className={inputCls} />
+          <input value={filters.nome} onChange={(e) => set('nome', e.target.value)} placeholder="Nome da pessoa" className={inputCls} />
         </Field>
         <Field label="Email">
           <input value={filters.email} onChange={(e) => set('email', e.target.value)} placeholder="email@..." className={inputCls} />

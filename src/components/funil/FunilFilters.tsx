@@ -147,7 +147,7 @@ export function FunilFilters({
         <div className="glass-card mt-3 p-4">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <Field label="Nome">
-              <input value={filters.nome} onChange={(e) => set('nome', e.target.value)} placeholder="Nome do lead" className={inputCls} />
+              <input value={filters.nome} onChange={(e) => set('nome', e.target.value)} placeholder="Nome da pessoa" className={inputCls} />
             </Field>
             <Field label="Email">
               <input value={filters.email} onChange={(e) => set('email', e.target.value)} placeholder="email@..." className={inputCls} />
@@ -168,7 +168,7 @@ export function FunilFilters({
             <Field label="Próxima ação">
               <DateRange de={filters.proximaAcaoDe} ate={filters.proximaAcaoAte} onDe={(v) => set('proximaAcaoDe', v)} onAte={(v) => set('proximaAcaoAte', v)} />
             </Field>
-            <Field label="Valor do negócio (R$)">
+            <Field label="Valor (R$)">
               <div className="flex items-center gap-1">
                 <input type="number" step="0.01" value={filters.valorMin} onChange={(e) => set('valorMin', e.target.value)} placeholder="Mín" className={inputCls} />
                 <span className="text-xs text-[var(--color-text-secondary)]">–</span>
@@ -190,10 +190,10 @@ export function FunilFilters({
                 <option value="Quente">Quente</option>
               </select>
             </Field>
-            <Field label="Cliente / Lead">
+            <Field label="Já comprou?">
               <select value={filters.leadType} onChange={(e) => set('leadType', e.target.value as FunilFilterState['leadType'])} className={inputCls}>
                 <option value="">Todos</option>
-                <option value="Lead">Lead</option>
+                <option value="Lead">Ainda não</option>
                 <option value="Cliente">Cliente</option>
               </select>
             </Field>

@@ -71,15 +71,15 @@ export function AddToPipelineDialog({
         contact_id: contactId,
         pipeline_id: pipelineId,
         stage_id: stageId,
-        title: contactName || contactPhone || 'Novo negócio',
+        title: contactName || contactPhone || 'Nova oportunidade',
         status: 'open',
       });
       if (error) throw new Error(error.message);
-      toast.success('Negócio criado no pipeline.');
+      toast.success('Oportunidade aberta.');
       onDone?.();
       onClose();
     } catch (err) {
-      toast.error('Falha ao adicionar ao pipeline', {
+      toast.error('Falha ao abrir a oportunidade', {
         description: err instanceof Error ? err.message : 'Erro interno',
       });
     } finally {
@@ -88,16 +88,16 @@ export function AddToPipelineDialog({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} title="Adicionar ao pipeline">
+    <Dialog open={open} onClose={onClose} title="Abrir oportunidade">
       <div className="space-y-4">
         <p className="text-sm text-[var(--color-text-secondary)]">
-          Cria um novo negócio para{' '}
+          Abre uma nova oportunidade para{' '}
           <b className="text-[var(--color-text-primary)]">{contactName || contactPhone || 'o contato'}</b>{' '}
-          no pipeline e estágio escolhidos.
+          no funil e na etapa escolhidos.
         </p>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <label className="space-y-1 text-xs text-[var(--color-text-secondary)]">
-            Pipeline
+            Funil
             <select value={pipelineId} onChange={(e) => setPipelineId(e.target.value)} className={selectCls}>
               {pipelines.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>

@@ -93,7 +93,7 @@ export default function ContactDetailPage() {
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" onClick={() => setShowPipelineModal(true)}>
-            <Filter className="h-4 w-4" /> Adicionar no pipeline
+            <Filter className="h-4 w-4" /> Abrir oportunidade
           </Button>
           <Button variant="outline" onClick={() => setShowLinkModal(true)}>
             <Link2 className="h-4 w-4" /> Vincular canal
@@ -128,7 +128,7 @@ export default function ContactDetailPage() {
 
         {/* Lateral: negócios + vínculos */}
         <div className="space-y-5">
-          <SidePanel title="Negócios" empty="Nenhum negócio.">
+          <SidePanel title="Oportunidades" empty="Nenhuma oportunidade.">
             {deals.map((d) => (
               <DealRow key={d.id} deal={d} />
             ))}

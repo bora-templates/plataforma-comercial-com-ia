@@ -29,12 +29,12 @@ type ActionDef = Record<string, unknown> & { type: string };
 const ACTION_TYPES: { value: string; label: string }[] = [
   { value: 'add_tag', label: 'Adicionar tag' },
   { value: 'next_action', label: 'Agendar próxima ação' },
-  { value: 'set_lead_type', label: 'Mudar Lead/Cliente' },
+  { value: 'set_lead_type', label: 'Marcar como cliente ou não' },
   { value: 'set_temperature', label: 'Mudar temperatura' },
   { value: 'send_template', label: 'Disparar template (API oficial)' },
   { value: 'send_text', label: 'Disparar mensagem de texto' },
   { value: 'assign', label: 'Atribuir a alguém da equipe' },
-  { value: 'add_to_pipeline', label: 'Adicionar em outro funil' },
+  { value: 'add_to_pipeline', label: 'Abrir em outro funil' },
 ];
 
 const inputCls =
@@ -127,7 +127,7 @@ export function FunnelAutomationsTab() {
         <div className="text-label opacity-60">Carregando…</div>
       ) : pipelineAutomations.length === 0 ? (
         <div className="glass-card p-6 text-sm text-[var(--color-text-secondary)]">
-          Nenhuma automação neste funil. Crie a primeira: quando o lead entrar numa etapa,
+          Nenhuma automação neste funil. Crie a primeira: quando alguém entrar numa etapa,
           o CRM executa as ações automaticamente (tags, próxima ação, mensagens, atribuição…).
         </div>
       ) : (
@@ -144,7 +144,7 @@ export function FunnelAutomationsTab() {
                     </span>
                   </div>
                   <div className="mt-1 text-sm text-[var(--color-text-secondary)]">
-                    Quando o lead entrar em <span className="text-[var(--accent-secondary)]">{stageName(a.stage_id)}</span> →{' '}
+                    Quando alguém entrar em <span className="text-[var(--accent-secondary)]">{stageName(a.stage_id)}</span> →{' '}
                     {a.actions.map((act) => ACTION_TYPES.find((t) => t.value === act.type)?.label ?? act.type).join(' · ')}
                   </div>
                 </div>
@@ -226,7 +226,7 @@ function AutomationForm({
           <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex.: Boas-vindas ao entrar em Follow-Up" className={inputCls} />
         </div>
         <div>
-          <span className={labelCls}>Quando o lead entrar na etapa</span>
+          <span className={labelCls}>Quando alguém entrar na etapa</span>
           <select value={stageId} onChange={(e) => setStageId(e.target.value)} className={inputCls}>
             <option value="">Selecione a etapa…</option>
             {stages.map((s) => (
@@ -270,7 +270,7 @@ function AutomationForm({
               {a.type === 'set_lead_type' && (
                 <select value={String(a.value ?? '')} onChange={(e) => setAction(i, { value: e.target.value })} className={inputCls}>
                   <option value="">Valor…</option>
-                  <option value="Lead">Lead</option>
+                  <option value="Lead">Ainda não comprou</option>
                   <option value="Cliente">Cliente</option>
                 </select>
               )}

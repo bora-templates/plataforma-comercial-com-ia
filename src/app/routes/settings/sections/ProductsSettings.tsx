@@ -164,7 +164,7 @@ export function ProductsSettings() {
   };
 
   const handleRemove = async (p: Product) => {
-    if (!confirm(`Excluir o produto "${p.name}"? Ele será desvinculado dos negócios.`)) return;
+    if (!confirm(`Excluir o produto "${p.name}"? Ele será desvinculado das oportunidades.`)) return;
     try {
       await remove(p.id);
       toast.success('Produto excluído.');
@@ -181,7 +181,7 @@ export function ProductsSettings() {
             <h2 className="text-xl font-bold text-display">Produtos</h2>
             <p className="text-sm text-[var(--color-text-secondary)]">
               Cadastre o catálogo da sua operação — incluindo classes personalizadas
-              (ex.: imóveis). Os produtos podem ser atribuídos a leads/negócios no funil.
+              (ex.: imóveis). Os produtos podem ser vinculados às oportunidades no funil.
             </p>
           </header>
 

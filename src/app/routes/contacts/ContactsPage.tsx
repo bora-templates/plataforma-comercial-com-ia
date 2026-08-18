@@ -261,8 +261,8 @@ export default function ContactsPage() {
             }}
             className="h-10 rounded-lg border border-[rgba(var(--accent-rgb),0.12)] bg-[rgba(var(--surface-rgb),0.03)] px-3 text-sm text-[var(--color-text-primary)]"
           >
-            <option value="">Leads e clientes</option>
-            <option value="Lead">Somente leads</option>
+            <option value="">Todas as pessoas</option>
+            <option value="Lead">Ainda não compraram</option>
             <option value="Cliente">Somente clientes</option>
           </select>
           <select

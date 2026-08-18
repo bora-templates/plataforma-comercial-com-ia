@@ -94,7 +94,7 @@ export default function FunilPage() {
           <div className="text-label">{VOCAB.funnel}</div>
           <h1 className="text-2xl font-bold text-display truncate">{pipeline?.name ?? VOCAB.funnel}</h1>
           <p className="text-sm text-[var(--color-text-secondary)]">
-            {boardDeals.length} negócio(s) · {brl(totalPipeline)} em pipeline · arraste entre as etapas
+            {boardDeals.length} oportunidade(s) · {brl(totalPipeline)} em aberto · arraste entre as etapas
           </p>
         </div>
 
@@ -163,7 +163,7 @@ export default function FunilPage() {
       {error && <LoadErrorBanner message={error} onRetry={() => void reload()} />}
 
       {loading ? (
-        <div className="text-label opacity-60">Carregando funil...</div>
+        <div className="text-label opacity-60">Carregando…</div>
       ) : !pipeline ? (
         <div className="glass-card p-6 text-sm text-[var(--color-text-secondary)]">
           Nenhum funil comercial configurado.
@@ -211,7 +211,7 @@ export default function FunilPage() {
                       onClick={() => setAdding(stage.id)}
                       className="flex w-full items-center justify-center gap-1 rounded-lg border border-dashed border-[rgba(var(--accent-rgb),0.25)] py-1.5 text-xs text-[var(--color-text-secondary)] transition hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)]"
                     >
-                      <Plus className="h-3 w-3" /> Negócio
+                      <Plus className="h-3 w-3" /> Oportunidade
                     </button>
                   )}
 
@@ -289,7 +289,7 @@ function ArchivedPanel({
       <div className="fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col border-l border-[rgba(var(--accent-rgb),0.2)] bg-[var(--bg-primary)] shadow-[0_0_60px_rgba(var(--accent-rgb),0.15)]">
         <div className="flex items-center justify-between border-b border-[rgba(var(--accent-rgb),0.1)] px-4 py-3">
           <span className="flex items-center gap-2 text-sm font-semibold text-[var(--color-text-primary)]">
-            <Archive className="h-4 w-4 text-[var(--accent-primary)]" /> Negócios arquivados ({deals.length})
+            <Archive className="h-4 w-4 text-[var(--accent-primary)]" /> Oportunidades arquivadas ({deals.length})
           </span>
           <button onClick={onClose} className="rounded-md p-1 text-[var(--color-text-secondary)] transition hover:bg-[rgba(var(--surface-rgb),0.05)]">
             <X className="h-4 w-4" />
@@ -297,7 +297,7 @@ function ArchivedPanel({
         </div>
         <div className="flex-1 space-y-2 overflow-y-auto p-4">
           {deals.length === 0 && (
-            <div className="text-sm text-[var(--color-text-secondary)]">Nenhum negócio arquivado neste funil.</div>
+            <div className="text-sm text-[var(--color-text-secondary)]">Nenhuma oportunidade arquivada neste funil.</div>
           )}
           {deals.map((d) => {
             const leadName = d.contact?.name?.trim() || d.contact?.phone || 'Sem nome';
@@ -386,7 +386,7 @@ function DealCard({
           fora do fluxo, não desloca nenhum badge. */}
       <button
         onClick={(e) => { e.stopPropagation(); onArchive(); }}
-        title="Arquivar negócio"
+        title="Arquivar oportunidade"
         className="absolute bottom-2 right-2 rounded-md border border-[rgba(var(--accent-rgb),0.25)] p-1 text-[var(--color-text-secondary)] opacity-0 transition group-hover:opacity-100 hover:bg-[rgba(var(--surface-rgb),0.10)] hover:text-[var(--color-text-primary)]"
         style={{ background: 'var(--bg-card)' }}
       >
@@ -455,12 +455,12 @@ function AddDealForm({
       className="space-y-2 rounded-lg border border-[rgba(var(--accent-rgb),0.2)] bg-[rgba(var(--surface-rgb),0.03)] p-2"
     >
       <select value={contactId} onChange={(e) => setContactId(e.target.value)} className={inputCls}>
-        <option value="">Contato (lead)…</option>
+        <option value="">Pessoa…</option>
         {contacts.map((c) => (
           <option key={c.id} value={c.id}>{c.name ?? c.phone}</option>
         ))}
       </select>
-      <input autoFocus value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Título do negócio" className={inputCls} />
+      <input autoFocus value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Título da oportunidade" className={inputCls} />
       <input value={value} onChange={(e) => setValue(e.target.value)} type="number" step="0.01" placeholder="Valor (R$)" className={inputCls} />
       <div className="flex gap-2">
         <button type="submit" disabled={busy} className="flex-1 rounded-md bg-[var(--accent-primary)] px-2 py-1 text-xs font-semibold text-[var(--on-accent)] disabled:opacity-60">

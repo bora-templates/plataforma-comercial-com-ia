@@ -98,7 +98,7 @@ export function DealDrawer({ deal, stages, pipelines, isAdmin, onClose, onStageC
   };
   const reopen = () => {
     setLostReason('');
-    void saveDealField({ status: 'open' }, 'Negócio reaberto.');
+    void saveDealField({ status: 'open' }, 'Oportunidade reaberta.');
   };
 
   const changePipeline = async (pipelineId: string) => {
@@ -107,7 +107,7 @@ export function DealDrawer({ deal, stages, pipelines, isAdmin, onClose, onStageC
     const firstStage = (st?.[0] as { id: string } | undefined)?.id ?? null;
     const err = await detail.saveDeal({ pipeline_id: pipelineId, stage_id: firstStage });
     if (err) { toast.error(err); return; }
-    toast.success('Lead movido de funil.');
+    toast.success('Oportunidade movida de funil.');
     await onChanged();
     onClose();
   };
@@ -125,7 +125,7 @@ export function DealDrawer({ deal, stages, pipelines, isAdmin, onClose, onStageC
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end" role="dialog" aria-label="Detalhe do lead">
+    <div className="fixed inset-0 z-50 flex justify-end" role="dialog" aria-label="Detalhe da oportunidade">
       <div className="absolute inset-0 bg-[rgba(var(--shadow-rgb),0.60)] backdrop-blur-sm" onClick={onClose} />
       <aside
         className="relative z-10 flex h-full w-full max-w-full flex-col overflow-y-auto border-l border-[rgba(var(--accent-rgb),0.25)] bg-[var(--bg-primary)] shadow-[0_0_60px_rgba(var(--accent-rgb),0.12)] transition-transform duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)] sm:w-[460px]"
@@ -133,11 +133,11 @@ export function DealDrawer({ deal, stages, pipelines, isAdmin, onClose, onStageC
       >
         <div className="sticky top-0 z-10 flex items-start justify-between gap-3 border-b border-[rgba(var(--accent-rgb),0.12)] bg-[var(--bg-primary)]/95 px-5 py-4 backdrop-blur">
           <div className="min-w-0 flex-1">
-            <div className="text-label">Lead</div>
+            <div className="text-label">Pessoa</div>
             {/* Título = nome do lead (contato), editável */}
             <InlineText
               value={contact?.name ?? ''}
-              placeholder="Nome do lead"
+              placeholder="Nome da pessoa"
               onSave={(v) => saveContactField({ name: v || null })}
               className="text-lg font-bold text-display"
             />
@@ -185,7 +185,7 @@ export function DealDrawer({ deal, stages, pipelines, isAdmin, onClose, onStageC
               </Field>
               <Field label="Tipo">
                 <select value={deal.lead_type} onChange={(e) => saveDealField({ lead_type: e.target.value as LeadType }, 'Tipo atualizado.')} className={inputCls}>
-                  <option value="Lead">Lead</option>
+                  <option value="Lead">Ainda não comprou</option>
                   <option value="Cliente">Cliente</option>
                 </select>
               </Field>
@@ -201,7 +201,7 @@ export function DealDrawer({ deal, stages, pipelines, isAdmin, onClose, onStageC
 
             {/* Status do negócio (ganho / perdido) */}
             <section className="space-y-2">
-              <div className="text-label">Status do negócio</div>
+              <div className="text-label">Situação</div>
               {deal.status === 'open' ? (
                 <div className="space-y-2">
                   <div className="flex gap-2">
@@ -317,7 +317,7 @@ export function DealDrawer({ deal, stages, pipelines, isAdmin, onClose, onStageC
 
             {/* Origem do lead (rastreio UTM) — de onde este lead realmente veio */}
             <section className="space-y-2">
-              <div className="text-label">Origem do lead (UTM)</div>
+              <div className="text-label">De onde veio (UTM)</div>
               {origin ? (
                 <div className="space-y-3 rounded-lg border border-[rgba(var(--accent-rgb),0.12)] bg-[rgba(var(--surface-rgb),0.02)] p-3">
                   <div className="flex flex-wrap items-center gap-2">
@@ -338,7 +338,7 @@ export function DealDrawer({ deal, stages, pipelines, isAdmin, onClose, onStageC
                 </div>
               ) : (
                 <p className="text-sm text-[var(--color-text-secondary)] opacity-70">
-                  Sem parâmetros de origem (UTM). Lead manual ou entrada direta.
+                  Sem parâmetros de origem (UTM). Cadastro manual ou entrada direta.
                 </p>
               )}
             </section>
@@ -385,7 +385,7 @@ export function DealDrawer({ deal, stages, pipelines, isAdmin, onClose, onStageC
             <section className="space-y-3">
               <div className="text-label">Notas internas</div>
               <div className="flex gap-2">
-                <input value={note} onChange={(e) => setNote(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && void submitNote()} placeholder="Anotar algo sobre este lead…" className={inputCls} />
+                <input value={note} onChange={(e) => setNote(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && void submitNote()} placeholder="Anotar algo sobre esta pessoa…" className={inputCls} />
                 <button onClick={submitNote} disabled={savingNote || !note.trim()} className="rounded-lg bg-gradient-to-br from-[var(--accent-deep)] to-[var(--accent-primary)] px-4 py-2 text-sm font-semibold text-[var(--on-accent)] transition hover:opacity-90 disabled:opacity-60">
                   {savingNote ? '…' : 'Anotar'}
                 </button>

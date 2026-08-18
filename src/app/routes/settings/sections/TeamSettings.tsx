@@ -330,10 +330,10 @@ function LeadQueueManager() {
         <header className="flex items-start justify-between gap-3">
           <div className="space-y-1">
             <h2 className="text-xl font-bold text-display flex items-center gap-2">
-              <Shuffle className="h-5 w-5 text-[var(--accent-primary)]" /> Distribuição automática de leads
+              <Shuffle className="h-5 w-5 text-[var(--accent-primary)]" /> Distribuição automática de conversas
             </h2>
             <div className="space-y-1.5 text-sm text-[var(--color-text-secondary)]">
-              <p>Como um lead ganha responsável, nesta ordem:</p>
+              <p>Como uma conversa ganha responsável, nesta ordem:</p>
               <ol className="list-decimal space-y-1 pl-5">
                 <li>
                   <span className="text-[var(--color-text-label)]">Número com operador vinculado</span>{' '}
@@ -342,14 +342,14 @@ function LeadQueueManager() {
                 </li>
                 <li>
                   <span className="text-[var(--color-text-label)]">Rodízio no handoff</span>: quando a
-                  IA é pausada e a conversa está sem responsável, o lead vai para o próximo da fila
+                  IA é pausada e a conversa está sem responsável, a conversa vai para o próximo da fila
                   abaixo que estiver <span className="text-[var(--color-text-label)]">online</span>{' '}
                   (quem está offline é pulado).
                 </li>
               </ol>
               <p>
                 Atribuições manuais nunca são sobrescritas. Com a fila vazia ou ninguém online, o
-                lead fica sem responsável e toda a equipe é notificada do handoff.
+                conversa fica sem responsável e toda a equipe é notificada do handoff.
               </p>
             </div>
           </div>

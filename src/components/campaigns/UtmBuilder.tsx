@@ -90,7 +90,7 @@ export function UtmBuilder() {
       <div className="flex items-center gap-2">
         <Link2 className="h-4 w-4 text-[var(--accent-primary)]" />
         <p className="text-sm text-[var(--color-text-secondary)]">
-          Gere URLs rastreáveis com UTMs. A origem dos leads (orgânico/pago, canal, campanha)
+          Gere URLs rastreáveis com UTMs. A origem de cada pessoa (orgânico/pago, canal, campanha)
           é derivada automaticamente desses parâmetros.
         </p>
       </div>

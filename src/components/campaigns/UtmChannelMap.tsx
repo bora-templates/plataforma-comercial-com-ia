@@ -91,7 +91,7 @@ export function UtmChannelMap() {
           <p className="text-sm text-[var(--color-text-secondary)]">
             Normaliza variações de nomenclatura do <code>utm_source</code> para um token
             canônico antes de derivar o canal de origem. Ex.: <code>ig → instagram</code>,{' '}
-            <code>fb → facebook</code>. Vale para leads criados/atualizados após salvar.
+            <code>fb → facebook</code>. Vale para pessoas criadas/atualizadas após salvar.
           </p>
         </header>
 
