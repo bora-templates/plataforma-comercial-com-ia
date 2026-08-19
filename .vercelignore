@@ -1,0 +1,9 @@
+# Arquivos locais que nunca devem ir no upload do deploy.
+# O deploy por CLI (`vercel deploy`) envia o diretório inteiro, inclusive o que
+# o .gitignore esconde: sem esta lista, o .env.local com service_role key e
+# CRYPTO_KEY entra no source do deployment.
+.env
+.env.*
+!.env.example
+public/__preview-*
+.api-dist
