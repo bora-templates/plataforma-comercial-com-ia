@@ -12,13 +12,14 @@ import { getSupabase } from '@/lib/supabase';
 // ----------------------------------------------------------------------------
 // Invite — aceite de convite nativo do Supabase.
 // ----------------------------------------------------------------------------
-// O owner convida via `invite-team-member` → o Supabase envia o e-mail de
-// convite (inviteUserByEmail). O link do e-mail aponta para esta tela com a
-// sessão já estabelecida (detectSessionInUrl). O usuário convidado apenas
-// define a senha (updateUser) — o app_user com o role correto já foi criado
-// pelo trigger handle_new_user no momento do convite (via invited_role).
+// O owner convida via `invite-team-member`, que devolve um link de convite
+// (generateLink) e dispara o e-mail do Supabase quando o projeto tem SMTP.
+// Os dois caminhos levam a esta tela com a sessão já estabelecida
+// (detectSessionInUrl). O usuário convidado apenas define a senha (updateUser):
+// o app_user com o role correto já foi criado pelo trigger handle_new_user no
+// momento do convite (via invited_role).
 //
-// Sem token/tabela `invites` e sem Resend: o convite é 100% Supabase Auth.
+// Sem token nem tabela `invites`: o convite é 100% Supabase Auth.
 // ----------------------------------------------------------------------------
 
 export default function InvitePage() {
@@ -87,8 +88,8 @@ export default function InvitePage() {
         <div className="flex flex-col items-center gap-4 py-4 text-center">
           <ShieldAlert className="h-12 w-12 text-[var(--color-error)]" />
           <p className="text-sm text-[var(--color-text-secondary)] max-w-sm">
-            Abra o link diretamente do e-mail de convite. Se já passou da validade,
-            peça um novo convite ao owner desta instância.
+            Abra o link do convite que você recebeu, por e-mail ou por mensagem. Se
+            já passou da validade, peça um novo ao owner desta instância.
           </p>
         </div>
       </AuthShell>

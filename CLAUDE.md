@@ -93,7 +93,9 @@ Nunca usar o schema `public` para lógica de aplicação.
     `'operator'`, usa esse valor.
   - Caso contrário, conta as linhas em `app_users`. Se zero, o novo usuário
     vira `admin`. Se ≥ 1, vira `operator`.
-  - Insere em `app_users (user_id, role, accepted_at = now())`.
+  - Insere em `app_users (user_id, role, accepted_at)`; convite nasce com
+    `accepted_at` nulo (pendente) e o trigger `on_auth_user_accepted` marca o
+    aceite no primeiro login ou na confirmação do e-mail.
   - Espelha a role em `auth.users.raw_app_meta_data.role` para que policies
     possam consultá-la via JWT sem ler `app_users`.
 - `app_users` é a tabela de membros da instância (substitui `tenant_members`
@@ -438,7 +440,7 @@ supabase/functions/
 ├── zernio-number-status/     status cacheado do número (tier/quality/health) p/ dashboard
 ├── simulate-inbound/         dev only: finge mensagem inbound
 ├── test-zernio-connection/   valida a conexão Zernio (GET /whatsapp/number-info)
-└── invite-team-member/       convite nativo do Supabase Auth (inviteUserByEmail + invited_role)
+└── invite-team-member/       convite nativo do Supabase Auth (link copiável + e-mail, invited_role)
 ```
 
 ---
@@ -595,9 +597,14 @@ fallback default.
   - Disparo em massa usa **Broadcasts** do Zernio (não o loop por-contato na
     Meta); o motor de follow-up próprio (pg_cron) foi mantido e não migrou para
     Sequences do Zernio.
-  - Convites são 100% Supabase Auth nativo (`invite-team-member` →
-    `inviteUserByEmail`); o Resend, a tabela `invites` e o link com token foram
-    removidos.
+  - Convites são 100% Supabase Auth nativo (`invite-team-member`): a função
+    devolve sempre um link copiável (`generateLink`, type `invite`) e tenta o
+    e-mail (`inviteUserByEmail`), que só sai com SMTP próprio no projeto. A
+    tabela `invites` e o link com token próprio foram removidos.
+  - Antes de gerar link, a RPC `whatsapp_hub.invite_target_state(email, org)`
+    autoriza o alvo: só `none` (convite novo) e `pending` (recopiar) passam. Sem
+    esse portão, um admin geraria link de sessão para conta de outra org ou do
+    super admin.
   - O `meta_tier` (enum + credencial) saiu; o tier vem de `number-info`,
     cacheado na credencial `zernio_number_info`.
   - Vários shapes de payload do Zernio (webhook inbound/status, `upload-direct`,

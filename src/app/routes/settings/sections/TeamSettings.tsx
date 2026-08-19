@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { VOCAB } from '@/config/vocab';
 import { toast } from 'sonner';
-import { GripVertical, Loader2, Mail, Plus, Shuffle, Trash2 } from 'lucide-react';
+import { Check, Copy, GripVertical, Link2, Loader2, Mail, Plus, Shuffle, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -31,6 +31,16 @@ async function invokeErrorMessage(error: unknown, data: { error?: string } | nul
   return (error as { message?: string } | null)?.message ?? 'Erro desconhecido';
 }
 
+// Link de convite gerado pela Edge Function. Fica visível para o admin copiar
+// e mandar por WhatsApp: o e-mail do Supabase só entrega para membros da
+// organização do projeto enquanto não houver SMTP próprio configurado.
+interface InviteLink {
+  email: string;
+  url: string;
+  emailed: boolean;
+  emailError: string | null;
+}
+
 interface MemberRow {
   id: string;
   role: Role;
@@ -51,6 +61,9 @@ export function TeamSettings() {
   const [role, setRole] = useState<Role>('operator');
   const [inviting, setInviting] = useState(false);
   const [removingId, setRemovingId] = useState<string | null>(null);
+  const [inviteLink, setInviteLink] = useState<InviteLink | null>(null);
+  const [linkingId, setLinkingId] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const loadAll = async () => {
     if (!userId) return;
@@ -101,6 +114,46 @@ export function TeamSettings() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, isOwner]);
 
+  // navigator.clipboard exige contexto seguro (https ou localhost). Quando não
+  // dá, o link continua visível no campo abaixo para seleção manual.
+  const copyToClipboard = async (url: string) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+      toast.success('Link copiado.');
+      return true;
+    } catch {
+      toast.message('Copie o link no campo abaixo.', {
+        description: 'O navegador não liberou a área de transferência.',
+      });
+      return false;
+    }
+  };
+
+  const handleCopyPending = async (member: MemberRow) => {
+    if (!member.email) {
+      toast.error('Este convite não tem e-mail registrado.');
+      return;
+    }
+    setLinkingId(member.user_id);
+    const supabase = getSupabase();
+    const { data, error } = await supabase.functions.invoke('invite-team-member', {
+      body: { email: member.email, mode: 'link', app_url: window.location.origin },
+    });
+    setLinkingId(null);
+
+    if (error || !data?.ok || !data.invite_link) {
+      toast.error('Falha ao gerar o link', {
+        description: await invokeErrorMessage(error, data),
+      });
+      return;
+    }
+
+    setInviteLink({ email: member.email, url: data.invite_link, emailed: false, emailError: null });
+    void copyToClipboard(data.invite_link);
+  };
+
   const handleInvite = async (e: FormEvent) => {
     e.preventDefault();
     if (!email.trim()) {
@@ -108,24 +161,37 @@ export function TeamSettings() {
       return;
     }
 
+    const target = email.trim().toLowerCase();
     setInviting(true);
     const supabase = getSupabase();
     const { data, error } = await supabase.functions.invoke('invite-team-member', {
-      // app_url = domínio atual (produção na Vercel) para o link do e-mail não
+      // app_url = domínio atual (produção na Vercel) para o link do convite não
       // cair em localhost.
-      body: { email: email.trim(), role, app_url: window.location.origin },
+      body: { email: target, role, app_url: window.location.origin },
     });
     setInviting(false);
 
     if (error || !data?.ok) {
-      toast.error('Falha ao enviar convite', {
+      toast.error('Falha ao criar o convite', {
         description: await invokeErrorMessage(error, data),
       });
       return;
     }
 
-    toast.success(`Convite enviado para ${email.trim()}`, {
-      description: 'O Supabase enviou o e-mail; o convidado define a senha pelo link.',
+    if (data.invite_link) {
+      setInviteLink({
+        email: target,
+        url: data.invite_link,
+        emailed: Boolean(data.emailed),
+        emailError: (data.email_error as string | null) ?? null,
+      });
+      void copyToClipboard(data.invite_link);
+    }
+
+    toast.success(`Convite criado para ${target}`, {
+      description: data.emailed
+        ? 'O convite também foi enviado por e-mail. O link está copiado.'
+        : 'Mande o link para a pessoa. Ela define a senha ao abrir.',
     });
 
     setEmail('');
@@ -162,7 +228,7 @@ export function TeamSettings() {
           <h2 className="text-xl font-bold text-display">Equipe</h2>
           <p className="text-sm text-[var(--color-text-secondary)]">
             {isOwner
-              ? 'Convide novos membros por e-mail. O Supabase envia o convite e o membro define a senha pelo link.'
+              ? 'Convide novos membros. Cada convite gera um link para você mandar por WhatsApp, e o e-mail sai automaticamente se o projeto tiver SMTP próprio.'
               : 'Apenas o owner desta instância pode convidar membros.'}
           </p>
         </header>
@@ -200,7 +266,7 @@ export function TeamSettings() {
               {inviting ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Enviando...
+                  Criando...
                 </>
               ) : (
                 <>
@@ -210,6 +276,39 @@ export function TeamSettings() {
               )}
             </Button>
           </form>
+        )}
+
+        {isOwner && inviteLink && (
+          <div className="space-y-2 rounded-lg border border-[rgba(212,165,116,0.25)] bg-[rgba(212,165,116,0.06)] p-3">
+            <div className="text-label">Link de convite de {inviteLink.email}</div>
+            <p className="text-xs text-[var(--color-text-secondary)]">
+              Uso único e com validade curta. Se a pessoa demorar, gere outro pelo botão de
+              link na lista abaixo.
+              {inviteLink.emailed
+                ? ' O convite também foi enviado por e-mail.'
+                : inviteLink.emailError
+                  ? ` O e-mail não saiu: ${inviteLink.emailError}`
+                  : ''}
+            </p>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <Input
+                readOnly
+                value={inviteLink.url}
+                onFocus={(e) => e.currentTarget.select()}
+                className="font-mono text-xs"
+                aria-label="Link de convite"
+              />
+              <Button
+                type="button"
+                variant="secondary"
+                className="shrink-0"
+                onClick={() => void copyToClipboard(inviteLink.url)}
+              >
+                {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                {copied ? 'Copiado' : 'Copiar'}
+              </Button>
+            </div>
+          </div>
         )}
 
         <div className="space-y-2">
@@ -247,6 +346,22 @@ export function TeamSettings() {
                     <span className="text-xs uppercase tracking-wide font-semibold text-[var(--accent-primary)]">
                       {m.role === 'admin' ? 'Owner' : 'Operador'}
                     </span>
+                    {isOwner && !m.accepted_at && m.email && (
+                      <button
+                        type="button"
+                        onClick={() => void handleCopyPending(m)}
+                        disabled={linkingId === m.user_id}
+                        aria-label={`Copiar link de convite de ${m.email}`}
+                        title="Copiar link do convite"
+                        className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--color-text-secondary)] transition hover:bg-[rgba(212,165,116,0.12)] hover:text-[var(--accent-primary)] disabled:opacity-50"
+                      >
+                        {linkingId === m.user_id ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Link2 className="h-4 w-4" />
+                        )}
+                      </button>
+                    )}
                     {isOwner && m.user_id !== userId && (
                       <button
                         type="button"

@@ -416,7 +416,7 @@ supabase/functions/
 ├── send-operator-message/    operador envia texto/mídia pela inbox
 ├── simulate-inbound/         dev only: finge mensagem inbound
 ├── test-meta-connection/     valida credenciais Meta
-└── invite-team-member/       cria convite (Supabase admin invite + role)
+└── invite-team-member/       cria convite (link copiável + e-mail, role)
 ```
 
 ---
