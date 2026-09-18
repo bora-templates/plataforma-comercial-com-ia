@@ -110,8 +110,16 @@ wizard `/setup` (persistidas em localStorage) ou nas envs `VITE_`.
 
 ## 3. Primeiro acesso
 
-- O **primeiro usuário** que se cadastrar vira **admin** automaticamente
-  (trigger `handle_new_user`). Os seguintes entram como `operator`.
+- O owner nasce no wizard `/setup`, como **admin** da organização padrão. No
+  caminho manual, o **primeiro usuário** criado vira o owner (trigger
+  `handle_new_user`).
+- Depois do owner, **ninguém entra por cadastro**. A equipe entra por convite
+  na tela Equipe (link copiável ou e-mail), e o banco recusa qualquer usuário
+  novo que não tenha convite registrado pelo backend.
+- O wizard desliga o cadastro aberto do Supabase Auth. No caminho manual,
+  desligue à mão depois de criar o owner: painel do Supabase, **Authentication →
+  Sign In / Providers → Allow new users to sign up** desligado. Convite por
+  link e por e-mail continuam funcionando com essa chave desligada.
 - Admin controla templates, campanhas, knowledge, equipe e configurações.
 - Operator opera inbox, contatos, funil e entrega no dia a dia.
 
@@ -159,3 +167,62 @@ Personalize por cliente sem tocar na lógica:
 
 RLS no padrão do hub: leitura para qualquer autenticado; escrita para
 `admin`/`operator`.
+
+---
+
+## 7. Atualização de segurança de 18/09/2026: convite só pelo backend
+
+Vale para toda instalação criada antes de 18/09/2026. Até esta correção, o banco
+aceitava como convite qualquer cadastro que declarasse, no próprio cadastro, o
+papel e a organização. Com o cadastro aberto do Supabase Auth ligado, quem
+soubesse o id da organização conseguia criar uma conta de admin nela. O risco é
+real para quem configurou SMTP próprio ou desligou a confirmação de e-mail; no
+Supabase com o e-mail padrão e a confirmação ligada, o próprio serviço recusa o
+cadastro de quem não é membro do projeto.
+
+**1. Agora, sem mexer em código (30 segundos).** No painel do Supabase do seu
+projeto: **Authentication → Sign In / Providers → Allow new users to sign up**
+desligado, e salve. Isso fecha a porta sozinho. Convite por link e por e-mail,
+login e troca de senha continuam funcionando.
+
+**2. Confira se alguém entrou sem convite.** No **SQL Editor** do Supabase:
+
+```sql
+select u.email, u.created_at, au.role, o.name as organizacao
+  from auth.users u
+  join whatsapp_hub.app_users au on au.user_id = u.id
+  left join whatsapp_hub.organizations o on o.id = au.org_id
+ where u.raw_user_meta_data ? 'invited_role'
+   and u.invited_at is null
+   and au.is_super_admin = false
+ order by u.created_at;
+```
+
+Convite feito pela tela Equipe grava `invited_at`. Linha que aparecer aqui
+merece conferência: se você reconhece o e-mail como alguém que você convidou,
+está tudo certo. Se não reconhece, remova a pessoa na tela Equipe e troque as
+credenciais de integração (WhatsApp e LLM) em Credenciais.
+
+**3. Atualize o código, nesta ordem.**
+
+1. Traga do template os quatro arquivos da correção:
+   `supabase/migrations/20260918120000_convite_so_pelo_backend.sql`,
+   `supabase/functions/invite-team-member/index.ts`, `api/bootstrap.ts` e
+   `api/admin/orgs.ts`.
+2. Publique as Edge Functions (`npm run functions:deploy`, seção 2.2). A função
+   nova funciona com o banco antigo e com o novo.
+3. Aplique a migration. Quem instalou pelo wizard `/setup` cola o conteúdo do
+   arquivo `.sql` no **SQL Editor** e executa (ela é idempotente, pode rodar
+   mais de uma vez). Quem instalou pelo caminho manual roda `npm run db:push`.
+4. `git push`, para a Vercel publicar as rotas `api/`.
+
+Depois do passo 3, convide alguém na tela Equipe para confirmar que o link sai.
+Se aparecer "O banco recusou a criação do convite", a função do passo 2 ainda
+não foi publicada.
+
+Para conferir a regra num banco descartável, sem tocar no seu projeto:
+
+```bash
+npm i --no-save @electric-sql/pglite
+node tests/sql/convite-so-pelo-backend.test.mjs
+```

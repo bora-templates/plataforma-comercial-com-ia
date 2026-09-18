@@ -88,16 +88,29 @@ Nunca usar o schema `public` para lógica de aplicação.
 - Supabase Auth com email/senha.
 - Enum `whatsapp_hub.tenant_role` (nome herdado, semântica nova): valores
   permitidos `'admin' | 'operator'`.
-- Trigger `whatsapp_hub.handle_new_user` em `auth.users`:
-  - Se o convite trouxe `raw_user_meta_data.invited_role` = `'admin'` ou
-    `'operator'`, usa esse valor.
-  - Caso contrário, conta as linhas em `app_users`. Se zero, o novo usuário
-    vira `admin`. Se ≥ 1, vira `operator`.
-  - Insere em `app_users (user_id, role, accepted_at)`; convite nasce com
-    `accepted_at` nulo (pendente) e o trigger `on_auth_user_accepted` marca o
-    aceite no primeiro login ou na confirmação do e-mail.
-  - Espelha a role em `auth.users.raw_app_meta_data.role` para que policies
-    possam consultá-la via JWT sem ler `app_users`.
+- Trigger `whatsapp_hub.handle_new_user` em `auth.users` (versão vigente na
+  migration `20260918120000_convite_so_pelo_backend.sql`):
+  - Se `app_users` está vazia, o novo usuário é o owner: `admin` + super admin
+    da organização padrão.
+  - Senão, só entra quem tem **convite registrado pelo backend**: o trigger
+    procura em `whatsapp_hub.pending_invites` um registro válido para o mesmo
+    e-mail, com o hash do `raw_user_meta_data.invite_token`. Papel e
+    organização saem do registro. `invited_role` e `invited_org_id` do metadata
+    **não são lidos**, porque o metadata é escrito pelo cliente no cadastro.
+  - Qualquer outro cadastro é recusado com exceção (o insert é desfeito).
+  - Insere em `app_users (user_id, org_id, role, accepted_at)`; convite nasce
+    com `accepted_at` nulo (pendente) e o trigger `on_auth_user_accepted` marca
+    o aceite no primeiro login ou na confirmação do e-mail.
+  - Espelha `role`, `org_id`, `home_org_id` e `is_super_admin` em
+    `auth.users.raw_app_meta_data` para que policies consultem via JWT sem ler
+    `app_users`.
+- **Regra de segurança:** nada que o cliente escreve (`raw_user_meta_data`,
+  corpo de requisição, query string) decide papel ou organização. Quem decide é
+  registro gravado com service role depois de `requireAdmin`. O id da
+  organização aparece em URL pública de Storage e não é segredo.
+- O cadastro aberto do Supabase Auth fica **desligado** (`disable_signup`): o
+  wizard `/setup` desliga no bootstrap. Owner (admin API), `inviteUserByEmail` e
+  `generateLink` não dependem dessa chave e seguem funcionando.
 - `app_users` é a tabela de membros da instância (substitui `tenant_members`
   do build SaaS antigo). UNIQUE por `user_id`.
 - Policies RLS gateiam por `whatsapp_hub.current_user_role()`:
@@ -578,9 +591,15 @@ fallback default.
 - `campaign_contacts.template_id_override` é per-row e existe para que o
   dispatcher use um template diferente do template-pai da campanha em
   follow-ups.
-- `raw_user_meta_data.invited_role` no convite é o canal pelo qual
-  `handle_new_user` aceita um valor pré-definido de role. Sem ele, a regra
-  default (1º usuário = admin, demais = operator) decide.
+- O convite é autorizado por `whatsapp_hub.pending_invites`, gravada só pela
+  RPC `register_pending_invite` (EXECUTE apenas para `service_role`; o schema dá
+  EXECUTE a `authenticated` por default privilege, então toda função sensível
+  nova precisa de `REVOKE` explícito). A RPC devolve um token de uso único que
+  viaja em `raw_user_meta_data.invite_token`; o banco guarda só o sha256 e o
+  registro vence em 15 minutos, porque o usuário é criado na mesma requisição.
+  `invited_role` / `invited_org_id` continuam indo no metadata apenas para
+  instalação que ainda não aplicou a migration `20260918120000`. Teste de
+  regressão: `tests/sql/convite-so-pelo-backend.test.mjs` (Postgres embutido).
 - A Vault entry `whatsapp_hub_encryption_key` ainda existe por motivos
   históricos (a migração `20260422120012` a cria), mas nenhum código atual
   consome `encrypt_secret`/`decrypt_secret`.

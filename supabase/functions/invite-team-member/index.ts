@@ -7,8 +7,14 @@
 //      apenas para membros da organização do projeto, 2 por hora);
 //   2. sempre devolve um link de convite copiável (generateLink type=invite),
 //      para o admin mandar por WhatsApp quando o e-mail nao sai.
-// O trigger `handle_new_user` lê `invited_role` + `invited_org_id` do metadata
-// e provisiona o app_user, nos dois caminhos.
+//
+// Quem autoriza o convite é o banco, não o metadata: antes de criar o usuário
+// a função registra o convite com `register_pending_invite` (service role) e
+// recebe um token de uso único, que viaja em `invite_token`. O trigger
+// `handle_new_user` só provisiona o app_user se achar esse registro para o
+// mesmo e-mail, e tira papel e organização do registro. `invited_role` e
+// `invited_org_id` seguem no metadata só para instalação que ainda não aplicou
+// a migration 20260918120000: nela o trigger antigo continua lendo esses campos.
 //
 // mode: 'link' regenera o link de um convite pendente, sem tocar no e-mail.
 //
@@ -43,7 +49,22 @@ function friendlyAuthError(raw: string): string {
   if (/error sending|smtp|mail/i.test(raw)) {
     return 'O projeto não conseguiu enviar o e-mail. Configure um SMTP próprio no Supabase ou use o link.';
   }
+  if (/database error saving new user/i.test(raw)) {
+    // O trigger handle_new_user recusou o usuário. Logo depois de atualizar o
+    // banco, a API pode levar alguns segundos para enxergar a função nova.
+    return 'O banco recusou a criação do convite. Aguarde um minuto e tente de novo.';
+  }
   return raw;
+}
+
+// Banco que ainda não recebeu a migration 20260918120000 não tem a função
+// register_pending_invite: o PostgREST responde PGRST202 (ou 42883).
+function isMissingFunction(error: { code?: string; message?: string }): boolean {
+  return (
+    error.code === 'PGRST202' ||
+    error.code === '42883' ||
+    /could not find the function|function .* does not exist/i.test(error.message ?? '')
+  );
 }
 
 Deno.serve(async (req) => {
@@ -116,12 +137,38 @@ Deno.serve(async (req) => {
     const appUrl = credUrl || (isValidAppUrl(bodyUrl) ? bodyUrl : '');
     const redirectTo = appUrl ? `${appUrl}/invite` : undefined;
 
+    // Convite novo: registra no banco ANTES de criar o usuário. O token volta
+    // em claro uma única vez e o banco guarda só o hash; o trigger
+    // handle_new_user confere e-mail + token e marca o registro como usado.
+    // Recopiar link (state 'pending') não cria usuário, então não registra nada.
+    let inviteToken: string | null = null;
+    if (mode === 'invite' && state === 'none') {
+      const { data: token, error: registerError } = await db.rpc('register_pending_invite', {
+        p_email: email,
+        p_org_id: caller.orgId,
+        p_role: role,
+        p_invited_by: caller.userId,
+      });
+      if (registerError && !isMissingFunction(registerError)) {
+        return jsonResponse(
+          { ok: false, error: `Falha ao registrar o convite: ${registerError.message}` },
+          { status: 500 },
+        );
+      }
+      if (registerError) {
+        // Banco sem a migration 20260918120000: o trigger antigo ainda decide
+        // pelo metadata. O convite segue como antes, e o aviso fica no log.
+        console.warn(JSON.stringify({ event: 'invite_registry_missing', hint: 'aplicar migration 20260918120000' }));
+      } else {
+        inviteToken = typeof token === 'string' && token ? token : null;
+      }
+    }
+
     const inviteMeta = {
       invited_role: role,
-      // O trigger handle_new_user EXIGE invited_org_id para vincular o novo
-      // usuário à organização de quem convidou.
       invited_org_id: caller.orgId,
       invited_by: caller.email,
+      ...(inviteToken ? { invite_token: inviteToken } : {}),
     };
 
     // Passo 1: e-mail. Só faz sentido para convite novo; falha de envio não

@@ -194,6 +194,22 @@ async function configureAuthUrls(ref: string, pat: string, appUrl: string) {
   if (!res.ok) throw new Error(`Falha ao configurar URLs do Auth: ${await res.text()}`);
 }
 
+// Desliga o cadastro aberto do Supabase Auth ("Allow new users to sign up").
+// Ninguém entra nesta plataforma por cadastro: o owner nasce pela admin API
+// (createOwner) e a equipe por convite (inviteUserByEmail / generateLink), e
+// nenhum desses três caminhos consulta essa chave no GoTrue. Com o cadastro
+// aberto, o endpoint público de signup fica exposto com a anon key, que vai no
+// bundle do frontend. O trigger handle_new_user já recusa quem não tem convite
+// registrado pelo backend; esta é a segunda camada.
+async function disableOpenSignup(ref: string, pat: string) {
+  const res = await fetch(`https://api.supabase.com/v1/projects/${ref}/config/auth`, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${pat}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ disable_signup: true }),
+  });
+  if (!res.ok) throw new Error(`Falha ao desligar o cadastro aberto no Auth: ${await res.text()}`);
+}
+
 // URL pública do app = domínio onde o wizard está rodando (o deploy da Vercel).
 function requestAppUrl(req: ApiRequest): string | null {
   const forwarded = req.headers['x-forwarded-host'] ?? req.headers.host;
@@ -568,6 +584,14 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     await supabaseQuery(ref, body.supabase_pat, BOOTSTRAP_TABLE_SQL);
     await mark(ref, body.supabase_pat, 'connection_ok');
     steps.push('connection_ok');
+
+    stepFailed = 'signup_disabled';
+    // Antes das migrations de propósito: enquanto não existe owner, o primeiro
+    // usuário criado vira super admin, e essa janela não pode ficar aberta para
+    // a internet. Idempotente: o PATCH pode rodar de novo a cada bootstrap.
+    await disableOpenSignup(ref, body.supabase_pat);
+    await mark(ref, body.supabase_pat, 'signup_disabled');
+    steps.push('signup_disabled');
 
     stepFailed = 'migrations';
     await runMigrations(ref, body.supabase_pat, body, cryptoKey);

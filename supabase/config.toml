@@ -166,6 +166,11 @@ enable_refresh_token_rotation = true
 # Requires enable_refresh_token_rotation = true.
 refresh_token_reuse_interval = 10
 # Allow/disallow new user signups to your project.
+# Este arquivo so vale para o ambiente LOCAL (supabase start), onde o primeiro
+# cadastro em /auth/signup cria o owner. No projeto hospedado o cadastro aberto
+# fica DESLIGADO: o wizard /setup envia disable_signup = true pela Management
+# API (api/bootstrap.ts), e o trigger handle_new_user recusa usuario novo sem
+# convite registrado pelo backend. Nao rode `supabase config push` com este valor.
 enable_signup = true
 # Allow/disallow anonymous sign-ins to your project.
 enable_anonymous_sign_ins = false

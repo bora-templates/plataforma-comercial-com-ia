@@ -139,13 +139,38 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       if (seedError) throw new Error(seedError.message);
 
       // Convite do admin inicial é best-effort — falha não desfaz a criação.
+      // Quem autoriza o convite é o registro em pending_invites (token de uso
+      // único conferido pelo trigger handle_new_user), não o metadata. Banco
+      // que ainda não recebeu a migration 20260918120000 não tem a função
+      // (PGRST202 / 42883): aí o convite segue só com o metadata, como antes.
       let warning: string | undefined;
       if (adminEmail) {
-        const { error: inviteError } = await supabase.auth.admin.inviteUserByEmail(adminEmail, {
-          data: { invited_role: 'admin', invited_org_id: org.id },
-        });
-        if (inviteError) {
-          warning = `Organização criada, mas o convite falhou: ${inviteError.message}`;
+        const { data: token, error: registerError } = await supabase
+          .schema('whatsapp_hub')
+          .rpc('register_pending_invite', {
+            p_email: adminEmail,
+            p_org_id: org.id,
+            p_role: 'admin',
+            p_invited_by: auth.userId,
+          });
+        const registryMissing =
+          !!registerError &&
+          (registerError.code === 'PGRST202' ||
+            registerError.code === '42883' ||
+            /could not find the function|function .* does not exist/i.test(registerError.message ?? ''));
+        if (registerError && !registryMissing) {
+          warning = `Organização criada, mas o convite falhou: ${registerError.message}`;
+        } else {
+          const { error: inviteError } = await supabase.auth.admin.inviteUserByEmail(adminEmail, {
+            data: {
+              invited_role: 'admin',
+              invited_org_id: org.id,
+              ...(typeof token === 'string' && token ? { invite_token: token } : {}),
+            },
+          });
+          if (inviteError) {
+            warning = `Organização criada, mas o convite falhou: ${inviteError.message}`;
+          }
         }
       }
 
