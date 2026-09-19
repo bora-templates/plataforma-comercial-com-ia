@@ -51,7 +51,10 @@ async function hmacSha256Raw(secret: string, payload: string): Promise<Uint8Arra
   return new Uint8Array(mac);
 }
 
-function bytesToHex(bytes: Uint8Array): string {
+// Nome próprio de propósito: o wizard /setup cola _shared/credentials.ts neste
+// mesmo escopo, e lá já existe um bytesToHex. Dois nomes de topo iguais no bundle
+// derrubam a função com "Identifier has already been declared" (BOOT_ERROR).
+function macToHex(bytes: Uint8Array): string {
   return Array.from(bytes).map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
@@ -65,7 +68,7 @@ function bytesToBase64(bytes: Uint8Array): string {
 // aceitamos ambos, com prefixo opcional "sha256=", comparação constant-time.
 function signatureMatches(header: string, mac: Uint8Array): boolean {
   const got = (header.startsWith('sha256=') ? header.slice(7) : header).trim();
-  return timingSafeEqualStr(got, bytesToHex(mac)) || timingSafeEqualStr(got, bytesToBase64(mac));
+  return timingSafeEqualStr(got, macToHex(mac)) || timingSafeEqualStr(got, bytesToBase64(mac));
 }
 
 // --- normalizacao do payload (conforme OpenAPI do Zernio) ------------------
