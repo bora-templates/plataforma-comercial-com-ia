@@ -65,12 +65,37 @@ export APP_ENCRYPTION_KEY=<segredo-32-chars>          # qualquer string >= 16 ch
 npm run db:push
 ```
 
-O script `scripts/push-migrations.mjs` aplica cada migration em ordem, registra
-o que já rodou (idempotente) e substitui os placeholders de segredo no momento
-do push (nada sensível fica no git).
+O script `scripts/push-migrations.mjs` aplica cada migration pendente em ordem,
+registra o que já rodou e substitui os placeholders de segredo no momento do push
+(nada sensível fica no git). Cada migration viaja junto com o próprio registro
+numa chamada só, então uma falha no meio não deixa migration aplicada sem
+registro.
+
+**Os dois controles de migration.** O wizard `/setup` anota o que aplicou em
+`public._bootstrap_state` (um step `migration:<arquivo>` por migration) e o
+`db:push` anota em `supabase_migrations.schema_migrations` (a `version` é o
+prefixo numérico do arquivo, o mesmo formato do Supabase CLI). O `db:push` trata
+como aplicada a migration que estiver em qualquer um dos dois, grava cada
+migration nova nos dois e, a cada execução, copia para o outro lado o que
+estiver faltando. Por isso o mesmo comando serve para instalação manual e para
+instalação feita pelo wizard. Para atualizar uma instalação que já está no ar,
+siga a seção 8.
+
+**Ver antes de aplicar.** `npm run db:status` usa as mesmas variáveis, só lê o
+banco e mostra quais migrations o `db:push` aplicaria.
+
+**Trava de segurança.** Quando o banco já tem o schema `whatsapp_hub` e a
+primeira migration não aparece em nenhum dos dois controles, o `db:push` para
+sem executar nada (código de saída 3), porque ali a única coisa que ele poderia
+fazer é reaplicar tudo desde o começo. Nesse banco, migration nova entra pelo
+SQL Editor (seção 8, passo 3).
 
 > Alternativa oficial: `supabase db push` (Supabase CLI), que requer a senha do
-> banco. O `npm run db:push` evita isso usando o PAT.
+> banco. O `npm run db:push` evita isso usando o PAT. Em instalação feita pelo
+> wizard antes de 18/09/2026, rode `npm run db:push` uma vez antes de usar o CLI
+> oficial: é essa execução que preenche `supabase_migrations.schema_migrations`.
+> Com a tabela vazia, o CLI entende que nenhuma migration rodou e tenta reaplicar
+> todas.
 
 ### 2.2. Edge Functions
 
@@ -211,9 +236,15 @@ credenciais de integração (WhatsApp e LLM) em Credenciais.
    `api/admin/orgs.ts`.
 2. Publique as Edge Functions (`npm run functions:deploy`, seção 2.2). A função
    nova funciona com o banco antigo e com o novo.
-3. Aplique a migration. Quem instalou pelo wizard `/setup` cola o conteúdo do
-   arquivo `.sql` no **SQL Editor** e executa (ela é idempotente, pode rodar
-   mais de uma vez). Quem instalou pelo caminho manual roda `npm run db:push`.
+3. Aplique a migration por um destes dois caminhos. Os dois servem para
+   instalação feita pelo wizard `/setup` e para instalação manual.
+   - **SQL Editor:** cole o conteúdo do arquivo `.sql` e execute. Ela é
+     idempotente, pode rodar mais de uma vez.
+   - **Terminal:** `npm run db:status` e depois `npm run db:push`, como descreve
+     a seção 8. **Se o seu clone ainda não tem o comando `npm run db:status`,
+     não rode `npm run db:push` numa instalação feita pelo wizard:** o script
+     antigo ignora o registro do wizard e reaplica todas as migrations desde a
+     primeira. A seção 8 mostra quais arquivos trazer do template antes.
 4. `git push`, para a Vercel publicar as rotas `api/`.
 
 Depois do passo 3, convide alguém na tela Equipe para confirmar que o link sai.
@@ -225,4 +256,55 @@ Para conferir a regra num banco descartável, sem tocar no seu projeto:
 ```bash
 npm i --no-save @electric-sql/pglite
 node tests/sql/convite-so-pelo-backend.test.mjs
+```
+
+---
+
+## 8. Atualizar o banco de uma instalação que já está no ar
+
+Vale para qualquer migration nova que chegar do template, em instalação feita
+pelo wizard `/setup` ou pelo caminho manual.
+
+**1. Confira que o seu clone tem o `db:push` novo.** Com as variáveis da seção
+2.1 definidas (`SUPABASE_ACCESS_TOKEN` e `PROJECT_REF` bastam para a maioria das
+migrations), rode:
+
+```bash
+npm run db:status
+```
+
+Se o npm responder `Missing script: "db:status"`, o seu clone é anterior a
+18/09/2026. Nesse clone, **não rode `npm run db:push` numa instalação feita pelo
+wizard**: o script antigo só conhece o próprio registro, conclui que nada foi
+aplicado e reaplica todas as migrations desde a primeira, e algumas delas apagam
+dados. Traga do template os três arquivos `scripts/lib/migration-plan.mjs`,
+`scripts/migrations-status.mjs` e `scripts/push-migrations.mjs`, e acrescente ao
+`package.json` a linha `"db:status": "node scripts/migrations-status.mjs"`. Se
+faltar algum, o comando falha antes de tocar no banco, e o `db:status` avisa
+quando encontra o `push-migrations.mjs` antigo no clone.
+
+**2. Leia o que o `db:status` mostrou e aplique.** Ele só lê o banco. A lista de
+pendentes deve ter apenas as migrations novas. Estando certa:
+
+```bash
+npm run db:push
+```
+
+Se o `db:status` parar dizendo que o banco já tem o schema `whatsapp_hub` e que
+a primeira migration não aparece como aplicada, o banco foi montado por um
+caminho que não deixou registro. O `db:push` também para nesse caso, sem
+executar nada, e a migration nova entra pelo passo 3.
+
+**3. Sem terminal: SQL Editor.** Cole o conteúdo do arquivo `.sql` no SQL Editor
+do Supabase e execute. Toda migration de 18/09/2026 em diante é idempotente e
+pode rodar mais de uma vez. Migration colada à mão não fica registrada, então o
+próximo `npm run db:push` a aplica de novo e registra, o que é seguro porque ela
+é idempotente.
+
+Para conferir a lógica do `db:push` sem tocar em banco nenhum:
+
+```bash
+npm run test:migrations                 # decisão e travas, com a Management API simulada
+npm i --no-save @electric-sql/pglite    # opcional: liga os testes com Postgres embutido
+npm run test:migrations
 ```

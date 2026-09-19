@@ -262,7 +262,7 @@ public.app_settings              <- SINGLE SOURCE OF TRUTH das credenciais
 └── updated_at      timestamptz
 
 public._bootstrap_state           <- checkpoints idempotentes do wizard /setup
-├── step         text PK          (connection_ok, migrations_done, owner_created, ...)
+├── step         text PK          (connection_ok, migrations_done, owner_created, migration:<arquivo.sql>, ...)
 ├── completed_at timestamptz
 └── metadata     jsonb            (nunca guarda senha; só user_id/email/count)
 ```
@@ -283,6 +283,34 @@ public._bootstrap_state           <- checkpoints idempotentes do wizard /setup
   valor server-side e exige sessão de owner/admin.
 - `CRYPTO_KEY` (env core) decifra os valores; sem ela os dados em
   `app_settings` são irrecuperáveis.
+
+### Migrations: dois controles, uma regra
+
+- O wizard `/setup` (`api/bootstrap.ts`) grava um step `migration:<arquivo.sql>`
+  em `public._bootstrap_state`. O `npm run db:push`
+  (`scripts/push-migrations.mjs`) grava a `version` (prefixo numérico do arquivo)
+  em `supabase_migrations.schema_migrations`, o formato do Supabase CLI.
+- Desde 18/09/2026 os dois gravam nos dois lugares, e o `db:push` considera
+  aplicada a migration que estiver em qualquer um deles. A cada execução ele
+  também copia para o outro lado o registro que faltar. Antes disso, rodar
+  `db:push` numa instalação feita pelo wizard reaplicava tudo desde a primeira
+  migration, inclusive as destrutivas.
+- Caminho de atualização de uma instalação no ar: `npm run db:status` (só lê) e
+  depois `npm run db:push`. Sem terminal, SQL Editor. Passo a passo no
+  `INSTALL.md`, seção 8. Clone sem o script `db:status` ainda tem o `db:push`
+  antigo e não pode rodá-lo em instalação de wizard.
+- Trava: se o schema `whatsapp_hub` existe e a primeira migration não tem registro
+  em nenhum dos dois controles, o `db:push` sai com código 3 sem executar nada.
+- Migration nova precisa ser idempotente, terminar em `;` (o wizard e o `db:push`
+  colam o SQL de registro logo depois do arquivo, na mesma chamada) e usar
+  prefixo numérico inédito. O par `20260811120000_*` é histórico e não pode ser
+  renomeado, porque o nome do arquivo é a identidade gravada pelo wizard.
+- A lógica vive em `scripts/lib/migration-plan.mjs` (`planMigrations` é função
+  pura). `api/bootstrap.ts` repete a regra de identidade do arquivo de propósito:
+  a função da Vercel não importa nada de `scripts/`.
+- Testes sem banco real: `npm run test:migrations`. Com
+  `npm i --no-save @electric-sql/pglite` instalado, os mesmos cenários rodam num
+  Postgres embutido. Nunca testar `db:push` contra projeto Supabase em produção.
 
 ---
 

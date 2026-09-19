@@ -34,6 +34,57 @@ CREATE TABLE IF NOT EXISTS public._bootstrap_state (
 ALTER TABLE public._bootstrap_state ENABLE ROW LEVEL SECURITY;
 `;
 
+// Segundo controle de migrations. O npm run db:push e o Supabase CLI oficial
+// anotam em supabase_migrations.schema_migrations, não em _bootstrap_state.
+// Instalação que nascia só com o primeiro controle parecia "sem nenhuma
+// migration aplicada" para essas ferramentas, e elas reaplicavam tudo desde o
+// começo. O wizard passa a preencher os dois.
+//
+// Para o wizard este registro é secundário: fica dentro de um bloco com
+// EXCEPTION (subtransação), então qualquer falha aqui vira NOTICE e não derruba
+// a instalação. Os ADD COLUMN cobrem a tabela criada por um CLI antigo, que só
+// tinha a coluna version.
+const SCHEMA_MIGRATIONS_TABLE_SQL = `
+DO $schema_migrations$
+BEGIN
+  CREATE SCHEMA IF NOT EXISTS supabase_migrations;
+  CREATE TABLE IF NOT EXISTS supabase_migrations.schema_migrations (
+    version text PRIMARY KEY,
+    name text,
+    statements text[]
+  );
+  ALTER TABLE supabase_migrations.schema_migrations ADD COLUMN IF NOT EXISTS name text;
+  ALTER TABLE supabase_migrations.schema_migrations ADD COLUMN IF NOT EXISTS statements text[];
+EXCEPTION WHEN OTHERS THEN
+  RAISE NOTICE 'supabase_migrations.schema_migrations indisponivel: %', SQLERRM;
+END
+$schema_migrations$;
+`;
+
+const sqlLiteral = (value: string) => `'${value.replaceAll("'", "''")}'`;
+
+// Checkpoint de UMA migration nos dois controles. A identidade do arquivo tem
+// que ser a mesma de scripts/lib/migration-plan.mjs (parseMigrationFile):
+// version é o que vem antes do primeiro underscore.
+function migrationCheckpointSql(file: string) {
+  const base = file.replace(/\.sql$/, '');
+  const idx = base.indexOf('_');
+  const version = idx === -1 ? base : base.slice(0, idx);
+  const name = idx === -1 ? '' : base.slice(idx + 1);
+  return `INSERT INTO public._bootstrap_state (step, completed_at, metadata)
+      VALUES (${sqlLiteral(`migration:${file}`)}, now(), '{}'::jsonb)
+      ON CONFLICT (step) DO NOTHING;
+DO $schema_migrations$
+BEGIN
+  INSERT INTO supabase_migrations.schema_migrations (version, name, statements)
+  VALUES (${sqlLiteral(version)}, ${sqlLiteral(name)}, ARRAY[]::text[])
+  ON CONFLICT (version) DO NOTHING;
+EXCEPTION WHEN OTHERS THEN
+  RAISE NOTICE 'supabase_migrations.schema_migrations nao registrou a migration: %', SQLERRM;
+END
+$schema_migrations$;`;
+}
+
 function jsonString(value: unknown) {
   return JSON.stringify(value).replaceAll("'", "''");
 }
@@ -68,6 +119,12 @@ async function supabaseQuery(ref: string, pat: string, query: string) {
   }
 }
 
+// As duas tabelas de controle numa chamada só, para não gastar requisição da
+// Management API. Exportada para teste, junto com runMigrations.
+export async function prepareBootstrapTables(ref: string, pat: string) {
+  await supabaseQuery(ref, pat, `${BOOTSTRAP_TABLE_SQL}\n${SCHEMA_MIGRATIONS_TABLE_SQL}`);
+}
+
 async function mark(ref: string, pat: string, step: string, metadata: unknown = {}) {
   await supabaseQuery(
     ref,
@@ -98,7 +155,11 @@ async function getStepMetadata(ref: string, pat: string, step: string) {
     : null;
 }
 
-function substitute(sql: string, body: Required<BootstrapBody>, cryptoKey: string) {
+// O que as migrations precisam do corpo da requisição: só os dois valores que
+// entram no lugar dos placeholders.
+type MigrationSecrets = Pick<Required<BootstrapBody>, 'supabase_url' | 'supabase_service_role_key'>;
+
+function substitute(sql: string, body: MigrationSecrets, cryptoKey: string) {
   return sql
     .replaceAll('__SUPABASE_URL__', body.supabase_url)
     .replaceAll('__SUPABASE_SERVICE_ROLE_KEY__', body.supabase_service_role_key)
@@ -145,7 +206,7 @@ function isAlreadyAppliedError(message: string): boolean {
 // run, deixando o banco meio migrado. Agora: 1 SELECT único dos checkpoints +
 // 1 chamada por migration pendente, com o INSERT do checkpoint embutido na
 // MESMA chamada (atômico: ou aplica-e-marca, ou nada).
-async function runMigrations(ref: string, pat: string, body: Required<BootstrapBody>, cryptoKey: string) {
+export async function runMigrations(ref: string, pat: string, body: MigrationSecrets, cryptoKey: string) {
   const files = readdirSync('supabase/migrations').filter((file) => file.endsWith('.sql')).sort();
 
   const rows = await supabaseQuery(
@@ -161,9 +222,7 @@ async function runMigrations(ref: string, pat: string, body: Required<BootstrapB
     const step = `migration:${file}`;
     if (applied.has(step)) continue;
     const raw = readFileSync(join('supabase/migrations', file), 'utf8');
-    const markSql = `INSERT INTO public._bootstrap_state (step, completed_at, metadata)
-      VALUES ('${step.replaceAll("'", "''")}', now(), '{}'::jsonb)
-      ON CONFLICT (step) DO NOTHING;`;
+    const markSql = migrationCheckpointSql(file);
     try {
       await supabaseQuery(ref, pat, `${substitute(raw, body, cryptoKey)}\n${markSql}`);
     } catch (err) {
@@ -172,7 +231,7 @@ async function runMigrations(ref: string, pat: string, body: Required<BootstrapB
       // run anterior (ver RECONCILED_SQLSTATES). Marca e segue; o resto propaga.
       if (!isAlreadyAppliedError(message)) throw err;
       console.log(JSON.stringify({ event: 'migration_already_applied', file, detail: message.slice(0, 120) }));
-      await mark(ref, pat, step);
+      await supabaseQuery(ref, pat, markSql);
     }
   }
 }
@@ -581,7 +640,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     const steps: string[] = [];
 
     stepFailed = 'bootstrap_state';
-    await supabaseQuery(ref, body.supabase_pat, BOOTSTRAP_TABLE_SQL);
+    await prepareBootstrapTables(ref, body.supabase_pat);
     await mark(ref, body.supabase_pat, 'connection_ok');
     steps.push('connection_ok');
 
