@@ -4,6 +4,12 @@
 // Canal: API Oficial (Meta/Zernio, template aprovado) ou UAZAPI (não oficial,
 // texto livre) — com aviso de risco de banimento. Motor: check-follow-ups
 // (cron 15min); dedup 1 disparo por regra × contato (follow_up_log).
+//
+// O motor respeita o horário de atendimento, só olha conversa que recebeu
+// mensagem depois que a regra foi ligada, pula quem está esperando resposta ou
+// está com o time, e preenche {{1}} do template e {nome} do texto livre com o
+// primeiro nome. Os avisos dessas travas ficam em FlowHints.tsx. Template com
+// {{2}} em diante é barrado aqui, porque o motor recusaria o envio.
 // ============================================================================
 
 import { useEffect, useMemo, useState } from 'react';
@@ -14,6 +20,16 @@ import { useAuth } from '@/app/providers/AuthProvider';
 import { useFollowUpRules } from '@/hooks/useFollowUpRules';
 import { useTags } from '@/hooks/useTags';
 import { useTemplates } from '@/hooks/useTemplates';
+import { unfilledFlowVariables } from '@/lib/flow-messages';
+import {
+  BusinessHoursNotice,
+  FOLLOW_UP_INTRO,
+  FreeTextNameHint,
+  InactivityHint,
+  IncludeHumanToggle,
+  TagFilterHint,
+  TemplateVariablesHint,
+} from './FlowHints';
 import type { FollowUpRule, FollowUpTrigger } from '@/types/campaigns';
 import { VOCAB } from '@/config/vocab';
 
@@ -62,7 +78,8 @@ export function FollowUpsTab() {
       return `Cliente sem compra há ${Number(params.days) || Math.round(r.delay_hours / 24)} dia(s)`;
     }
     if (r.trigger_condition === 'inactivity') {
-      return `Conversa sem movimento há ${r.delay_hours}h`;
+      const withTeam = params.include_human_active === true ? ', incluindo conversas com o time' : '';
+      return `Conversa sem movimento há ${r.delay_hours}h${withTeam}`;
     }
     return `Sem resposta após ${r.delay_hours}h`;
   };
@@ -70,9 +87,7 @@ export function FollowUpsTab() {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm text-[var(--color-text-secondary)]">
-          Regras verificadas a cada 15 minutos. Cada regra dispara no máximo uma vez por contato.
-        </p>
+        <p className="text-sm text-[var(--color-text-secondary)]">{FOLLOW_UP_INTRO}</p>
         <button
           onClick={() => setCreating(true)}
           className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-gradient-to-br from-[#182940] to-[#D4A574] px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
@@ -80,6 +95,8 @@ export function FollowUpsTab() {
           <Plus className="h-4 w-4" /> Nova regra
         </button>
       </div>
+
+      <BusinessHoursNotice />
 
       {creating && (
         <RuleForm
@@ -159,7 +176,7 @@ export function FollowUpsTab() {
 function RuleForm({
   templates, tags, campaigns, uazapiOk, nextOrder, onSave, onCancel,
 }: {
-  templates: { id: string; name: string }[];
+  templates: { id: string; name: string; body: string }[];
   tags: { id: string; name: string }[];
   campaigns: { id: string; name: string }[];
   uazapiOk: boolean;
@@ -172,6 +189,8 @@ function RuleForm({
   const [delayHours, setDelayHours] = useState('24');
   const [days, setDays] = useState('30');
   const [templateId, setTemplateId] = useState('');
+  const [nameFallback, setNameFallback] = useState('');
+  const [includeHuman, setIncludeHuman] = useState(false);
   const [messageText, setMessageText] = useState('');
   const [campaignId, setCampaignId] = useState('');
   const [temperature, setTemperature] = useState('');
@@ -181,6 +200,10 @@ function RuleForm({
 
   // no_reply é reengajamento de broadcast — só existe na API oficial.
   const effectiveProvider = trigger === 'no_reply' ? 'zernio' : provider;
+  const templateBody = templates.find((t) => t.id === templateId)?.body ?? null;
+  // Sem resposta após campanha sai pelo disparo da campanha, que resolve as
+  // variáveis pelo mapeamento dela. A trava de variável vale para o envio direto.
+  const directSend = trigger !== 'no_reply';
 
   const save = async () => {
     if (effectiveProvider === 'zernio' && !templateId) {
@@ -191,11 +214,17 @@ function RuleForm({
       toast.error('Escreva a mensagem do follow-up.');
       return;
     }
+    if (effectiveProvider === 'zernio' && directSend && unfilledFlowVariables(templateBody).length > 0) {
+      toast.error('Escolha um template com no máximo uma variável. O follow-up preenche só a {{1}}, com o primeiro nome.');
+      return;
+    }
     const params: Record<string, unknown> = {};
     if (trigger === 'no_purchase') params.days = Number(days) || 30;
     if (temperature) params.temperature = temperature;
     if (leadType) params.lead_type = leadType;
     if (tagId) params.tag_id = tagId;
+    if (effectiveProvider === 'zernio' && directSend && nameFallback.trim()) params.name_fallback = nameFallback.trim();
+    if (trigger === 'inactivity' && includeHuman) params.include_human_active = true;
 
     setSaving(true);
     try {
@@ -240,6 +269,13 @@ function RuleForm({
           </div>
         )}
       </div>
+
+      {trigger === 'inactivity' && (
+        <div className="space-y-2">
+          <InactivityHint />
+          <IncludeHumanToggle checked={includeHuman} onChange={setIncludeHuman} />
+        </div>
+      )}
 
       {trigger === 'no_reply' && (
         <div>
@@ -288,11 +324,15 @@ function RuleForm({
             <option value="">Selecione…</option>
             {templates.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
           </select>
+          {directSend && (
+            <TemplateVariablesHint body={templateBody} fallback={nameFallback} onFallbackChange={setNameFallback} className="mt-2" />
+          )}
         </div>
       ) : (
         <div>
           <span className={labelCls}>Mensagem do follow-up</span>
           <textarea value={messageText} onChange={(e) => setMessageText(e.target.value)} rows={3} placeholder="Texto enviado pelo número UAZAPI…" className={`${inputCls} resize-none`} />
+          <FreeTextNameHint />
         </div>
       )}
 
@@ -316,6 +356,7 @@ function RuleForm({
             {tags.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
           </select>
         </div>
+        <TagFilterHint />
       </div>
 
       <div className="flex justify-end gap-2">

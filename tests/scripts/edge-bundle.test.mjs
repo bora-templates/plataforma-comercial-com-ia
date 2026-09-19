@@ -54,3 +54,11 @@ test('todo bundle montado pelo wizard é um módulo válido, sem nome declarado 
     .filter((r) => r.error);
   assert.deepEqual(broken, []);
 });
+
+test('o bundle do motor de follow-up carrega o módulo de regras uma vez só, sem import relativo sobrando', { skip }, () => {
+  for (const slug of ['check-follow-ups', 'funnel-automation']) {
+    const bundle = bootstrap.bundleEdgeFunction(slug);
+    assert.equal(bundle.match(/function resolveTemplateParams\(/g)?.length, 1, `${slug}: resolveTemplateParams`);
+    assert.doesNotMatch(bundle, /from\s+['"]\.\.?\//, `${slug}: sobrou import relativo no bundle`);
+  }
+});

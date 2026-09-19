@@ -5,12 +5,21 @@
 // numa etapa com automação ativa. Payload: { deal_id, stage_id }.
 //
 // Ações suportadas (funnel_automations.actions, array JSONB):
-//   add_tag{tag_id}                       → deal_tags (ignora duplicata)
+//   add_tag{tag_id}                       → deal_tags (ignora duplicata). O filtro
+//                                           de tag do follow-up lê a tag da pessoa
+//                                           E a da oportunidade, então esta vale lá
 //   next_action{action_type, delay_hours, note} → crm_activities (due_at)
 //   set_lead_type{value} / set_temperature{value} → update no deal
-//   send_template{template_id, params?}   → template 1:1 via Zernio (oficial)
+//   send_template{template_id, params?, name_fallback?}
+//                                         → template 1:1 via Zernio (oficial).
+//                                           {{1}} recebe o primeiro nome da pessoa
+//                                           (ou name_fallback); params fixa valores
+//                                           por posição e aceita {nome}. Variável
+//                                           sem valor nunca sai vazia: a ação falha
+//                                           com o motivo em `errors`.
 //   send_text{text}                       → texto pela conversa do contato
-//                                           (provider da conversa: Zernio/UAZAPI)
+//                                           (provider da conversa: Zernio/UAZAPI);
+//                                           {nome} vira o primeiro nome
 //   assign{user_id}                       → conversations.assigned_to
 //   add_to_pipeline{pipeline_id, stage_id}→ novo deal no outro funil (skip se
 //                                           o contato já tem deal lá — evita loop)
@@ -22,6 +31,13 @@ import { requireServiceRole } from '../_shared/auth.ts';
 import { sendInboxWithResolve } from '../_shared/inbox-delivery.ts';
 import { createInboxConversation, sendInboxTemplate } from '../_shared/zernio.ts';
 import { loadOrgZernioContext } from '../_shared/channels.ts';
+import {
+  firstNameOf,
+  renderFreeText,
+  renderPreview,
+  resolveTemplateParams,
+  unfillableVariables,
+} from '../_shared/follow-up-rules.ts';
 
 type Admin = ReturnType<typeof getAdminClient>;
 type Action = Record<string, unknown> & { type: string };
@@ -33,13 +49,6 @@ interface DealRow {
   stage_id: string | null;
   pipeline_id: string | null;
   title: string;
-}
-
-function countVariables(body: string): number {
-  return new Set(body.match(/\{\{\s*\d+\s*\}\}/g) ?? []).size;
-}
-function renderPreview(body: string, params: string[]): string {
-  return body.replace(/\{\{\s*(\d+)\s*\}\}/g, (_w, n: string) => params[Number(n) - 1] ?? `{{${n}}}`);
 }
 
 async function conversationOf(admin: Admin, orgId: string, contactId: string) {
@@ -157,12 +166,14 @@ async function runAction(admin: Admin, deal: DealRow, action: Action, errors: st
     const conv = await conversationOf(admin, deal.org_id, deal.contact_id);
     const { data: contact } = await admin
       .from('contacts')
-      .select('phone, instagram_id')
+      .select('phone, instagram_id, name')
       .eq('org_id', deal.org_id)
       .eq('id', deal.contact_id)
       .maybeSingle();
-    const c = contact as { phone: string | null; instagram_id?: string | null } | null;
+    const c = contact as { phone: string | null; instagram_id?: string | null; name?: string | null } | null;
     if (!conv || !c) { errors.push('send_text: contato sem conversa'); return; }
+    // {nome} vira o primeiro nome; sem nome, o marcador sai e a frase continua natural.
+    const text = renderFreeText(action.text, firstNameOf(c.name));
     try {
       const messageId = await sendInboxWithResolve(admin, {
         conversationRowId: conv.id,
@@ -174,8 +185,8 @@ async function runAction(admin: Admin, deal: DealRow, action: Action, errors: st
         channelId: conv.channel_id ?? null,
         zernioAccountId: conv.zernio_account_id,
         provider: conv.provider,
-      }, { text: action.text });
-      await recordSystemMessage(admin, deal.org_id, conv.id, 'text', action.text, messageId);
+      }, { text });
+      await recordSystemMessage(admin, deal.org_id, conv.id, 'text', text, messageId);
     } catch (err) {
       errors.push(`send_text: ${err instanceof Error ? err.message : String(err)}`);
     }
@@ -192,14 +203,31 @@ async function runAction(admin: Admin, deal: DealRow, action: Action, errors: st
         .maybeSingle();
       const template = tpl as { name: string; language: string; body: string; status: string } | null;
       if (!template || template.status !== 'approved') throw new Error('template não aprovado');
-      const { data: contact } = await admin.from('contacts').select('phone').eq('org_id', deal.org_id).eq('id', deal.contact_id).maybeSingle();
-      const phone = (contact as { phone: string | null } | null)?.phone;
+      const { data: contact } = await admin.from('contacts').select('phone, name').eq('org_id', deal.org_id).eq('id', deal.contact_id).maybeSingle();
+      const person = contact as { phone: string | null; name: string | null } | null;
+      const phone = person?.phone;
       if (!phone) throw new Error('contato sem telefone');
 
-      const paramValues = Array.isArray(action.params) ? (action.params as unknown[]).map((p) => String(p ?? '')) : [];
-      const varCount = countVariables(template.body);
-      const components = varCount > 0
-        ? [{ type: 'body', parameters: Array.from({ length: varCount }, (_, i) => ({ type: 'text', text: paramValues[i] ?? '' })) }]
+      // Parâmetro vazio nunca sai (a Meta recusa, ou entrega a frase quebrada):
+      // {{1}} é o primeiro nome, o resto só com valor fixo em action.params.
+      const unfillable = unfillableVariables(template.body, action.params);
+      if (unfillable.length > 0) {
+        throw new Error(
+          `template "${template.name}" tem variável que o fluxo não preenche: ${unfillable.map((n) => `{{${n}}}`).join(', ')}. `
+          + 'O fluxo preenche só a {{1}}, com o primeiro nome da pessoa.',
+        );
+      }
+      const resolved = resolveTemplateParams(template.body, action.params, firstNameOf(person?.name), action.name_fallback);
+      if (!resolved.ok) {
+        throw new Error(
+          resolved.reason === 'missing_name'
+            ? `pessoa sem nome para preencher a variável {{${resolved.index}}} (complete o nome em Pessoas ou grave name_fallback na ação)`
+            : `variável {{${resolved.index}}} do template sem valor`,
+        );
+      }
+      const paramValues = resolved.values;
+      const components = paramValues.length > 0
+        ? [{ type: 'body', parameters: paramValues.map((text) => ({ type: 'text', text })) }]
         : [];
 
       // Template (oficial/Zernio) usa o accountId do canal da conversa quando há;

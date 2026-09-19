@@ -2,6 +2,10 @@
 // Automações → Funil: "Quando o lead entrar em [etapa] → executar [ações]".
 // Regras em whatsapp_hub.funnel_automations; execução server-side pela Edge
 // Function funnel-automation (trigger no banco em deals.stage_id).
+//
+// Mensagens: o template sai com {{1}} = primeiro nome da pessoa e o texto livre
+// aceita {nome}. Template com {{2}} em diante é barrado aqui, porque a função
+// recusaria o envio. Os avisos ficam em FlowHints.tsx.
 // ============================================================================
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -11,6 +15,8 @@ import { getSupabase } from '@/lib/supabase';
 import { operatorLabel, useOperators } from '@/hooks/useOperators';
 import { useTags } from '@/hooks/useTags';
 import { useTemplates } from '@/hooks/useTemplates';
+import { unfilledFlowVariables } from '@/lib/flow-messages';
+import { AddTagHint, FreeTextNameHint, TemplateVariablesHint } from './FlowHints';
 import { CRM_ACTION_LABEL, CRM_ACTION_TYPES, type CrmActionType } from '@/types/crm';
 
 interface Pipeline { id: string; name: string; is_default: boolean }
@@ -181,7 +187,7 @@ function AutomationForm({
   allStages: Stage[];
   tags: { id: string; name: string }[];
   operators: { user_id: string; email: string; display_name?: string | null }[];
-  templates: { id: string; name: string }[];
+  templates: { id: string; name: string; body: string }[];
   onDone: () => Promise<void>;
   onCancel: () => void;
 }) {
@@ -194,10 +200,15 @@ function AutomationForm({
   const setAction = (i: number, patch: Partial<ActionDef>) =>
     setActions((cur) => cur.map((a, idx) => (idx === i ? { ...a, ...patch } : a)));
   const removeAction = (i: number) => setActions((cur) => cur.filter((_, idx) => idx !== i));
+  const templateBody = (id: unknown) => templates.find((t) => t.id === id)?.body ?? null;
 
   const save = async () => {
     if (!name.trim() || !stageId || actions.length === 0) {
       toast.error('Preencha nome, etapa e ao menos uma ação.');
+      return;
+    }
+    if (actions.some((a) => a.type === 'send_template' && unfilledFlowVariables(templateBody(a.template_id)).length > 0)) {
+      toast.error('Escolha um template com no máximo uma variável. O fluxo preenche só a {{1}}, com o primeiro nome.');
       return;
     }
     setSaving(true);
@@ -253,10 +264,13 @@ function AutomationForm({
 
             <div className="mt-2 grid gap-2 sm:grid-cols-2">
               {a.type === 'add_tag' && (
-                <select value={String(a.tag_id ?? '')} onChange={(e) => setAction(i, { tag_id: e.target.value })} className={inputCls}>
-                  <option value="">Tag…</option>
-                  {tags.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
-                </select>
+                <>
+                  <select value={String(a.tag_id ?? '')} onChange={(e) => setAction(i, { tag_id: e.target.value })} className={inputCls}>
+                    <option value="">Tag…</option>
+                    {tags.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+                  </select>
+                  <AddTagHint />
+                </>
               )}
               {a.type === 'next_action' && (
                 <>
@@ -283,13 +297,24 @@ function AutomationForm({
                 </select>
               )}
               {a.type === 'send_template' && (
-                <select value={String(a.template_id ?? '')} onChange={(e) => setAction(i, { template_id: e.target.value })} className={inputCls}>
-                  <option value="">Template aprovado…</option>
-                  {templates.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
-                </select>
+                <>
+                  <select value={String(a.template_id ?? '')} onChange={(e) => setAction(i, { template_id: e.target.value })} className={inputCls}>
+                    <option value="">Template aprovado…</option>
+                    {templates.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+                  </select>
+                  <TemplateVariablesHint
+                    body={templateBody(a.template_id)}
+                    fallback={String(a.name_fallback ?? '')}
+                    onFallbackChange={(value) => setAction(i, { name_fallback: value })}
+                    className="sm:col-span-2"
+                  />
+                </>
               )}
               {a.type === 'send_text' && (
-                <textarea value={String(a.text ?? '')} onChange={(e) => setAction(i, { text: e.target.value })} rows={2} placeholder="Mensagem de texto (sai pelo canal da conversa, Zernio ou UAZAPI; na API oficial exige janela de 24h aberta)" className={`${inputCls} sm:col-span-2 resize-none`} />
+                <div className="sm:col-span-2">
+                  <textarea value={String(a.text ?? '')} onChange={(e) => setAction(i, { text: e.target.value })} rows={2} placeholder="Mensagem de texto (sai pelo canal da conversa, Zernio ou UAZAPI; na API oficial exige janela de 24h aberta)" className={`${inputCls} resize-none`} />
+                  <FreeTextNameHint />
+                </div>
               )}
               {a.type === 'assign' && (
                 <select value={String(a.user_id ?? '')} onChange={(e) => setAction(i, { user_id: e.target.value })} className={inputCls}>

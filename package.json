@@ -14,7 +14,9 @@
     "db:status": "node scripts/migrations-status.mjs",
     "test:migrations": "node --test tests/scripts/*.test.mjs",
     "functions:deploy": "node scripts/deploy-functions.mjs",
-    "typecheck:api": "tsc -p tsconfig.api.json --noEmit"
+    "typecheck:api": "tsc -p tsconfig.api.json --noEmit",
+    "test:functions": "node --test tests/functions/*.test.mjs",
+    "test:functions:e2e": "node tests/functions/lib/write-wizard-bundles.mjs && deno test --no-check --no-lock --allow-all tests/functions/"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",
