@@ -362,11 +362,51 @@ service role key vêm de Vault entries (`whatsapp_hub_supabase_url`,
 
 ### Follow-up rules
 
-- Cadeia ordenada por `sequence_order` (1, 2, 3 …).
-- `check-follow-ups` (cron 15min) acha `campaign_contacts` cujo status ≠
-  `replied` e cujo `sent_at + delay_hours < now()`, e enfileira nova
-  mensagem com `template_id_override` apontando ao template do follow-up.
-- Resposta do contato em qualquer ponto cancela follow-ups futuros.
+Motor: `check-follow-ups` (cron 15min). A decisão de cada trava mora no módulo
+puro `_shared/follow-up-rules.ts`; o `index.ts` só consulta e envia.
+
+- Três gatilhos: `no_reply` (reengajamento de campanha, enfileira em
+  `campaign_contacts` com `template_id_override`), `inactivity` (conversa de
+  WhatsApp parada há `delay_hours`, envio 1:1) e `no_purchase` (cliente sem
+  compra há `params.days`, envio 1:1). Dedup do 1:1 em `follow_up_log`: uma vez
+  por regra × contato.
+- Regras rodam por conta e por `sequence_order` (toque 1 antes do toque 3). Cada
+  envio zera `conversations.last_message_at`, então só o primeiro toque que casa
+  sai na rodada.
+- **Horário de atendimento.** Conta fora do horário (`app_settings.business_hours`
+  no fuso de `ai_agent_config.timezone`) não envia nem enfileira, e nada vai para
+  o `follow_up_log`. A rodada seguinte dentro do horário envia. Conta que nunca
+  salvou o horário (`{}`) continua enviando a qualquer hora, e a tela avisa.
+- **Janela de inatividade.** A regra só olha conversa cuja última mensagem veio
+  depois de ela ser ligada (o maior entre `created_at` e `updated_at`, que muda
+  ao religar) e há no máximo `delay_hours` + 7 dias (`MAX_EXTRA_IDLE_HOURS`).
+  Primeira ativação e regra religada nunca alcançam o histórico.
+- **Quem falou por último.** `inactivity` só dispara quando a última mensagem não
+  privada é `outbound`. Lead esperando resposta e conversa sem mensagem ficam de
+  fora. Conversa com o time (`human_active` ou `ai_paused`) fica de fora, a menos
+  que a regra grave `params.include_human_active = true` (caixa "Incluir
+  conversas que estão com uma pessoa do time" no formulário). Conta que atende só
+  com pessoas precisa dessa caixa: com o agente desligado, o `process-ai-message`
+  deixa toda conversa em `human_active`.
+- **Variáveis.** `{{1}}` recebe o primeiro nome (`firstNameOf`), ou
+  `params.name_fallback`; `params.template_params` fixa valores por posição e
+  aceita `{nome}`. Parâmetro vazio nunca sai: template com `{{2}}` em diante sem
+  valor fixo derruba a regra com um erro só, e a tela barra ao salvar.
+  `message_text` (UAZAPI) aceita `{nome}`. A ação `send_template` /
+  `send_text` de `funnel-automation` segue a mesma regra (`action.params`,
+  `action.name_fallback`).
+- **Filtro de tag.** `params.tag_id` casa com `contact_tags` (tag da pessoa) OU
+  `deal_tags` (tag da oportunidade, onde a ação `add_tag` dos fluxos grava).
+- Leitura que falha (log, filtros, horário) derruba a regra naquela rodada em vez
+  de virar envio repetido. Listas de ids em `.in()` vão em fatias de 100.
+- Resposta do contato cancela os follow-ups de campanha (`no_reply`) futuros.
+
+Testes: `npm run test:functions` (módulo puro, Node) e
+`npm run test:functions:e2e` (handler de verdade no Deno contra PostgREST, Zernio
+e UAZAPI de mentira em `tests/functions/lib`, mais o bundle montado pelo wizard).
+Coluna nova em migration precisa entrar no `SCHEMA` de
+`tests/functions/lib/fake-backend.ts`, que recusa coluna desconhecida como o
+PostgREST de verdade.
 
 ### Agente IA + RAG
 
@@ -467,10 +507,11 @@ supabase/functions/
 │   ├── supabase-admin.ts     service role client
 │   ├── credentials.ts        getCredential()/setCredential() sobre public.app_settings (SSOT)
 │   ├── tenant-credentials.ts loadAppCredentials() → wrapper tipado de getCredential
+│   ├── follow-up-rules.ts    regras PURAS do follow-up (horário, ordem, janela, quem falou por último, variáveis)
 │   └── zernio.ts             client Zernio (inbox, broadcasts, templates, mídia, number-info)
 ├── zernio-webhook/           ingestão (X-Zernio-Signature) de statuses + inbound; idempotência via webhook_events
 ├── dispatch-campaign/        consumido por pg_cron 30s: cria Broadcasts no Zernio
-├── check-follow-ups/         consumido por pg_cron 15min
+├── check-follow-ups/         consumido por pg_cron 15min; travas descritas em "Follow-up rules"
 ├── process-ai-message/       RAG → LLM → resposta via Zernio (inbox 1:1)
 ├── process-knowledge/        upload → chunk → embed → store
 ├── transcribe-audio/         baixa áudio da URL do attachment (Zernio) → Whisper
@@ -510,6 +551,16 @@ supabase/functions/
   a envs core (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `CRYPTO_KEY`).
 - Resposta padrão: `{ data, error, message }` via `jsonResponse`.
 - Logging estruturado: `console.log(JSON.stringify({ event, ... }))`.
+- O wizard `/setup` não sobe a pasta `_shared/`: `bundleEdgeFunction`
+  (`api/bootstrap.ts`) cola cada `_shared` importado no MESMO escopo do
+  `index.ts`. Nome de topo repetido entre o `index.ts` e um `_shared` (ou entre
+  dois `_shared`) vira "Identifier has already been declared", e a função morre
+  com BOOT_ERROR só na instalação pelo wizard. O `functions:deploy` da CLI
+  preserva o escopo de cada módulo, por isso o problema passa despercebido em
+  quem publica pelo terminal. Código compartilhado entre funções mora em
+  `_shared/`, porque import de arquivo vizinho (`./algo.ts`) fica fora do bundle.
+  `tests/scripts/edge-bundle.test.mjs` monta o bundle de todas as funções e
+  confere a sintaxe (`npm run test:migrations`).
 
 ### Segurança
 - HMAC-SHA256 (timing-safe) na validação do webhook Meta.
