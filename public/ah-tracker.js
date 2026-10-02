@@ -4,6 +4,7 @@
  * Cole na landing:
  *   <script src="https://SEU-CRM/ah-tracker.js"
  *           data-endpoint="https://<ref>.supabase.co/functions/v1/ingest-lead"
+ *           data-org="slug-da-organizacao"
  *           data-auto></script>
  *
  * - Captura UTMs + fbclid/gclid + short_code (utm_ref do redirecionador) no
@@ -11,6 +12,9 @@
  * - Persiste em cookie 1ª-parte: first-touch IMUTÁVEL + last-touch, 90 dias.
  * - `data-auto`: liga automaticamente os forms marcados com [data-ah-form].
  *   No submit, POSTa lead + contexto de tracking ao endpoint de ingestão.
+ * - `data-org` (opcional): slug ou id da organização que recebe o lead. Use
+ *   quando a instalação tem mais de uma organização. Sem ele, o lead vai para
+ *   a organização do link de rastreio ou, sem link, para a organização padrão.
  *
  * API: window.LeadTracker.{ capture, getContext, submit, bindForm }.
  * ==========================================================================*/
@@ -23,6 +27,7 @@
 
   var scriptEl = document.currentScript;
   var ENDPOINT = (scriptEl && scriptEl.getAttribute('data-endpoint')) || '';
+  var ORG = (scriptEl && scriptEl.getAttribute('data-org')) || '';
   var AUTO = scriptEl && scriptEl.hasAttribute('data-auto');
 
   function setCookie(name, value, maxAge) {
@@ -95,6 +100,7 @@
   function submit(lead) {
     if (!ENDPOINT) return Promise.reject(new Error('data-endpoint ausente'));
     var payload = Object.assign({}, getContext(), lead || {});
+    if (ORG && !payload.org) payload.org = ORG;
     return fetch(ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

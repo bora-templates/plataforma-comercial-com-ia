@@ -6,6 +6,12 @@
 // lead + contexto de tracking. Cria o lead com snapshot de UTMs e
 // attribution_method = utm_landing, casando a tracking_session quando há code.
 //
+// Organização do lead, nesta ordem: a que a página informa (data-org do
+// snippet, slug ou id), a do código do link de rastreio e, sem nenhum dos dois,
+// a organização padrão da instalação (a ativa mais antiga). Organização
+// informada que não existe ou está arquivada é recusada, para o erro de
+// configuração aparecer em vez de o lead cair na organização errada.
+//
 // Deploy com --no-verify-jwt (chamado do browser da landing do cliente).
 // ============================================================================
 
@@ -25,7 +31,12 @@ interface LeadBody {
   short_code?: string;      // = utm_ref injetado pelo redirecionador
   raw_query?: Record<string, unknown>;
   page_url?: string;
+  org?: string;             // = data-org do snippet (slug ou id da organização)
 }
+
+type Admin = ReturnType<typeof getAdminClient>;
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function clean(v: unknown): string | null {
   return typeof v === 'string' && v.trim() !== '' ? v.trim() : null;
@@ -33,6 +44,46 @@ function clean(v: unknown): string | null {
 function normalizePhone(raw: string): string {
   const t = raw.trim();
   return t.startsWith('+') ? t : `+${t.replace(/[^\d]/g, '')}`;
+}
+
+async function resolveOrgId(
+  admin: Admin,
+  body: LeadBody,
+): Promise<{ orgId: string } | { error: string; status: number }> {
+  const informed = clean(body.org);
+  if (informed) {
+    const { data } = await admin
+      .from('organizations')
+      .select('id')
+      .eq(UUID_RE.test(informed) ? 'id' : 'slug', informed)
+      .eq('status', 'active')
+      .maybeSingle();
+    if (!data) {
+      return {
+        error: 'Organização do formulário não encontrada ou arquivada. Confira o data-org do snippet.',
+        status: 400,
+      };
+    }
+    return { orgId: (data as { id: string }).id };
+  }
+
+  const code = clean(body.short_code)?.toUpperCase();
+  if (code) {
+    const { data } = await admin
+      .from('tracking_sessions')
+      .select('org_id')
+      .eq('short_code', code)
+      .not('org_id', 'is', null)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const fromLink = (data as { org_id: string | null } | null)?.org_id;
+    if (fromLink) return { orgId: fromLink };
+  }
+
+  const { data: fallback } = await admin.rpc('default_org_id');
+  if (typeof fallback === 'string' && fallback) return { orgId: fallback };
+  return { error: 'Nenhuma organização ativa para receber o lead.', status: 500 };
 }
 
 Deno.serve(async (req) => {
@@ -55,15 +106,26 @@ Deno.serve(async (req) => {
 
   const admin = getAdminClient();
 
-  // Resolve/cria contato por telefone (preferido) ou email.
+  const org = await resolveOrgId(admin, body);
+  if ('error' in org) {
+    return jsonResponse({ ok: false, error: org.error }, { status: org.status });
+  }
+  const orgId = org.orgId;
+
+  // Resolve/cria contato por telefone (preferido) ou email, dentro da organização.
   let contactId: string | null = null;
-  const lookup = phone
-    ? admin.from('contacts').select('id').eq('phone', phone).maybeSingle()
-    : admin.from('contacts').select('id').eq('email', email!).maybeSingle();
+  const lookup = admin
+    .from('contacts')
+    .select('id')
+    .eq('org_id', orgId)
+    .eq(phone ? 'phone' : 'email', phone ?? email!)
+    .order('created_at', { ascending: true })
+    .limit(1)
+    .maybeSingle();
   const { data: existing } = await lookup;
   if (existing) contactId = (existing as { id: string }).id;
   else {
-    const insert: Record<string, unknown> = { name, source: 'landing' };
+    const insert: Record<string, unknown> = { org_id: orgId, name, source: 'landing' };
     if (phone) insert.phone = phone;
     if (email) insert.email = email;
     const { data: created, error } = await admin

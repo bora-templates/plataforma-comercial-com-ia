@@ -94,6 +94,11 @@ export const SCHEMA: Record<string, TableDef> = {
     columns: ['id', 'org_id', 'contact_id', 'deal_id', 'project_id', 'type', 'title', 'body', 'due_at', 'done',
       'owner_id', 'created_at', 'done_at'],
   },
+  [`${HUB}.tracking_sessions`]: {
+    columns: ['id', 'org_id', 'short_code', 'campaign_link_id', 'utm_source', 'utm_medium', 'utm_campaign',
+      'utm_content', 'utm_term', 'raw_query', 'fbclid', 'destination_type', 'destination_url', 'ip', 'user_agent',
+      'referer', 'deal_id', 'created_at', 'reconciled_at'],
+  },
   'public.org_settings': { columns: ['org_id', 'key', 'value_encrypted', 'updated_at'], unique: [['org_id', 'key']] },
 };
 
@@ -152,6 +157,8 @@ export class FakeBackend {
   readonly tables = new Map<string, Row[]>();
   readonly externalCalls: ExternalCall[] = [];
   readonly restLog: string[] = [];
+  // Chamadas de função do banco (POST /rpc/<função>), na ordem.
+  readonly rpcCalls: Array<{ fn: string; args: Row }> = [];
   // Falhas forçadas: (método, tabela) → resposta de erro do PostgREST.
   readonly forcedErrors: Array<{ method: string; table: string; status: number; code: string; message: string }> = [];
   // Falha forçada no envio pelo Zernio (simula recusa da Meta).
@@ -264,7 +271,20 @@ export class FakeBackend {
   }
 
   private rpc(fn: string, args: Row): Response {
+    this.rpcCalls.push({ fn, args });
     if (fn === 'verify_service_token') return json(200, false);
+    // Igual a whatsapp_hub.default_org_id(): a organização ativa mais antiga.
+    if (fn === 'default_org_id') {
+      const active = this.rows('organizations')
+        .filter((o) => o.status === 'active')
+        .sort((a, b) => String(a.created_at ?? '').localeCompare(String(b.created_at ?? '')));
+      return json(200, active[0]?.id ?? null);
+    }
+    // O card do formulário é regra do banco (testado em tests/sql). Aqui só
+    // interessa com qual contato a função chamou.
+    if (fn === 'ingest_landing_lead') {
+      return json(200, { deal_id: `deal-${++this.seq}`, attribution_method: 'utm_landing' });
+    }
     if (fn === 'bump_campaign_counter') {
       const row = this.rows('campaigns').find((c) => c.id === args.p_campaign_id);
       const column = String(args.p_column);
