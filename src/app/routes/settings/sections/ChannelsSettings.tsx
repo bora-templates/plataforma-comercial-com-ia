@@ -543,6 +543,25 @@ export function ChannelsSettings() {
             ) : null}
           </div>
 
+          {/* Sincroniza de novo os números da conta Zernio sem colar a chave outra
+              vez: serve para número novo no painel do Zernio e para instalação
+              que conectou antes de o número virar canal. */}
+          {zernioKeyExists ? (
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[rgba(212,165,116,0.15)] bg-white/[0.02] p-4">
+              <p className="min-w-0 flex-1 text-xs text-[var(--color-text-secondary)]">
+                Conectou um número novo no painel do Zernio? Sincronize para ele aparecer aqui.
+              </p>
+              <button
+                onClick={() => void connectZernio()}
+                disabled={connectingZernio || savingZernioKey}
+                className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-[rgba(212,165,116,0.25)] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-[var(--color-text-primary)] transition hover:border-[var(--accent-primary)] disabled:opacity-50"
+              >
+                {connectingZernio ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
+                Sincronizar números
+              </button>
+            </div>
+          ) : null}
+
           {/* Instagram: o token entra por aqui. Voltou de Credenciais, que era a
               única tela que gravava instagram_access_token e ficou órfã (fora do
               router) na atualização de agosto — sem isso o badge acima ficava
@@ -581,7 +600,7 @@ export function ChannelsSettings() {
           ) : zernioChannels.length === 0 ? (
             <div className="rounded-xl border border-dashed border-[rgba(148,163,184,0.25)] p-4 text-sm text-[var(--color-text-secondary)]">
               {zernioKeyExists
-                ? 'Nenhum número oficial sincronizado ainda. Conecte o WhatsApp no painel do Zernio e ele aparecerá aqui.'
+                ? 'Nenhum número oficial sincronizado ainda. Conecte o WhatsApp no painel do Zernio e clique em Sincronizar números.'
                 : 'Configure a Zernio API Key acima para sincronizar os números da sua conta Zernio.'}
             </div>
           ) : (

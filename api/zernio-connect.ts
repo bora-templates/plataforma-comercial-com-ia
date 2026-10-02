@@ -1,6 +1,8 @@
 import { randomBytes } from 'node:crypto';
+import { createClient } from '@supabase/supabase-js';
 import { requireAdmin } from '../src/lib/admin-auth.js';
 import { getCredential, setCredential } from '../src/lib/credentials.js';
+import { syncZernioChannel } from '../src/lib/zernio-channel.js';
 import {
   ZernioError,
   getNumberInfo,
@@ -19,6 +21,10 @@ import {
 // gera/registra o webhook do Zernio e persiste os derivados (account_id,
 // profile_id, webhook_secret, number_info cache). A chave nunca volta ao
 // browser; toda chamada ao Zernio sai daqui.
+//
+// O número conectado também vira canal da organização (whatsapp_hub.channels,
+// provider='zernio'), que é o que a tela de Canais lista e o que a
+// zernio-webhook usa para o operador vinculado e a IA por número.
 //
 //  POST  → resolve + registra webhook. Se houver mais de uma conta WhatsApp e
 //          nenhuma escolhida, responde { needsSelection, accounts } para o
@@ -40,6 +46,13 @@ type ApiResponse = {
 
 function authHeaderOf(req: ApiRequest): string | string[] | undefined {
   return req.headers?.authorization ?? req.headers?.Authorization;
+}
+
+function getSupabaseAdmin() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error('Supabase core nao configurado.');
+  return createClient(url, key, { auth: { persistSession: false } });
 }
 
 function webhookUrl(): string {
@@ -169,10 +182,15 @@ async function handlePost(orgId: string, req: ApiRequest, res: ApiResponse) {
     console.error(JSON.stringify({ event: 'zernio_webhook_register_failed', message: webhookWarning }));
   }
 
+  // Depois do webhook: se a gravação do canal falhar, as mensagens já chegam e
+  // reconectar refaz só o que faltou.
+  const channel = await syncZernioChannel(getSupabaseAdmin(), { orgId, account, numberInfo });
+
   return res.status(200).json({
     success: true,
     ...statusPayload(account, numberInfo),
     profileId,
+    channelId: channel.channelId,
     webhookWarning,
   });
 }
