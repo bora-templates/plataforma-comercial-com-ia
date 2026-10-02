@@ -22,7 +22,12 @@ const { PGlite } = await import(process.env.PGLITE_MODULE ?? '@electric-sql/pgli
 
 const MIGRATIONS = 'supabase/migrations';
 const BASE_MIGRATION = '20260720140000_attribute_instagram_provider.sql';
-const FIX_MIGRATION = '20261002120000_card_nasce_na_mensagem_recebida.sql';
+// Aplicadas em ordem, como o assistente faz. A segunda muda a regra do lead
+// perdido que volta a falar.
+const FIX_MIGRATIONS = [
+  '20261002120000_card_nasce_na_mensagem_recebida.sql',
+  '20261002140000_lead_perdido_volta_como_lead.sql',
+];
 
 // Colunas e tipos copiados do banco instalado pelo assistente (02/10/2026),
 // reduzidos ao que o card toca. Os default privileges sao os de
@@ -138,7 +143,10 @@ CREATE TABLE whatsapp_hub.deals (
   attribution_method  TEXT,
   raw_tracking        JSONB,
   tracking_session_id UUID,
-  created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+  won_at              TIMESTAMPTZ,
+  lost_at             TIMESTAMPTZ,
+  created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 -- Dublê do trg_org_from_parent do banco instalado: a organizacao do negocio e a
@@ -194,21 +202,21 @@ const db = new PGlite();
 await db.exec(FIXTURE);
 await db.exec(readFileSync(join(MIGRATIONS, BASE_MIGRATION), 'utf8'));
 
-const fixPath = join(MIGRATIONS, FIX_MIGRATION);
-const hasFix = existsSync(fixPath);
+const fixes = FIX_MIGRATIONS.filter((file) => existsSync(join(MIGRATIONS, file)));
+const hasFix = fixes.length > 0;
+for (const file of fixes) await db.exec(readFileSync(join(MIGRATIONS, file), 'utf8'));
 if (hasFix) {
-  const sql = readFileSync(fixPath, 'utf8');
-  await db.exec(sql);
   // A turma ja tem instalacoes no ar: reaplicar nao pode quebrar nada.
   let twice = null;
   try {
-    await db.exec(sql);
+    for (const file of fixes) await db.exec(readFileSync(join(MIGRATIONS, file), 'utf8'));
   } catch (err) {
     twice = err.message;
   }
-  check('migration reaplicada sem erro (idempotente)', twice === null, twice ?? '');
-} else {
-  console.log(`(sem ${FIX_MIGRATION}: rodando contra o banco de hoje)\n`);
+  check('migrations reaplicadas sem erro (idempotentes)', twice === null, twice ?? '');
+}
+for (const file of FIX_MIGRATIONS.filter((f) => !fixes.includes(f))) {
+  console.log(`(sem ${file}: rodando sem essa correção)\n`);
 }
 
 const one = async (sql, params = []) => (await db.query(sql, params)).rows[0];
@@ -340,19 +348,62 @@ check(
 );
 
 // ---------------------------------------------------------------------------
-// Contato que ja teve card fechado nao ganha card novo sozinho.
+// Quem volta depois de card fechado (regra do Luis em 02/10/2026):
+// lead perdido ha mais de 7 dias que volta a falar ganha card novo; perdido
+// ha menos de 7 dias nao (a conversa que terminou em perdido continua); quem
+// ja comprou nao ganha card novo sozinho.
 // ---------------------------------------------------------------------------
+const closedCard = (orgId, contactId, title, status, daysAgo) =>
+  db.query(
+    `INSERT INTO whatsapp_hub.deals (org_id, contact_id, title, status, won_at, lost_at, created_at, updated_at)
+     VALUES ($1, $2, $3, $4::text::whatsapp_hub.crm_deal_status,
+             CASE WHEN $4::text = 'won'  THEN now() - make_interval(days => $5::int) END,
+             CASE WHEN $4::text = 'lost' THEN now() - make_interval(days => $5::int) END,
+             now() - make_interval(days => $5::int + 30), now() - make_interval(days => $5::int))`,
+    [orgId, contactId, title, status, daysAgo],
+  );
+
 const elisa = await contact(orgA, { name: 'Elisa Prado', phone: '5511990000005' });
-await db.query(
-  `INSERT INTO whatsapp_hub.deals (org_id, contact_id, title, status) VALUES ($1, $2, 'Elisa Prado', 'lost')`,
-  [orgA, elisa.id],
-);
-await message(elisa.conversation, { content: 'Oi de novo' });
+await closedCard(orgA, elisa.id, 'Elisa Prado', 'lost', 20);
+await message(elisa.conversation, { content: 'Oi, voltei a pensar no curso' });
 const elisaCards = await cardsOf(elisa.id);
+const elisaNovo = elisaCards.find((c) => c.status === 'open');
 check(
-  'contato com card perdido não ganha card novo automático',
-  elisaCards.length === 1 && elisaCards[0].status === 'lost',
+  'lead perdido há mais de 7 dias que volta a falar ganha card novo no funil padrão',
+  elisaCards.length === 2 && elisaNovo?.funil === 'Vendas' && elisaNovo?.etapa === 'Lead',
   JSON.stringify(elisaCards),
+);
+await message(elisa.conversation, { content: 'Tem turma em novembro?' });
+check('a mensagem seguinte não cria um terceiro card', (await cardsOf(elisa.id)).length === 2);
+
+const joao = await contact(orgA, { name: 'João Pires', phone: '5511990000010' });
+await closedCard(orgA, joao.id, 'João Pires', 'lost', 1);
+await message(joao.conversation, { content: 'Ok, obrigado' });
+const joaoCards = await cardsOf(joao.id);
+check(
+  'lead perdido há menos de 7 dias não ganha card novo',
+  joaoCards.length === 1 && joaoCards[0].status === 'lost',
+  JSON.stringify(joaoCards),
+);
+
+const katia = await contact(orgA, { name: 'Kátia Reis', phone: '5511990000011' });
+await closedCard(orgA, katia.id, 'Kátia Reis', 'won', 40);
+await message(katia.conversation, { content: 'Preciso de ajuda com o acesso' });
+const katiaCards = await cardsOf(katia.id);
+check(
+  'cliente (card ganho) que volta a falar não ganha card novo',
+  katiaCards.length === 1 && katiaCards[0].status === 'won',
+  JSON.stringify(katiaCards),
+);
+
+const leo = await contact(orgA, { name: 'Léo Matos', phone: '5511990000012' });
+await closedCard(orgA, leo.id, 'Léo Matos', 'won', 90);
+await closedCard(orgA, leo.id, 'Léo Matos', 'lost', 30);
+await message(leo.conversation, { content: 'Oi, tudo bem?' });
+check(
+  'quem já comprou alguma vez continua fora, mesmo com um card perdido depois',
+  (await cardsOf(leo.id)).length === 2,
+  JSON.stringify(await cardsOf(leo.id)),
 );
 
 // ---------------------------------------------------------------------------
