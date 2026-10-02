@@ -541,12 +541,15 @@ async function handleNumberEvent(orgId: string, eventType: string): Promise<void
 
 // --- resolução de organização ----------------------------------------------
 
-// A URL registrada no Zernio passa a incluir ?org=<uuid>. Sem org válido,
-// caímos no fallback de compatibilidade: se existir exatamente 1 organização
-// ativa (webhook registrado antes da migração multi-org), usa-a; senão null.
+// A URL registrada no Zernio pode incluir ?org=<uuid>. Sem ?org=, a
+// organização sai da conta Zernio citada no evento (accountId): primeiro pelo
+// canal cadastrado, depois pela credencial zernio_account_id de cada
+// organização ativa. Com uma única organização ativa, usa-a direto, como antes.
+// Sem dono identificável, devolve null e o evento é descartado.
 async function resolveOrgId(
   admin: ReturnType<typeof getAdminClient>,
   orgFromQuery: string | null,
+  zernioAccountId: string | null,
 ): Promise<{ orgId: string; status: string } | null> {
   if (orgFromQuery) {
     const { data } = await admin
@@ -557,14 +560,57 @@ async function resolveOrgId(
     if (data) return { orgId: (data as { id: string }).id, status: (data as { status: string }).status };
     return null; // ?org= presente mas não existe → descartar
   }
-  // Fallback legado: única org ativa.
   const { data: actives } = await admin
     .from('organizations')
     .select('id, status')
     .eq('status', 'active')
-    .limit(2);
+    .limit(100);
   const rows = (actives ?? []) as Array<{ id: string; status: string }>;
   if (rows.length === 1) return { orgId: rows[0].id, status: rows[0].status };
+  if (rows.length === 0 || !zernioAccountId) return null;
+
+  // Mais de uma organização ativa: acha a dona da conta Zernio do evento.
+  const activeIds = new Set(rows.map((row) => row.id));
+  try {
+    const channel = await getChannelByZernioAccount(admin, zernioAccountId);
+    if (channel && activeIds.has(channel.org_id)) return { orgId: channel.org_id, status: 'active' };
+  } catch {
+    // Sem canal legível: segue para as credenciais.
+  }
+  const owners: string[] = [];
+  for (const row of rows) {
+    try {
+      const stored = await getCredential(row.id, 'zernio_account_id');
+      if (stored?.trim() === zernioAccountId) owners.push(row.id);
+    } catch {
+      // Credencial ilegível nesta organização: não é a dona.
+    }
+  }
+  if (owners.length === 1) return { orgId: owners[0], status: 'active' };
+  if (owners.length > 1) {
+    console.log(JSON.stringify({
+      event: 'zernio_webhook_ambiguous_org',
+      zernio_account_id: zernioAccountId,
+      orgs: owners.length,
+    }));
+  }
+  return null;
+}
+
+// Conta Zernio citada no evento. Os payloads trazem o accountId em account
+// (message.*, account.disconnected) ou direto no corpo, que pode vir
+// embrulhado em data. Leitura só para rotear: a assinatura é conferida depois.
+function eventZernioAccountId(payload: unknown): string | null {
+  const root = asObject(payload);
+  const scopes = root.data ? [root, asObject(root.data)] : [root];
+  for (const scope of scopes) {
+    const fromAccount = str(asObject(scope.account), ['accountId', 'id', '_id']);
+    if (fromAccount) return fromAccount;
+    const fromMessage = str(asObject(scope.message), ['accountId', 'account_id']);
+    if (fromMessage) return fromMessage;
+    const direct = str(scope, ['accountId', 'account_id']);
+    if (direct) return direct;
+  }
   return null;
 }
 
@@ -581,11 +627,23 @@ Deno.serve(async (req) => {
   const rawBody = await req.text();
   const admin = getAdminClient();
 
-  // Org da query string (?org=<uuid>) com fallback para a única org ativa.
+  // Org da query string (?org=<uuid>), da conta Zernio do evento ou, com uma
+  // só organização ativa, dela mesma. O corpo é lido aqui só para rotear.
   const orgFromQuery = new URL(req.url).searchParams.get('org');
-  const resolved = await resolveOrgId(admin, orgFromQuery);
+  let routingPayload: unknown = null;
+  try {
+    routingPayload = JSON.parse(rawBody);
+  } catch {
+    // JSON inválido é recusado depois da assinatura.
+  }
+  const zernioAccountId = eventZernioAccountId(routingPayload);
+  const resolved = await resolveOrgId(admin, orgFromQuery, zernioAccountId);
   if (!resolved) {
-    console.log(JSON.stringify({ event: 'zernio_webhook_no_org', org_query: orgFromQuery }));
+    console.log(JSON.stringify({
+      event: 'zernio_webhook_no_org',
+      org_query: orgFromQuery,
+      zernio_account_id: zernioAccountId,
+    }));
     return jsonResponse({ ok: true, skipped: 'no_org' });
   }
   const orgId = resolved.orgId;
