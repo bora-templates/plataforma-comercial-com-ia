@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getSupabase } from '@/lib/supabase';
+import { etapasDoFunilNovo } from '@/lib/criterios-padrao';
 import type { Pipeline, Stage, Deal, Tag } from '@/types/crm';
 
 const DEAL_SELECT =
@@ -303,13 +304,9 @@ export function usePipeline(): UsePipelineResult {
       return null;
     }
     const pipe = data as Pipeline;
-    // Semeia estágios padrão para o funil não nascer vazio.
-    await supabase.from('stages').insert([
-      { pipeline_id: pipe.id, name: 'Chegou agora', position: 0, is_won: false, is_lost: false, probability: 10 },
-      { pipeline_id: pipe.id, name: 'Em conversa', position: 1, is_won: false, is_lost: false, probability: 50 },
-      { pipeline_id: pipe.id, name: 'Fechou', position: 2, is_won: true, is_lost: false, probability: 100 },
-      { pipeline_id: pipe.id, name: 'Não fechou', position: 3, is_won: false, is_lost: true, probability: 0 },
-    ]);
+    // Semeia estágios padrão para o funil não nascer vazio, já com os
+    // critérios que deixam a IA mover o card (src/lib/criterios-padrao.ts).
+    await supabase.from('stages').insert(etapasDoFunilNovo(pipe.id));
     await loadPipelines();
     setSelectedId(pipe.id);
     return pipe;
