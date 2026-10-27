@@ -75,6 +75,12 @@ export async function setCredential(
   if (error) throw error;
 }
 
+export async function deleteCredential(orgId: string, key: string): Promise<void> {
+  const supabase = getSupabaseAdmin();
+  const { error } = await supabase.from('org_settings').delete().eq('org_id', orgId).eq('key', key);
+  if (error) throw error;
+}
+
 export async function credentialExists(
   orgId: string,
   keys: string[],

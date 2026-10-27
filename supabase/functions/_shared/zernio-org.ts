@@ -8,9 +8,10 @@
 //   3. credencial zernio_instagram_account_ids (lista JSON) que contém o
 //      accountId. A DM do Instagram chega com o id da conta de Instagram, que
 //      não é o do número de WhatsApp. Se o evento traz profiles[] e a
-//      organização tem zernio_profile_id, os dois precisam bater;
-//   4. credencial zernio_profile_id igual a um dos profiles[].id do evento. O
-//      perfil Zernio agrupa o WhatsApp e o Instagram do mesmo cliente.
+//      organização tem perfil confirmado, os dois precisam bater;
+//   4. credencial zernio_profile_id igual a um dos profiles[].id do evento,
+//      só quando zernio_profile_confirmed = 'true'. O perfil Zernio agrupa o
+//      WhatsApp e o Instagram do mesmo cliente.
 // Duas organizações donas no mesmo passo: descarta e registra o motivo.
 //
 // Módulo puro: o acesso ao banco e ao cofre entra por ZernioOrgLookup, para o
@@ -106,6 +107,15 @@ async function zoCredential(lookup: ZernioOrgLookup, orgId: string, key: string)
   }
 }
 
+// Perfil Zernio da organização, só quando a sincronização o confirmou
+// (zernio_profile_confirmed = 'true'). O perfil que veio do primeiro da lista
+// pode ser de outro cliente da mesma chave; sem a marca (instalação que ainda
+// não sincronizou depois desta versão), também não vale para rotear.
+async function zoConfirmedProfile(lookup: ZernioOrgLookup, orgId: string): Promise<string | null> {
+  if ((await zoCredential(lookup, orgId, 'zernio_profile_confirmed'))?.trim() !== 'true') return null;
+  return (await zoCredential(lookup, orgId, 'zernio_profile_id'))?.trim() || null;
+}
+
 // Organizações ativas cujo valor guardado em `key` casa com o evento.
 async function zoOwners(
   lookup: ZernioOrgLookup,
@@ -170,7 +180,7 @@ export async function resolveZernioOrg(
       parseZernioInstagramIds(stored).includes(accountId));
     const instagramOwners: string[] = [];
     for (const orgId of listed) {
-      const orgProfile = (await zoCredential(lookup, orgId, 'zernio_profile_id'))?.trim();
+      const orgProfile = await zoConfirmedProfile(lookup, orgId);
       if (profileIds.length > 0 && orgProfile && !profileIds.includes(orgProfile)) {
         lookup.log?.({
           event: 'zernio_webhook_profile_mismatch',
@@ -186,11 +196,12 @@ export async function resolveZernioOrg(
   }
 
   if (profileIds.length > 0) {
-    const byProfile = decide(
-      await zoOwners(lookup, rows, 'zernio_profile_id', (stored) =>
-        Boolean(stored?.trim()) && profileIds.includes(stored!.trim())),
-      'zernio_profile_id',
-    );
+    const profileOwners: string[] = [];
+    for (const row of rows) {
+      const orgProfile = await zoConfirmedProfile(lookup, row.id);
+      if (orgProfile && profileIds.includes(orgProfile)) profileOwners.push(row.id);
+    }
+    const byProfile = decide(profileOwners, 'zernio_profile_id');
     if (byProfile !== undefined) return byProfile;
   }
   return null;

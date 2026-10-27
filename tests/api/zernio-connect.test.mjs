@@ -55,6 +55,9 @@ function setup({ credentials = {}, chosenId } = {}) {
     setCredential: async (key, value) => {
       vault[key] = value;
     },
+    deleteCredential: async (key) => {
+      delete vault[key];
+    },
     listAccounts: zernio.listZernioAccounts,
     resolveProfileId: zernio.resolveProfileId,
     getNumberInfo: zernio.getNumberInfo,
@@ -92,6 +95,7 @@ test('conta só com Instagram: conecta, cadastra o webhook e avisa que não acho
 
   assert.deepEqual(JSON.parse(vault.zernio_instagram_account_ids), ['ig-1']);
   assert.equal(vault.zernio_profile_id, 'perfil-ig');
+  assert.equal(vault.zernio_profile_confirmed, 'true');
   assert.equal(vault.zernio_webhook_secret, 'segredo-novo');
   assert.equal(vault.zernio_account_id, undefined, 'sem WhatsApp, o número não é tocado');
   assert.deepEqual(channels, [], 'sem WhatsApp, nenhum canal novo');
@@ -109,6 +113,7 @@ test('WhatsApp e Instagram: conecta o número e guarda a conta de Instagram', { 
   assert.equal(result.body.accountId, 'wa-1');
   assert.equal(vault.zernio_account_id, 'wa-1');
   assert.equal(vault.zernio_profile_id, 'perfil-1');
+  assert.equal(vault.zernio_profile_confirmed, 'true');
   assert.equal(vault.zernio_webhook_secret, 'segredo-antigo', 'segredo existente é reaproveitado');
   assert.deepEqual(JSON.parse(vault.zernio_instagram_account_ids), ['ig-1', 'ig-2']);
   assert.deepEqual(result.body.instagram.accounts.map((a) => a.username), ['escolacontraluz', 'contraluz.cursos']);
@@ -227,4 +232,82 @@ test('instagramStatus lê a lista guardada para a tela', { skip }, () => {
     { connected: true, accounts: [{ id: 'ig-1', username: 'escolacontraluz' }] },
   );
   assert.deepEqual(flow.instagramStatus('["ig-1"]', 'lixo'), { connected: true, accounts: [{ id: 'ig-1', username: null }] });
+});
+
+// Prova da re-revisão (rodada 2): o número de WhatsApp sem profileId fazia o
+// resolveProfileId cair no primeiro perfil de GET /profiles, e a organização B
+// guardava o Instagram do cliente A.
+test('WhatsApp sem perfil: o primeiro perfil da lista não decide o Instagram', { skip }, async () => {
+  fakeZernio(
+    [
+      { _id: 'wa-b', platform: 'whatsapp', displayName: 'Cliente B' },
+      instagram('ig-a', 'cliente.a', 'perfil-a'),
+      instagram('ig-b', 'cliente.b', 'perfil-b'),
+    ],
+    { profiles: [{ _id: 'perfil-a' }, { _id: 'perfil-b' }] },
+  );
+  const { vault, run } = setup();
+
+  const result = await run();
+
+  assert.equal(result.body.success, true);
+  assert.deepEqual(JSON.parse(vault.zernio_instagram_account_ids), [], 'nenhum Instagram sem perfil confirmado');
+  // O perfil do fallback continua gravado para os broadcasts, marcado como não confirmado.
+  assert.equal(vault.zernio_profile_id, 'perfil-a');
+  assert.equal(vault.zernio_profile_confirmed, 'false');
+
+  // E a DM do cliente A não vai para a organização B.
+  const org = await import('../../supabase/functions/_shared/zernio-org.ts');
+  const creds = { 'org-a': { zernio_account_id: 'wa-a' }, 'org-b': vault };
+  const lookup = {
+    findOrg: async () => null,
+    activeOrgs: async () => [{ id: 'org-a', status: 'active' }, { id: 'org-b', status: 'active' }],
+    channelOrgByAccount: async () => null,
+    credential: async (o, k) => creds[o][k] ?? null,
+  };
+  const found = await org.resolveZernioOrg(lookup, { orgFromQuery: null, accountId: 'ig-a', profileIds: ['perfil-a'] });
+  assert.notDeepEqual(found, { orgId: 'org-b', status: 'active' });
+});
+
+test('WhatsApp com o perfil achado pelo accountIds de GET /profiles: confirmado', { skip }, async () => {
+  fakeZernio(
+    [{ _id: 'wa-b', platform: 'whatsapp', displayName: 'Cliente B' }, instagram('ig-b', 'cliente.b', 'perfil-b')],
+    { profiles: [{ _id: 'perfil-a', accountIds: ['wa-a'] }, { _id: 'perfil-b', accountIds: ['wa-b', 'ig-b'] }] },
+  );
+  const { vault, run } = setup();
+
+  await run();
+
+  assert.equal(vault.zernio_profile_id, 'perfil-b');
+  assert.equal(vault.zernio_profile_confirmed, 'true');
+  assert.deepEqual(JSON.parse(vault.zernio_instagram_account_ids), ['ig-b']);
+});
+
+test('WhatsApp sem perfil nenhum: apaga o zernio_profile_id antigo', { skip }, async () => {
+  fakeZernio([{ _id: 'wa-b', platform: 'whatsapp', displayName: 'Cliente B' }], { profiles: [] });
+  const { vault, run } = setup({ credentials: { zernio_profile_id: 'perfil-velho', zernio_profile_confirmed: 'true' } });
+
+  await run();
+
+  assert.equal(vault.zernio_profile_id, undefined);
+  assert.equal(vault.zernio_profile_confirmed, 'false');
+});
+
+test('só Instagram e a conta sem perfil: apaga o zernio_profile_id antigo', { skip }, async () => {
+  fakeZernio([{ _id: 'ig-solto', platform: 'instagram', username: 'sem.perfil' }]);
+  const { vault, run } = setup({ credentials: { zernio_profile_id: 'perfil-velho', zernio_profile_confirmed: 'true' } });
+
+  const result = await run();
+
+  assert.equal(result.body.success, true);
+  assert.equal(vault.zernio_profile_id, undefined);
+  assert.equal(vault.zernio_profile_confirmed, 'false');
+  assert.deepEqual(JSON.parse(vault.zernio_instagram_account_ids), ['ig-solto']);
+});
+
+test('escolha inválida responde com acento', { skip }, async () => {
+  fakeZernio([whatsapp('wa-1'), whatsapp('wa-2')]);
+  const { run } = setup({ chosenId: 'nao-existe' });
+  const result = await run();
+  assert.equal(result.body.message, 'Conta selecionada não encontrada.');
 });

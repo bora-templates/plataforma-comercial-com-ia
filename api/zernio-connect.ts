@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
 import { requireAdmin } from '../src/lib/admin-auth.js';
-import { getCredential, setCredential } from '../src/lib/credentials.js';
+import { deleteCredential, getCredential, setCredential } from '../src/lib/credentials.js';
 import { syncZernioChannel } from '../src/lib/zernio-channel.js';
 import { instagramStatus, runZernioConnect } from '../src/lib/zernio-connect-flow.js';
 import {
@@ -111,6 +111,7 @@ async function handlePost(orgId: string, req: ApiRequest, res: ApiResponse) {
     {
       getCredential: (key) => getCredential(orgId, key),
       setCredential: (key, value) => setCredential(orgId, key, value),
+      deleteCredential: (key) => deleteCredential(orgId, key),
       listAccounts: listZernioAccounts,
       resolveProfileId,
       getNumberInfo,

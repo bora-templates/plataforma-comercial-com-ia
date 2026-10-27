@@ -151,13 +151,22 @@ export async function listWhatsappAccounts(apiKey: string): Promise<ZernioAccoun
   return (await listZernioAccounts(apiKey)).filter((account) => account.platform === 'whatsapp');
 }
 
+export interface ZernioProfileRef {
+  id: string;
+  // true só quando o perfil vem da própria conta (account.profileId) ou de um
+  // perfil cujo accountIds contém a conta. O primeiro perfil da lista, usado
+  // como último recurso, NÃO é confirmado: com uma chave usada por vários
+  // clientes, ele pode ser de outro cliente.
+  confirmed: boolean;
+}
+
 // GET /profiles → resolve o profileId que agrupa a conta (obrigatorio nos
 // broadcasts). Se a propria conta ja carrega o profileId, usa esse.
 export async function resolveProfileId(
   apiKey: string,
   account: ZernioAccount,
-): Promise<string | null> {
-  if (account.profileId) return account.profileId;
+): Promise<ZernioProfileRef | null> {
+  if (account.profileId) return { id: account.profileId, confirmed: true };
   const body = await zfetch(apiKey, '/profiles');
   const profiles = asList(body);
   const match = profiles.find((profile) => {
@@ -165,7 +174,8 @@ export async function resolveProfileId(
     return Array.isArray(ids) && ids.map(String).includes(account.id);
   });
   const chosen = match ?? profiles[0];
-  return chosen ? pickString(chosen, ['_id', 'id']) : null;
+  const id = chosen ? pickString(chosen, ['_id', 'id']) : null;
+  return id ? { id, confirmed: Boolean(match) } : null;
 }
 
 export interface ZernioNumberInfo {

@@ -1,4 +1,4 @@
-import type { ZernioAccount, ZernioNumberInfo } from './zernio.js';
+import type { ZernioAccount, ZernioNumberInfo, ZernioProfileRef } from './zernio.js';
 
 // ============================================================================
 // Conexão da Zernio: WhatsApp e Instagram
@@ -23,8 +23,9 @@ import type { ZernioAccount, ZernioNumberInfo } from './zernio.js';
 export interface ZernioConnectDeps {
   getCredential(key: string): Promise<string | null>;
   setCredential(key: string, value: string): Promise<void>;
+  deleteCredential(key: string): Promise<void>;
   listAccounts(apiKey: string): Promise<ZernioAccount[]>;
-  resolveProfileId(apiKey: string, account: ZernioAccount): Promise<string | null>;
+  resolveProfileId(apiKey: string, account: ZernioAccount): Promise<ZernioProfileRef | null>;
   getNumberInfo(apiKey: string, accountId: string): Promise<ZernioNumberInfo>;
   registerWebhook(apiKey: string, opts: { url: string; secret: string }): Promise<void>;
   syncChannel(account: ZernioAccount, numberInfo: ZernioNumberInfo): Promise<{ channelId: string | null }>;
@@ -131,6 +132,21 @@ async function saveInstagram(
   return { connected: view.length > 0, accounts: view };
 }
 
+// Grava o perfil Zernio da organização e se ele é confirmado. O perfil do
+// último recurso (primeiro da lista) continua gravado porque os broadcasts
+// dependem dele, mas com zernio_profile_confirmed = 'false', e o zernio-webhook
+// não roteia por ele. Sem perfil nenhum, o antigo é apagado para a defesa do
+// webhook não descartar DM legítima com um perfil velho.
+async function saveProfile(deps: ZernioConnectDeps, profile: ZernioProfileRef | null): Promise<void> {
+  if (profile) {
+    await deps.setCredential('zernio_profile_id', profile.id);
+    await deps.setCredential('zernio_profile_confirmed', profile.confirmed ? 'true' : 'false');
+  } else {
+    await deps.deleteCredential('zernio_profile_id');
+    await deps.setCredential('zernio_profile_confirmed', 'false');
+  }
+}
+
 function instagramLabel(account: ZernioAccount): string {
   return account.username ? `@${account.username.replace(/^@/, '')}` : account.name;
 }
@@ -172,7 +188,7 @@ export async function runZernioConnect(
     if (input.chosenId) {
       chosen = instagramAccounts.find((item) => item.id === input.chosenId);
       if (!chosen) {
-        return { status: 400, body: { success: false, message: 'Conta selecionada nao encontrada.' } };
+        return { status: 400, body: { success: false, message: 'Conta selecionada não encontrada.' } };
       }
     } else if (groups.size === 1) {
       chosen = instagramAccounts[0];
@@ -191,10 +207,11 @@ export async function runZernioConnect(
     const profileId = chosen.profileId;
     let instagram: InstagramStatus;
     if (profileId) {
-      await deps.setCredential('zernio_profile_id', profileId);
+      await saveProfile(deps, { id: profileId, confirmed: true });
       instagram = await saveInstagram(deps, instagramAccounts, profileId);
     } else {
-      // Sem perfil informado: só a conta escolhida, e nenhum perfil gravado.
+      // Sem perfil informado: só a conta escolhida, e o perfil antigo sai.
+      await saveProfile(deps, null);
       const view = [{ id: chosen.id, username: chosen.username ?? null }];
       await deps.setCredential('zernio_instagram_account_ids', JSON.stringify([chosen.id]));
       await deps.setCredential('zernio_instagram_accounts', JSON.stringify(view));
@@ -222,7 +239,7 @@ export async function runZernioConnect(
   if (input.chosenId) {
     account = whatsapp.find((item) => item.id === input.chosenId);
     if (!account) {
-      return { status: 400, body: { success: false, message: 'Conta selecionada nao encontrada.' } };
+      return { status: 400, body: { success: false, message: 'Conta selecionada não encontrada.' } };
     }
   } else if (whatsapp.length === 1) {
     account = whatsapp[0];
@@ -238,13 +255,16 @@ export async function runZernioConnect(
     };
   }
 
-  const profileId = await deps.resolveProfileId(apiKey, account);
+  const profile = await deps.resolveProfileId(apiKey, account);
+  const profileId = profile?.id ?? null;
   const numberInfo = await deps.getNumberInfo(apiKey, account.id);
 
   await deps.setCredential('zernio_account_id', account.id);
-  if (profileId) await deps.setCredential('zernio_profile_id', profileId);
+  await saveProfile(deps, profile);
   await deps.setCredential('zernio_number_info', JSON.stringify(numberInfo));
-  const instagram = await saveInstagram(deps, instagramAccounts, profileId);
+  // Instagram só com perfil confirmado: o primeiro perfil da lista pode ser de
+  // outro cliente da mesma chave.
+  const instagram = await saveInstagram(deps, instagramAccounts, profile?.confirmed ? profile.id : null);
 
   const webhookWarning = await registerWebhookSafe(deps, apiKey);
 

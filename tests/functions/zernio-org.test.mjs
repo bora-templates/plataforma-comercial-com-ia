@@ -7,7 +7,8 @@
 // WhatsApp guardado em zernio_account_id, e por isso era descartada (no_org).
 // Agora a busca também olha a lista de contas de Instagram da organização
 // (zernio_instagram_account_ids) e, por último, o perfil Zernio
-// (zernio_profile_id) contra profiles[].id do evento.
+// (zernio_profile_id, só quando zernio_profile_confirmed = 'true') contra
+// profiles[].id do evento.
 //
 // Como rodar (Node 22.18+, que importa o TypeScript direto):
 //   npm run test:functions
@@ -91,8 +92,8 @@ test('duas organizações ativas: sem conta conhecida, o perfil Zernio do evento
   const { lookup } = install({
     orgs: DUAS,
     credentials: {
-      'org-a': { zernio_account_id: 'wa-a', zernio_profile_id: 'perfil-a' },
-      'org-b': { zernio_account_id: 'wa-b', zernio_profile_id: 'perfil-b' },
+      'org-a': { zernio_account_id: 'wa-a', zernio_profile_id: 'perfil-a', zernio_profile_confirmed: 'true' },
+      'org-b': { zernio_account_id: 'wa-b', zernio_profile_id: 'perfil-b', zernio_profile_confirmed: 'true' },
     },
   });
   const evento = dmInstagram('ig-nunca-sincronizada', 'perfil-a');
@@ -108,8 +109,8 @@ test('duas organizações donas da mesma conta de Instagram: descarta e registra
   const { lookup, logs } = install({
     orgs: DUAS,
     credentials: {
-      'org-a': { zernio_instagram_account_ids: '["ig-1"]', zernio_profile_id: 'perfil-a' },
-      'org-b': { zernio_instagram_account_ids: '["ig-1"]', zernio_profile_id: 'perfil-b' },
+      'org-a': { zernio_instagram_account_ids: '["ig-1"]', zernio_profile_id: 'perfil-a', zernio_profile_confirmed: 'true' },
+      'org-b': { zernio_instagram_account_ids: '["ig-1"]', zernio_profile_id: 'perfil-b', zernio_profile_confirmed: 'true' },
     },
   });
   // Evento sem profiles[]: a defesa por perfil não decide, e as duas são donas.
@@ -129,8 +130,8 @@ test('duas organizações com o mesmo perfil Zernio e conta desconhecida: descar
   const { lookup, logs } = install({
     orgs: DUAS,
     credentials: {
-      'org-a': { zernio_profile_id: 'perfil-x' },
-      'org-b': { zernio_profile_id: 'perfil-x' },
+      'org-a': { zernio_profile_id: 'perfil-x', zernio_profile_confirmed: 'true' },
+      'org-b': { zernio_profile_id: 'perfil-x', zernio_profile_confirmed: 'true' },
     },
   });
   const found = await mod.resolveZernioOrg(lookup, {
@@ -153,8 +154,8 @@ test('o canal e o número de WhatsApp continuam valendo antes do Instagram', { s
     orgs: DUAS,
     channels: { 'wa-canal': 'org-b' },
     credentials: {
-      'org-a': { zernio_account_id: 'wa-a', zernio_profile_id: 'perfil-comum' },
-      'org-b': { zernio_profile_id: 'perfil-comum' },
+      'org-a': { zernio_account_id: 'wa-a', zernio_profile_id: 'perfil-comum', zernio_profile_confirmed: 'true' },
+      'org-b': { zernio_profile_id: 'perfil-comum', zernio_profile_confirmed: 'true' },
     },
   });
   assert.deepEqual(
@@ -207,8 +208,8 @@ test('defesa: conta de Instagram na lista, mas o evento é de outro perfil Zerni
     orgs: DUAS,
     credentials: {
       // Lista gravada errada (versão antiga guardava todas as contas da chave).
-      'org-a': { zernio_instagram_account_ids: '["ig-b"]', zernio_profile_id: 'perfil-a' },
-      'org-b': { zernio_profile_id: 'perfil-b' },
+      'org-a': { zernio_instagram_account_ids: '["ig-b"]', zernio_profile_id: 'perfil-a', zernio_profile_confirmed: 'true' },
+      'org-b': { zernio_profile_id: 'perfil-b', zernio_profile_confirmed: 'true' },
     },
   });
   const evento = dmInstagram('ig-b', 'perfil-b');
@@ -225,8 +226,8 @@ test('defesa: perfil diferente e nenhuma outra dona, o evento é descartado', { 
   const { lookup } = install({
     orgs: DUAS,
     credentials: {
-      'org-a': { zernio_instagram_account_ids: '["ig-c"]', zernio_profile_id: 'perfil-a' },
-      'org-b': { zernio_profile_id: 'perfil-b' },
+      'org-a': { zernio_instagram_account_ids: '["ig-c"]', zernio_profile_id: 'perfil-a', zernio_profile_confirmed: 'true' },
+      'org-b': { zernio_profile_id: 'perfil-b', zernio_profile_confirmed: 'true' },
     },
   });
   const found = await mod.resolveZernioOrg(lookup, {
@@ -243,5 +244,43 @@ test('defesa: organização sem zernio_profile_id ou evento sem profiles continu
   assert.deepEqual(
     await mod.resolveZernioOrg(lookup, { orgFromQuery: null, accountId: 'ig-a', profileIds: ['perfil-qualquer'] }),
     { orgId: 'org-a', status: 'active' },
+  );
+});
+
+test('perfil não confirmado (veio do primeiro perfil da lista) não roteia DM', { skip }, async () => {
+  const { lookup } = install({
+    orgs: DUAS,
+    credentials: {
+      'org-a': { zernio_account_id: 'wa-a', zernio_profile_id: 'perfil-a', zernio_profile_confirmed: 'true' },
+      'org-b': { zernio_account_id: 'wa-b', zernio_profile_id: 'perfil-x', zernio_profile_confirmed: 'false' },
+    },
+  });
+  assert.equal(
+    await mod.resolveZernioOrg(lookup, { orgFromQuery: null, accountId: 'ig-x', profileIds: ['perfil-x'] }),
+    null,
+  );
+  assert.deepEqual(
+    await mod.resolveZernioOrg(lookup, { orgFromQuery: null, accountId: 'ig-a', profileIds: ['perfil-a'] }),
+    { orgId: 'org-a', status: 'active' },
+  );
+});
+
+test('perfil sem a marca de confirmado (instalação antiga) não roteia nem descarta pela defesa', { skip }, async () => {
+  const { lookup } = install({
+    orgs: DUAS,
+    credentials: {
+      'org-a': { zernio_profile_id: 'perfil-a' },
+      'org-b': { zernio_instagram_account_ids: '["ig-b"]', zernio_profile_id: 'perfil-velho' },
+    },
+  });
+  // Pelo perfil: org-a não confirmou, então ninguém é dono.
+  assert.equal(
+    await mod.resolveZernioOrg(lookup, { orgFromQuery: null, accountId: 'ig-z', profileIds: ['perfil-a'] }),
+    null,
+  );
+  // Pela lista: o perfil não confirmado de org-b não derruba a DM legítima.
+  assert.deepEqual(
+    await mod.resolveZernioOrg(lookup, { orgFromQuery: null, accountId: 'ig-b', profileIds: ['perfil-b'] }),
+    { orgId: 'org-b', status: 'active' },
   );
 });

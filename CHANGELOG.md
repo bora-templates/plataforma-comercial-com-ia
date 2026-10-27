@@ -12,7 +12,8 @@ tela do Instagram mostra a conta que está de fato conectada.
 - O "Sincronizar números" e o "Salvar e sincronizar" guardam as contas de Instagram da Zernio
   de cada organização, junto com o número de WhatsApp. Só entram as contas do mesmo perfil da
   Zernio do número, para uma chave usada por vários clientes não levar o Instagram de um para a
-  organização de outro. Sem WhatsApp e com mais de um perfil na chave, a tela pede para escolher
+  organização de outro. Quando a Zernio não diz de qual perfil é o número, nenhuma conta de
+  Instagram entra e o webhook não usa esse perfil para achar a organização. Sem WhatsApp e com mais de um perfil na chave, a tela pede para escolher
   a conta do Instagram.
 - O `zernio-webhook` acha a organização da DM do Instagram pela conta de Instagram e, se ela
   ainda não foi sincronizada, pelo perfil da Zernio. Antes, com duas ou mais organizações
