@@ -9,9 +9,9 @@
 //      accountId. A DM do Instagram chega com o id da conta de Instagram, que
 //      não é o do número de WhatsApp. Se o evento traz profiles[] e a
 //      organização tem perfil confirmado, os dois precisam bater;
-//   4. credencial zernio_profile_id igual a um dos profiles[].id do evento,
-//      só quando zernio_profile_confirmed = 'true'. O perfil Zernio agrupa o
-//      WhatsApp e o Instagram do mesmo cliente.
+//   4. credencial zernio_profile_confirmed_id (gravada só quando o perfil é
+//      confirmado) igual a um dos profiles[].id do evento. O perfil Zernio
+//      agrupa o WhatsApp e o Instagram do mesmo cliente.
 // Duas organizações donas no mesmo passo: descarta e registra o motivo.
 //
 // Módulo puro: o acesso ao banco e ao cofre entra por ZernioOrgLookup, para o
@@ -107,13 +107,13 @@ async function zoCredential(lookup: ZernioOrgLookup, orgId: string, key: string)
   }
 }
 
-// Perfil Zernio da organização, só quando a sincronização o confirmou
-// (zernio_profile_confirmed = 'true'). O perfil que veio do primeiro da lista
-// pode ser de outro cliente da mesma chave; sem a marca (instalação que ainda
-// não sincronizou depois desta versão), também não vale para rotear.
+// Perfil Zernio da organização, só quando a sincronização o confirmou: a
+// chave zernio_profile_confirmed_id guarda o id e só existe nesse caso. O
+// zernio_profile_id (dos disparos) não é lido aqui, porque pode ser o primeiro
+// perfil da lista, de outro cliente da mesma chave. Instalação que ainda não
+// sincronizou depois desta versão não tem a chave e fica de fora.
 async function zoConfirmedProfile(lookup: ZernioOrgLookup, orgId: string): Promise<string | null> {
-  if ((await zoCredential(lookup, orgId, 'zernio_profile_confirmed'))?.trim() !== 'true') return null;
-  return (await zoCredential(lookup, orgId, 'zernio_profile_id'))?.trim() || null;
+  return (await zoCredential(lookup, orgId, 'zernio_profile_confirmed_id'))?.trim() || null;
 }
 
 // Organizações ativas cujo valor guardado em `key` casa com o evento.

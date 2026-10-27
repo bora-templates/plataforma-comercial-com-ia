@@ -95,7 +95,8 @@ test('conta só com Instagram: conecta, cadastra o webhook e avisa que não acho
 
   assert.deepEqual(JSON.parse(vault.zernio_instagram_account_ids), ['ig-1']);
   assert.equal(vault.zernio_profile_id, 'perfil-ig');
-  assert.equal(vault.zernio_profile_confirmed, 'true');
+  assert.equal(vault.zernio_profile_confirmed_id, 'perfil-ig');
+  assert.equal(vault.zernio_profile_confirmed, undefined, 'a chave antiga não é mais gravada');
   assert.equal(vault.zernio_webhook_secret, 'segredo-novo');
   assert.equal(vault.zernio_account_id, undefined, 'sem WhatsApp, o número não é tocado');
   assert.deepEqual(channels, [], 'sem WhatsApp, nenhum canal novo');
@@ -113,7 +114,7 @@ test('WhatsApp e Instagram: conecta o número e guarda a conta de Instagram', { 
   assert.equal(result.body.accountId, 'wa-1');
   assert.equal(vault.zernio_account_id, 'wa-1');
   assert.equal(vault.zernio_profile_id, 'perfil-1');
-  assert.equal(vault.zernio_profile_confirmed, 'true');
+  assert.equal(vault.zernio_profile_confirmed_id, 'perfil-1');
   assert.equal(vault.zernio_webhook_secret, 'segredo-antigo', 'segredo existente é reaproveitado');
   assert.deepEqual(JSON.parse(vault.zernio_instagram_account_ids), ['ig-1', 'ig-2']);
   assert.deepEqual(result.body.instagram.accounts.map((a) => a.username), ['escolacontraluz', 'contraluz.cursos']);
@@ -246,7 +247,7 @@ test('WhatsApp sem perfil: o primeiro perfil da lista não decide o Instagram', 
     ],
     { profiles: [{ _id: 'perfil-a' }, { _id: 'perfil-b' }] },
   );
-  const { vault, run } = setup();
+  const { vault, run } = setup({ credentials: { zernio_profile_confirmed_id: 'perfil-b' } });
 
   const result = await run();
 
@@ -254,7 +255,7 @@ test('WhatsApp sem perfil: o primeiro perfil da lista não decide o Instagram', 
   assert.deepEqual(JSON.parse(vault.zernio_instagram_account_ids), [], 'nenhum Instagram sem perfil confirmado');
   // O perfil do fallback continua gravado para os broadcasts, marcado como não confirmado.
   assert.equal(vault.zernio_profile_id, 'perfil-a');
-  assert.equal(vault.zernio_profile_confirmed, 'false');
+  assert.equal(vault.zernio_profile_confirmed_id, undefined);
 
   // E a DM do cliente A não vai para a organização B.
   const org = await import('../../supabase/functions/_shared/zernio-org.ts');
@@ -279,29 +280,29 @@ test('WhatsApp com o perfil achado pelo accountIds de GET /profiles: confirmado'
   await run();
 
   assert.equal(vault.zernio_profile_id, 'perfil-b');
-  assert.equal(vault.zernio_profile_confirmed, 'true');
+  assert.equal(vault.zernio_profile_confirmed_id, 'perfil-b');
   assert.deepEqual(JSON.parse(vault.zernio_instagram_account_ids), ['ig-b']);
 });
 
 test('WhatsApp sem perfil nenhum: apaga o zernio_profile_id antigo', { skip }, async () => {
   fakeZernio([{ _id: 'wa-b', platform: 'whatsapp', displayName: 'Cliente B' }], { profiles: [] });
-  const { vault, run } = setup({ credentials: { zernio_profile_id: 'perfil-velho', zernio_profile_confirmed: 'true' } });
+  const { vault, run } = setup({ credentials: { zernio_profile_id: 'perfil-velho', zernio_profile_confirmed_id: 'perfil-velho' } });
 
   await run();
 
   assert.equal(vault.zernio_profile_id, undefined);
-  assert.equal(vault.zernio_profile_confirmed, 'false');
+  assert.equal(vault.zernio_profile_confirmed_id, undefined);
 });
 
 test('só Instagram e a conta sem perfil: apaga o zernio_profile_id antigo', { skip }, async () => {
   fakeZernio([{ _id: 'ig-solto', platform: 'instagram', username: 'sem.perfil' }]);
-  const { vault, run } = setup({ credentials: { zernio_profile_id: 'perfil-velho', zernio_profile_confirmed: 'true' } });
+  const { vault, run } = setup({ credentials: { zernio_profile_id: 'perfil-velho', zernio_profile_confirmed_id: 'perfil-velho' } });
 
   const result = await run();
 
   assert.equal(result.body.success, true);
   assert.equal(vault.zernio_profile_id, undefined);
-  assert.equal(vault.zernio_profile_confirmed, 'false');
+  assert.equal(vault.zernio_profile_confirmed_id, undefined);
   assert.deepEqual(JSON.parse(vault.zernio_instagram_account_ids), ['ig-solto']);
 });
 

@@ -132,18 +132,26 @@ async function saveInstagram(
   return { connected: view.length > 0, accounts: view };
 }
 
-// Grava o perfil Zernio da organização e se ele é confirmado. O perfil do
-// último recurso (primeiro da lista) continua gravado porque os broadcasts
-// dependem dele, mas com zernio_profile_confirmed = 'false', e o zernio-webhook
-// não roteia por ele. Sem perfil nenhum, o antigo é apagado para a defesa do
-// webhook não descartar DM legítima com um perfil velho.
+// Grava o perfil Zernio da organização em duas chaves independentes:
+//   · zernio_profile_id: o perfil para os disparos, inclusive o do último
+//     recurso (primeiro da lista), porque os broadcasts dependem dele;
+//   · zernio_profile_confirmed_id: o mesmo id, só quando confirmado. É a única
+//     chave que o zernio-webhook lê para rotear por perfil. Sem confirmação,
+//     ela é apagada.
+// Uma chave só para o webhook evita ler, entre duas gravações ou no cache de
+// credenciais da Edge, um perfil novo com uma marca de confirmado antiga. Sem
+// perfil nenhum, as duas saem, para a defesa do webhook não descartar DM
+// legítima com um perfil velho.
 async function saveProfile(deps: ZernioConnectDeps, profile: ZernioProfileRef | null): Promise<void> {
+  if (profile?.confirmed) {
+    await deps.setCredential('zernio_profile_confirmed_id', profile.id);
+  } else {
+    await deps.deleteCredential('zernio_profile_confirmed_id');
+  }
   if (profile) {
     await deps.setCredential('zernio_profile_id', profile.id);
-    await deps.setCredential('zernio_profile_confirmed', profile.confirmed ? 'true' : 'false');
   } else {
     await deps.deleteCredential('zernio_profile_id');
-    await deps.setCredential('zernio_profile_confirmed', 'false');
   }
 }
 
