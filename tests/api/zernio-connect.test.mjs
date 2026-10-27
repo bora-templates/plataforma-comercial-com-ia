@@ -126,7 +126,7 @@ test('Instagram desconectado no painel: a sincronização esvazia a lista guarda
   assert.equal(result.body.instagram.connected, false);
 });
 
-test('duas contas de WhatsApp: pede a escolha, mas já guarda o Instagram', { skip }, async () => {
+test('duas contas de WhatsApp: pede a escolha e só grava o Instagram depois dela', { skip }, async () => {
   const calls = fakeZernio([whatsapp('wa-1'), whatsapp('wa-2'), instagram('ig-1', 'escolacontraluz')]);
   const { vault, run } = setup();
 
@@ -134,8 +134,68 @@ test('duas contas de WhatsApp: pede a escolha, mas já guarda o Instagram', { sk
 
   assert.equal(result.body.needsSelection, true);
   assert.deepEqual(result.body.accounts.map((a) => a.id), ['wa-1', 'wa-2']);
-  assert.deepEqual(JSON.parse(vault.zernio_instagram_account_ids), ['ig-1']);
+  assert.equal(vault.zernio_instagram_account_ids, undefined, 'nada de Instagram antes da escolha');
+  assert.equal(vault.zernio_profile_id, undefined);
   assert.ok(!calls.some((c) => c.path.endsWith('/webhooks/settings')));
+});
+
+test('chave compartilhada: a organização só guarda o Instagram do perfil do seu WhatsApp', { skip }, async () => {
+  fakeZernio([
+    whatsapp('wa-a', 'perfil-a'),
+    instagram('ig-a', 'cliente.a', 'perfil-a'),
+    instagram('ig-b', 'cliente.b', 'perfil-b'),
+  ]);
+  const { vault, run } = setup();
+
+  const result = await run();
+
+  assert.equal(result.body.success, true);
+  assert.equal(vault.zernio_profile_id, 'perfil-a');
+  assert.deepEqual(JSON.parse(vault.zernio_instagram_account_ids), ['ig-a']);
+  assert.deepEqual(result.body.instagram.accounts.map((a) => a.id), ['ig-a']);
+  assert.ok(!vault.zernio_instagram_accounts.includes('ig-b'));
+});
+
+test('Instagram sem perfil informado não é atribuído a ninguém', { skip }, async () => {
+  fakeZernio([
+    whatsapp('wa-a', 'perfil-a'),
+    { _id: 'ig-solto', platform: 'instagram', username: 'sem.perfil' },
+  ]);
+  const { vault, run } = setup();
+
+  await run();
+
+  assert.deepEqual(JSON.parse(vault.zernio_instagram_account_ids), []);
+});
+
+test('só Instagram em dois perfis: pede a escolha e não grava nada antes', { skip }, async () => {
+  const calls = fakeZernio([instagram('ig-a', 'cliente.a', 'perfil-a'), instagram('ig-b', 'cliente.b', 'perfil-b')]);
+  const { vault, run } = setup();
+
+  const result = await run();
+
+  assert.equal(result.body.needsSelection, true);
+  assert.equal(result.body.kind, 'instagram');
+  assert.deepEqual(result.body.accounts.map((a) => a.id), ['ig-a', 'ig-b']);
+  assert.equal(vault.zernio_instagram_account_ids, undefined);
+  assert.equal(vault.zernio_profile_id, undefined);
+  assert.ok(!calls.some((c) => c.path.endsWith('/webhooks/settings')));
+});
+
+test('só Instagram em dois perfis, com a escolha: grava só o perfil escolhido', { skip }, async () => {
+  const calls = fakeZernio([
+    instagram('ig-a', 'cliente.a', 'perfil-a'),
+    instagram('ig-b1', 'cliente.b', 'perfil-b'),
+    instagram('ig-b2', 'cliente.b.loja', 'perfil-b'),
+  ]);
+  const { vault, run } = setup({ chosenId: 'ig-b1' });
+
+  const result = await run();
+
+  assert.equal(result.body.success, true);
+  assert.equal(vault.zernio_profile_id, 'perfil-b');
+  assert.deepEqual(JSON.parse(vault.zernio_instagram_account_ids), ['ig-b1', 'ig-b2']);
+  assert.ok(calls.some((c) => c.path.endsWith('/webhooks/settings')));
 });
 
 test('conta sem WhatsApp e sem Instagram: erro claro', { skip }, async () => {

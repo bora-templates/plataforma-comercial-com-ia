@@ -88,7 +88,12 @@ export function ChannelsSettings() {
   const [showUazapiForm, setShowUazapiForm] = useState(false);
   const [uazForm, setUazForm] = useState({ label: '', serverUrl: '', token: '' });
   const [savingUaz, setSavingUaz] = useState(false);
-  const [zernioChoices, setZernioChoices] = useState<{ id: string; name: string }[] | null>(null);
+  // Contas para escolher: números de WhatsApp ou, sem WhatsApp, contas de
+  // Instagram de perfis Zernio diferentes.
+  const [zernioChoices, setZernioChoices] = useState<{
+    kind: 'whatsapp' | 'instagram';
+    accounts: { id: string; name: string }[];
+  } | null>(null);
   const [connectingZernio, setConnectingZernio] = useState(false);
   // Zernio API Key (credencial em app_settings) — conecta números oficiais +
   // Instagram. Fica recolhida quando já configurada para não poluir a tela.
@@ -256,7 +261,10 @@ export function ChannelsSettings() {
       const body = await res.json();
       if (body.instagram) setInstagram(body.instagram as InstagramStatus);
       if (res.ok && body.needsSelection) {
-        setZernioChoices(body.accounts ?? []);
+        setZernioChoices({
+          kind: body.kind === 'instagram' ? 'instagram' : 'whatsapp',
+          accounts: body.accounts ?? [],
+        });
         return;
       }
       if (!res.ok || !body.success) {
@@ -268,6 +276,9 @@ export function ChannelsSettings() {
       void loadChannels();
       void loadInstagramStatus();
     } catch (err) {
+      // A sincronização pode ter gravado parte antes de falhar: relê o estado
+      // do Instagram para a tela não mostrar um "Conectado" velho.
+      void loadInstagramStatus();
       toast.error('Falha ao conectar via Zernio', {
         description: err instanceof Error ? err.message : 'Erro interno',
       });
@@ -485,8 +496,14 @@ export function ChannelsSettings() {
                     : 'inline-flex items-center gap-1.5 rounded-full bg-[rgba(148,163,184,0.1)] px-2.5 py-1 text-[11px] font-semibold text-[var(--color-text-secondary)]'
                 }
               >
-                <Instagram className="h-3 w-3" />
-                {instagram === null ? '…' : instagram.connected ? 'Instagram conectado' : 'Instagram não conectado'}
+                {instagram === null ? null : <Instagram className="h-3 w-3" />}
+                {instagram === null ? (
+                  <Loader2 className="h-3 w-3 animate-spin" aria-label="Carregando" />
+                ) : instagram.connected ? (
+                  'Instagram conectado'
+                ) : (
+                  'Instagram não conectado'
+                )}
               </span>
             </div>
           </div>
@@ -575,14 +592,16 @@ export function ChannelsSettings() {
             onSync={() => void connectZernio()}
           />
 
-          {/* Seletor de conta Zernio (API Key com várias contas WhatsApp) */}
+          {/* Seletor de conta Zernio (vários números, ou só Instagram em vários perfis) */}
           {zernioChoices ? (
             <div className="rounded-xl border border-[rgba(212,165,116,0.15)] bg-white/[0.02] p-4">
               <h4 className="text-sm font-semibold text-[var(--color-text-primary)]">
-                Escolha a conta WhatsApp para conectar
+                {zernioChoices.kind === 'instagram'
+                  ? 'Escolha a conta do Instagram para conectar'
+                  : 'Escolha a conta WhatsApp para conectar'}
               </h4>
               <div className="mt-3 space-y-2">
-                {zernioChoices.map((acc) => (
+                {zernioChoices.accounts.map((acc) => (
                   <button
                     key={acc.id}
                     onClick={() => void connectZernio(acc.id)}

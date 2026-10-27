@@ -10,7 +10,10 @@ tela do Instagram mostra a conta que está de fato conectada.
 ### Canais
 
 - O "Sincronizar números" e o "Salvar e sincronizar" guardam as contas de Instagram da Zernio
-  de cada organização, junto com o número de WhatsApp.
+  de cada organização, junto com o número de WhatsApp. Só entram as contas do mesmo perfil da
+  Zernio do número, para uma chave usada por vários clientes não levar o Instagram de um para a
+  organização de outro. Sem WhatsApp e com mais de um perfil na chave, a tela pede para escolher
+  a conta do Instagram.
 - O `zernio-webhook` acha a organização da DM do Instagram pela conta de Instagram e, se ela
   ainda não foi sincronizada, pelo perfil da Zernio. Antes, com duas ou mais organizações
   ativas, toda DM do Instagram era descartada.
@@ -23,8 +26,10 @@ tela do Instagram mostra a conta que está de fato conectada.
 
 ### Para atualizar uma instalação que já está no ar
 
-- Depois de atualizar, o dono clica uma vez em "Sincronizar números" na tela de Canais para o
-  Instagram aparecer como conectado e as DMs chegarem na organização certa.
+- Depois de atualizar o código, republique as Edge Functions com `npm run functions:deploy`
+  (seção 2.2 do `INSTALL.md`), porque o `zernio-webhook` mudou. Só então o dono clica uma vez em
+  "Sincronizar números" na tela de Canais para o Instagram aparecer como conectado e as DMs
+  chegarem na organização certa.
 - Não há migration nova. O token de Instagram colado na tela antiga continua guardado no banco,
   sem uso.
 
