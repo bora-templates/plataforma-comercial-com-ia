@@ -7,7 +7,8 @@
 //   2. credencial zernio_account_id (o número de WhatsApp) igual ao accountId;
 //   3. credencial zernio_instagram_account_ids (lista JSON) que contém o
 //      accountId. A DM do Instagram chega com o id da conta de Instagram, que
-//      não é o do número de WhatsApp;
+//      não é o do número de WhatsApp. Se o evento traz profiles[] e a
+//      organização tem zernio_profile_id, os dois precisam bater;
 //   4. credencial zernio_profile_id igual a um dos profiles[].id do evento. O
 //      perfil Zernio agrupa o WhatsApp e o Instagram do mesmo cliente.
 // Duas organizações donas no mesmo passo: descarta e registra o motivo.
@@ -162,11 +163,25 @@ export async function resolveZernioOrg(
     );
     if (byWhatsapp !== undefined) return byWhatsapp;
 
-    const byInstagram = decide(
-      await zoOwners(lookup, rows, 'zernio_instagram_account_ids', (stored) =>
-        parseZernioInstagramIds(stored).includes(accountId)),
-      'zernio_instagram_account_ids',
-    );
+    // Defesa: com profiles[] no evento e zernio_profile_id na organização, a
+    // conta da lista só vale se o perfil bater. Uma lista gravada errada (a
+    // mesma chave enxerga o Instagram de outro cliente) não rouba a DM.
+    const listed = await zoOwners(lookup, rows, 'zernio_instagram_account_ids', (stored) =>
+      parseZernioInstagramIds(stored).includes(accountId));
+    const instagramOwners: string[] = [];
+    for (const orgId of listed) {
+      const orgProfile = (await zoCredential(lookup, orgId, 'zernio_profile_id'))?.trim();
+      if (profileIds.length > 0 && orgProfile && !profileIds.includes(orgProfile)) {
+        lookup.log?.({
+          event: 'zernio_webhook_profile_mismatch',
+          zernio_account_id: accountId,
+          org_id: orgId,
+        });
+        continue;
+      }
+      instagramOwners.push(orgId);
+    }
+    const byInstagram = decide(instagramOwners, 'zernio_instagram_account_ids');
     if (byInstagram !== undefined) return byInstagram;
   }
 

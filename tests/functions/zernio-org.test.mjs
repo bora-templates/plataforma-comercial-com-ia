@@ -112,11 +112,17 @@ test('duas organizações donas da mesma conta de Instagram: descarta e registra
       'org-b': { zernio_instagram_account_ids: '["ig-1"]', zernio_profile_id: 'perfil-b' },
     },
   });
+  // Evento sem profiles[]: a defesa por perfil não decide, e as duas são donas.
   const found = await mod.resolveZernioOrg(lookup, {
-    orgFromQuery: null, accountId: 'ig-1', profileIds: ['perfil-a'],
+    orgFromQuery: null, accountId: 'ig-1', profileIds: [],
   });
   assert.equal(found, null);
   assert.ok(logs.some((entry) => entry.event === 'zernio_webhook_ambiguous_org'));
+  // Com o perfil no evento, só a organização do mesmo perfil fica.
+  assert.deepEqual(
+    await mod.resolveZernioOrg(lookup, { orgFromQuery: null, accountId: 'ig-1', profileIds: ['perfil-a'] }),
+    { orgId: 'org-a', status: 'active' },
+  );
 });
 
 test('duas organizações com o mesmo perfil Zernio e conta desconhecida: descarta', { skip }, async () => {
@@ -194,4 +200,48 @@ test('?org= na URL continua decidindo, inclusive organização arquivada', { ski
     { orgId: 'org-v', status: 'archived' },
   );
   assert.equal(await mod.resolveZernioOrg(lookup, { orgFromQuery: 'nao-existe', accountId: null, profileIds: [] }), null);
+});
+
+test('defesa: conta de Instagram na lista, mas o evento é de outro perfil Zernio, não roteia', { skip }, async () => {
+  const { lookup } = install({
+    orgs: DUAS,
+    credentials: {
+      // Lista gravada errada (versão antiga guardava todas as contas da chave).
+      'org-a': { zernio_instagram_account_ids: '["ig-b"]', zernio_profile_id: 'perfil-a' },
+      'org-b': { zernio_profile_id: 'perfil-b' },
+    },
+  });
+  const evento = dmInstagram('ig-b', 'perfil-b');
+  const found = await mod.resolveZernioOrg(lookup, {
+    orgFromQuery: null,
+    accountId: mod.zernioEventAccountId(evento),
+    profileIds: mod.zernioEventProfileIds(evento),
+  });
+  // org-a é descartada no passo do Instagram; o passo do perfil acha a dona certa.
+  assert.deepEqual(found, { orgId: 'org-b', status: 'active' });
+});
+
+test('defesa: perfil diferente e nenhuma outra dona, o evento é descartado', { skip }, async () => {
+  const { lookup } = install({
+    orgs: DUAS,
+    credentials: {
+      'org-a': { zernio_instagram_account_ids: '["ig-c"]', zernio_profile_id: 'perfil-a' },
+      'org-b': { zernio_profile_id: 'perfil-b' },
+    },
+  });
+  const found = await mod.resolveZernioOrg(lookup, {
+    orgFromQuery: null, accountId: 'ig-c', profileIds: ['perfil-c'],
+  });
+  assert.equal(found, null);
+});
+
+test('defesa: organização sem zernio_profile_id ou evento sem profiles continua achando pela lista', { skip }, async () => {
+  const { lookup } = install({
+    orgs: DUAS,
+    credentials: { 'org-a': { zernio_instagram_account_ids: '["ig-a"]' }, 'org-b': {} },
+  });
+  assert.deepEqual(
+    await mod.resolveZernioOrg(lookup, { orgFromQuery: null, accountId: 'ig-a', profileIds: ['perfil-qualquer'] }),
+    { orgId: 'org-a', status: 'active' },
+  );
 });
