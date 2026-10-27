@@ -1,61 +1,24 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Instagram, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
-import { useAuth } from '@/app/providers/AuthProvider';
+import { Instagram, Loader2, RefreshCw } from 'lucide-react';
+import type { InstagramStatus } from '@/lib/zernio-connect-flow';
 
-// Card de conexão do Instagram (via Zernio). Vive dentro de Canais: era a única
-// tela que gravava instagram_access_token e ficou inalcançável quando
-// Credenciais saiu do router. O token entra cifrado no banco (CRYPTO_KEY) via
-// /api/credentials — nunca em .env, nunca no front depois de salvo.
-export function InstagramCard({ onSaved }: { onSaved?: () => void }) {
-  const { session } = useAuth();
-  const [connected, setConnected] = useState<boolean | null>(null);
-  const [token, setToken] = useState('');
-  const [saving, setSaving] = useState(false);
-
-  const loadStatus = useCallback(async () => {
-    if (!session) return;
-    try {
-      const res = await fetch('/api/credentials?keys=instagram_access_token', {
-        headers: { Authorization: `Bearer ${session.access_token}` },
-      });
-      const body = (await res.json()) as Record<string, { exists: boolean }>;
-      setConnected(Boolean(body.instagram_access_token?.exists));
-    } catch {
-      setConnected(false);
-    }
-  }, [session]);
-
-  useEffect(() => {
-    void loadStatus();
-  }, [loadStatus]);
-
-  const save = async () => {
-    if (!token.trim()) return;
-    setSaving(true);
-    try {
-      const res = await fetch('/api/credentials', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${session?.access_token ?? ''}`,
-        },
-        body: JSON.stringify({ credentials: { instagram_access_token: token.trim() } }),
-      });
-      const body = await res.json();
-      if (!res.ok || !body.success) throw new Error(body.message ?? 'Falha ao salvar.');
-      toast.success('Instagram conectado.');
-      setToken('');
-      setConnected(true);
-      onSaved?.();
-    } catch (err) {
-      toast.error('Falha ao conectar o Instagram', {
-        description: err instanceof Error ? err.message : 'Erro interno',
-      });
-    } finally {
-      setSaving(false);
-    }
-  };
+// Card do Instagram (via Zernio) dentro de Canais. Mostra o estado real: as
+// contas de Instagram que a sincronização da Zernio guardou para a
+// organização (zernio_instagram_account_ids), que é o que o zernio-webhook usa
+// para achar a organização da DM. Antes havia aqui um campo de token que
+// gravava instagram_access_token, que nenhum código lia; essa credencial fica
+// no banco, sem uso.
+export function InstagramCard({
+  status,
+  canSync,
+  syncing,
+  onSync,
+}: {
+  status: InstagramStatus | null;
+  canSync: boolean;
+  syncing: boolean;
+  onSync: () => void;
+}) {
+  const connected = status?.connected ?? false;
 
   return (
     <div className="rounded-xl border border-[rgba(212,165,116,0.15)] bg-white/[0.02] p-5 backdrop-blur-[40px]">
@@ -68,7 +31,7 @@ export function InstagramCard({ onSaved }: { onSaved?: () => void }) {
             <span className="text-[11px] font-medium uppercase tracking-[0.1em] text-[#94A3B8]">
               Instagram
             </span>
-            {connected === null ? (
+            {status === null ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin text-[var(--color-text-secondary)]" />
             ) : (
               <span
@@ -82,30 +45,53 @@ export function InstagramCard({ onSaved }: { onSaved?: () => void }) {
               </span>
             )}
           </div>
-          <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
-            DMs do Instagram caem no inbox e a IA já começa a conversar. Conecte a conta no
-            Zernio e cole o token de acesso abaixo.
-          </p>
 
-          <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-            <input
-              type="password"
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
-              placeholder={connected ? 'Colar novo token para reconectar…' : 'Instagram Access Token (via Zernio)'}
-              className="flex-1 rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.03] px-3 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-[var(--accent-primary)]"
-            />
+          {status !== null && connected ? (
+            <>
+              <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
+                As DMs destas contas caem no inbox e a IA já começa a conversar.
+              </p>
+              <ul className="mt-3 space-y-1.5">
+                {status.accounts.map((account) => (
+                  <li
+                    key={account.id}
+                    className="flex items-center justify-between gap-3 rounded-lg border border-[rgba(212,165,116,0.15)] bg-white/[0.02] px-3 py-2 text-sm text-[var(--color-text-primary)]"
+                  >
+                    <span className="truncate">
+                      {account.username ? `@${account.username.replace(/^@/, '')}` : 'Conta de Instagram'}
+                    </span>
+                    <span className="shrink-0 font-mono text-[11px] text-[var(--color-text-secondary)]">
+                      {account.id}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : status !== null ? (
+            <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
+              Conecte o Instagram no painel da Zernio e clique em Sincronizar números.
+            </p>
+          ) : null}
+
+          <div className="mt-4 flex flex-wrap items-center gap-3">
             <button
-              onClick={save}
-              disabled={saving || !token.trim()}
-              className="rounded-lg bg-gradient-to-br from-[#182940] to-[#D4A574] px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
+              onClick={onSync}
+              disabled={!canSync || syncing}
+              className="inline-flex items-center gap-2 rounded-lg border border-[rgba(212,165,116,0.25)] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-[var(--color-text-primary)] transition hover:border-[var(--accent-primary)] disabled:opacity-50"
             >
-              {saving ? 'Salvando…' : connected ? 'Reconectar' : 'Conectar'}
+              {syncing ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <RefreshCw className="h-3.5 w-3.5" />
+              )}
+              Sincronizar números
             </button>
+            {!canSync ? (
+              <span className="text-xs text-[var(--color-text-secondary)]">
+                Salve a Zernio API Key acima para sincronizar.
+              </span>
+            ) : null}
           </div>
-          <p className="mt-2 text-xs text-[var(--color-text-secondary)] opacity-70">
-            O token é cifrado no banco (AES-256-GCM). Nunca fica em .env nem trafega pro navegador depois de salvo.
-          </p>
         </div>
       </div>
     </div>

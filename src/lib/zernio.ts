@@ -113,10 +113,13 @@ export interface ZernioAccount {
   platform: string;
   name: string;
   profileId: string | null;
+  // Nome de usuário da conta (Instagram), quando a Zernio informa.
+  username?: string | null;
 }
 
-// GET /accounts → contas WhatsApp conectadas (platform: 'whatsapp').
-export async function listWhatsappAccounts(apiKey: string): Promise<ZernioAccount[]> {
+// GET /accounts → todas as contas conectadas na Zernio (WhatsApp, Instagram e
+// as outras plataformas), cada uma com o seu id e a sua plataforma.
+export async function listZernioAccounts(apiKey: string): Promise<ZernioAccount[]> {
   const body = await zfetch(apiKey, '/accounts');
   return asList(body)
     .map((raw) => {
@@ -129,14 +132,23 @@ export async function listWhatsappAccounts(apiKey: string): Promise<ZernioAccoun
           : profileRaw && typeof profileRaw === 'object'
             ? pickString(profileRaw as Json, ['_id', 'id'])
             : null;
+      const platform = (pickString(raw, ['platform', 'channel']) ?? '').toLowerCase();
       return {
         id: pickString(raw, ['_id', 'id']) ?? '',
-        platform: (pickString(raw, ['platform', 'channel']) ?? '').toLowerCase(),
-        name: pickString(raw, ['displayName', 'username', 'name', 'label']) ?? 'Conta WhatsApp',
+        platform,
+        name:
+          pickString(raw, ['displayName', 'username', 'name', 'label']) ??
+          (platform === 'instagram' ? 'Conta Instagram' : 'Conta WhatsApp'),
         profileId,
+        username: pickString(raw, ['username', 'handle']),
       };
     })
-    .filter((account) => account.id && account.platform === 'whatsapp');
+    .filter((account) => account.id);
+}
+
+// Só as contas WhatsApp (platform: 'whatsapp').
+export async function listWhatsappAccounts(apiKey: string): Promise<ZernioAccount[]> {
+  return (await listZernioAccounts(apiKey)).filter((account) => account.platform === 'whatsapp');
 }
 
 // GET /profiles → resolve o profileId que agrupa a conta (obrigatorio nos

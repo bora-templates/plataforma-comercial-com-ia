@@ -3,13 +3,13 @@ import { createClient } from '@supabase/supabase-js';
 import { requireAdmin } from '../src/lib/admin-auth.js';
 import { getCredential, setCredential } from '../src/lib/credentials.js';
 import { syncZernioChannel } from '../src/lib/zernio-channel.js';
+import { instagramStatus, runZernioConnect } from '../src/lib/zernio-connect-flow.js';
 import {
   ZernioError,
   getNumberInfo,
-  listWhatsappAccounts,
+  listZernioAccounts,
   registerWebhook,
   resolveProfileId,
-  type ZernioAccount,
   type ZernioNumberInfo,
 } from '../src/lib/zernio.js';
 
@@ -17,10 +17,11 @@ import {
 // api/zernio-connect
 // ----------------------------------------------------------------------------
 // Roda DEPOIS que a Zernio API Key foi salva (api/credentials). Le a chave do
-// cofre, resolve a conta WhatsApp conectada + profile + status do numero,
-// gera/registra o webhook do Zernio e persiste os derivados (account_id,
-// profile_id, webhook_secret, number_info cache). A chave nunca volta ao
-// browser; toda chamada ao Zernio sai daqui.
+// cofre, resolve a conta WhatsApp conectada + profile + status do numero e as
+// contas de Instagram, gera/registra o webhook do Zernio e persiste os
+// derivados (account_id, profile_id, webhook_secret, number_info cache,
+// instagram_account_ids). A regra mora em src/lib/zernio-connect-flow.ts. A
+// chave nunca volta ao browser; toda chamada ao Zernio sai daqui.
 //
 // O número conectado também vira canal da organização (whatsapp_hub.channels,
 // provider='zernio'), que é o que a tela de Canais lista e o que a
@@ -29,7 +30,8 @@ import {
 //  POST  → resolve + registra webhook. Se houver mais de uma conta WhatsApp e
 //          nenhuma escolhida, responde { needsSelection, accounts } para o
 //          wizard exibir o seletor e reenviar com { accountId }.
-//  GET   → status cacheado (numero + tier) para a tela de Configuracoes.
+//          Conta so com Instagram conecta o Instagram e cadastra o webhook.
+//  GET   → status cacheado (numero + tier + Instagram) para a tela de Canais.
 // ============================================================================
 
 type ApiRequest = {
@@ -68,30 +70,6 @@ function webhookUrlSafe(): string | null {
   return base ? `${base.replace(/\/$/, '')}/functions/v1/zernio-webhook` : null;
 }
 
-async function ensureWebhookSecret(orgId: string): Promise<string> {
-  const existing = await getCredential(orgId, 'zernio_webhook_secret');
-  if (existing && existing.trim()) return existing.trim();
-  const secret = randomBytes(32).toString('hex');
-  await setCredential(orgId, 'zernio_webhook_secret', secret);
-  return secret;
-}
-
-function statusPayload(account: ZernioAccount | null, info: ZernioNumberInfo | null) {
-  return {
-    accountId: account?.id ?? null,
-    accountName: account?.name ?? null,
-    number: info
-      ? {
-          display_phone_number: info.display_phone_number,
-          verified_name: info.verified_name,
-          messaging_limit_tier: info.messaging_limit_tier,
-          quality_rating: info.quality_rating,
-          health_status: info.health_status,
-        }
-      : null,
-  };
-}
-
 async function handleGet(orgId: string, res: ApiResponse) {
   const accountId = (await getCredential(orgId, 'zernio_account_id'))?.trim() || null;
   const rawInfo = await getCredential(orgId, 'zernio_number_info');
@@ -103,10 +81,15 @@ async function handleGet(orgId: string, res: ApiResponse) {
       info = null;
     }
   }
+  const instagram = instagramStatus(
+    await getCredential(orgId, 'zernio_instagram_account_ids'),
+    await getCredential(orgId, 'zernio_instagram_accounts'),
+  );
   return res.status(200).json({
     success: true,
     connected: Boolean(accountId),
     accountId,
+    instagram,
     webhook_url: webhookUrlSafe(),
     number: info
       ? {
@@ -121,78 +104,25 @@ async function handleGet(orgId: string, res: ApiResponse) {
 }
 
 async function handlePost(orgId: string, req: ApiRequest, res: ApiResponse) {
-  const apiKey = (await getCredential(orgId, 'zernio_api_key'))?.trim();
-  if (!apiKey) {
-    return res.status(400).json({
-      success: false,
-      message: 'Salve a Zernio API Key antes de conectar.',
-    });
-  }
-
   const body = (req.body ?? {}) as { accountId?: unknown };
   const chosenId = typeof body.accountId === 'string' ? body.accountId.trim() : '';
 
-  const accounts = await listWhatsappAccounts(apiKey);
-  if (accounts.length === 0) {
-    return res.status(400).json({
-      success: false,
-      message:
-        'Nenhuma conta WhatsApp encontrada no Zernio. Conecte o WhatsApp no painel do Zernio antes de continuar.',
-    });
-  }
-
-  let account: ZernioAccount | undefined;
-  if (chosenId) {
-    account = accounts.find((item) => item.id === chosenId);
-    if (!account) {
-      return res
-        .status(400)
-        .json({ success: false, message: 'Conta selecionada nao encontrada.' });
-    }
-  } else if (accounts.length === 1) {
-    account = accounts[0];
-  } else {
-    return res.status(200).json({
-      success: false,
-      needsSelection: true,
-      accounts: accounts.map((item) => ({ id: item.id, name: item.name })),
-    });
-  }
-
-  const profileId = await resolveProfileId(apiKey, account);
-  const numberInfo = await getNumberInfo(apiKey, account.id);
-
-  await setCredential(orgId, 'zernio_account_id', account.id);
-  if (profileId) await setCredential(orgId, 'zernio_profile_id', profileId);
-  await setCredential(orgId, 'zernio_number_info', JSON.stringify(numberInfo));
-
-  // Webhook: gera/reusa o segredo e registra no Zernio. Best-effort — se o
-  // registro falhar (ex.: endpoint a confirmar), o setup nao trava: o segredo
-  // fica salvo e devolvemos um aviso para o operador registrar/retentar.
-  const secret = await ensureWebhookSecret(orgId);
-  let webhookWarning: string | null = null;
-  try {
-    await registerWebhook(apiKey, {
-      url: webhookUrl(),
-      secret,
-    });
-  } catch (err) {
-    webhookWarning =
-      err instanceof Error ? err.message : 'Falha ao registrar o webhook no Zernio.';
-    console.error(JSON.stringify({ event: 'zernio_webhook_register_failed', message: webhookWarning }));
-  }
-
-  // Depois do webhook: se a gravação do canal falhar, as mensagens já chegam e
-  // reconectar refaz só o que faltou.
-  const channel = await syncZernioChannel(getSupabaseAdmin(), { orgId, account, numberInfo });
-
-  return res.status(200).json({
-    success: true,
-    ...statusPayload(account, numberInfo),
-    profileId,
-    channelId: channel.channelId,
-    webhookWarning,
-  });
+  const result = await runZernioConnect(
+    {
+      getCredential: (key) => getCredential(orgId, key),
+      setCredential: (key, value) => setCredential(orgId, key, value),
+      listAccounts: listZernioAccounts,
+      resolveProfileId,
+      getNumberInfo,
+      registerWebhook,
+      syncChannel: (account, numberInfo) =>
+        syncZernioChannel(getSupabaseAdmin(), { orgId, account, numberInfo }),
+      webhookUrl,
+      newSecret: () => randomBytes(32).toString('hex'),
+    },
+    { chosenId },
+  );
+  return res.status(result.status).json(result.body);
 }
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {

@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/app/providers/AuthProvider';
 import { getSupabase } from '@/lib/supabase';
 import { operatorLabel, useOperators } from '@/hooks/useOperators';
+import type { InstagramStatus } from '@/lib/zernio-connect-flow';
 import { InstagramCard } from './InstagramCard';
 
 // Configurações → Canais. Multi-número: cada linha de whatsapp_hub.channels é
@@ -35,7 +36,6 @@ interface ChannelRow {
   ai_enabled: boolean;
 }
 
-type ConnState = boolean | null; // null = carregando
 
 const ZERNIO_COLOR = '#25D366';
 const UAZAPI_COLOR = '#2DD4BF';
@@ -82,7 +82,8 @@ export function ChannelsSettings() {
   const { session } = useAuth();
   const { operators } = useOperators();
   const [channels, setChannels] = useState<ChannelRow[] | null>(null);
-  const [instagram, setInstagram] = useState<ConnState>(null);
+  // Contas de Instagram sincronizadas da Zernio (null = carregando).
+  const [instagram, setInstagram] = useState<InstagramStatus | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [showUazapiForm, setShowUazapiForm] = useState(false);
   const [uazForm, setUazForm] = useState({ label: '', serverUrl: '', token: '' });
@@ -117,10 +118,10 @@ export function ChannelsSettings() {
       const res = await fetch('/api/zernio-connect', {
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
-      const body = (await res.json()) as { connected?: boolean };
-      setInstagram(Boolean(body.connected));
+      const body = (await res.json()) as { instagram?: InstagramStatus };
+      setInstagram(body.instagram ?? { connected: false, accounts: [] });
     } catch {
-      setInstagram(false);
+      setInstagram({ connected: false, accounts: [] });
     }
   }, [session]);
 
@@ -253,6 +254,7 @@ export function ChannelsSettings() {
         body: JSON.stringify(accountId ? { accountId } : {}),
       });
       const body = await res.json();
+      if (body.instagram) setInstagram(body.instagram as InstagramStatus);
       if (res.ok && body.needsSelection) {
         setZernioChoices(body.accounts ?? []);
         return;
@@ -261,7 +263,8 @@ export function ChannelsSettings() {
         throw new Error(body.message ?? 'Falha ao conectar o número no Zernio.');
       }
       setZernioChoices(null);
-      toast.success('Número Zernio conectado.');
+      // Conta só com Instagram: o backend avisa que não achou número.
+      toast.success(body.message ?? 'Número Zernio conectado.');
       void loadChannels();
       void loadInstagramStatus();
     } catch (err) {
@@ -477,13 +480,13 @@ export function ChannelsSettings() {
               </span>
               <span
                 className={
-                  instagram
+                  instagram?.connected
                     ? 'inline-flex items-center gap-1.5 rounded-full bg-[rgba(225,48,108,0.1)] px-2.5 py-1 text-[11px] font-semibold text-[#E1306C]'
                     : 'inline-flex items-center gap-1.5 rounded-full bg-[rgba(148,163,184,0.1)] px-2.5 py-1 text-[11px] font-semibold text-[var(--color-text-secondary)]'
                 }
               >
                 <Instagram className="h-3 w-3" />
-                {instagram === null ? '…' : instagram ? 'Instagram conectado' : 'Instagram não conectado'}
+                {instagram === null ? '…' : instagram.connected ? 'Instagram conectado' : 'Instagram não conectado'}
               </span>
             </div>
           </div>
@@ -562,11 +565,15 @@ export function ChannelsSettings() {
             </div>
           ) : null}
 
-          {/* Instagram: o token entra por aqui. Voltou de Credenciais, que era a
-              única tela que gravava instagram_access_token e ficou órfã (fora do
-              router) na atualização de agosto — sem isso o badge acima ficava
-              preso em "não conectado" sem caminho para conectar. */}
-          <InstagramCard onSaved={() => setInstagram(true)} />
+          {/* Instagram: estado real das contas sincronizadas da Zernio. O campo de
+              token que vivia aqui gravava instagram_access_token, que nenhum
+              código lia; a credencial antiga fica no banco, sem uso. */}
+          <InstagramCard
+            status={instagram}
+            canSync={zernioKeyExists}
+            syncing={connectingZernio || savingZernioKey}
+            onSync={() => void connectZernio()}
+          />
 
           {/* Seletor de conta Zernio (API Key com várias contas WhatsApp) */}
           {zernioChoices ? (

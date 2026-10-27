@@ -2,6 +2,32 @@
 
 Mudanças relevantes deste projeto ficam registradas aqui.
 
+## [1.1.1] · 2026-10-27
+
+O Instagram pela Zernio passa a funcionar quando a instalação tem mais de uma organização, e a
+tela do Instagram mostra a conta que está de fato conectada.
+
+### Canais
+
+- O "Sincronizar números" e o "Salvar e sincronizar" guardam as contas de Instagram da Zernio
+  de cada organização, junto com o número de WhatsApp.
+- O `zernio-webhook` acha a organização da DM do Instagram pela conta de Instagram e, se ela
+  ainda não foi sincronizada, pelo perfil da Zernio. Antes, com duas ou mais organizações
+  ativas, toda DM do Instagram era descartada.
+- A conta da Zernio que tem só Instagram conecta sem erro, cadastra o webhook e avisa que nenhum
+  número de WhatsApp foi encontrado.
+- O card do Instagram mostra as contas sincronizadas e um botão para sincronizar. O campo de
+  token saiu da tela, porque nenhum código usava o valor colado ali.
+- O selo "Instagram conectado" do card da Zernio passa a olhar a conta de Instagram, e não mais
+  o número de WhatsApp.
+
+### Para atualizar uma instalação que já está no ar
+
+- Depois de atualizar, o dono clica uma vez em "Sincronizar números" na tela de Canais para o
+  Instagram aparecer como conectado e as DMs chegarem na organização certa.
+- Não há migration nova. O token de Instagram colado na tela antiga continua guardado no banco,
+  sem uso.
+
 ## [1.1.0] · 2026-10-02
 
 O card passa a nascer sozinho no funil, a IA já vem pronta para mover o card e a organização
