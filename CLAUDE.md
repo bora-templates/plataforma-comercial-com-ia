@@ -419,6 +419,14 @@ PostgREST de verdade.
      histórico da conversa.
   3. Chama o provider configurado na credencial `llm_provider`.
   4. Envia resposta via Zernio (mensagem 1:1 na inbox, dentro da janela de 24h).
+- **Modo de teste** (`ai_agent_config.test_mode` + `test_allowlist`, até 20
+  números, migration `20261028120000`): ligado, a IA só responde os contatos cujo
+  número está na lista; o resto vai para humano como a IA desligada, com o log
+  `ai_test_mode_skip`. A regra de comparação (nono dígito, 55 implícito, número
+  estrangeiro com +) mora em `_shared/ai-test-mode.ts` e a tela repete a
+  validação em `src/lib/ai-test-mode.ts` (testes em
+  `tests/functions/ai-test-mode.test.mjs`). Contato do Instagram não tem @
+  gravado (`contacts.instagram_id` é o id do remetente), então só número vale.
 - Handoff: operador clica "Pausar IA" → `conversation.ai_paused = true` →
   trigger `_on_handoff_notify` faz fanout para todos operadores.
 - Áudio do contato → `transcribe-audio` baixa o áudio da URL do attachment

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { Bot, BookOpen, Clock, Image, Loader2 } from 'lucide-react';
+import { Bot, BookOpen, Clock, FlaskConical, Image, Loader2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAppUser } from '@/app/providers/AppUserProvider';
@@ -16,11 +16,15 @@ interface TabDef {
   id: TabId;
   label: string;
   icon: LucideIcon;
-  render: () => React.ReactNode;
+  render: (ctx: TabContext) => React.ReactNode;
+}
+
+interface TabContext {
+  onTestModeChange: (on: boolean) => void;
 }
 
 const TABS: TabDef[] = [
-  { id: 'agent', label: 'Agente', icon: Bot, render: () => <AIAgentSettings /> },
+  { id: 'agent', label: 'Agente', icon: Bot, render: (ctx) => <AIAgentSettings onTestModeChange={ctx.onTestModeChange} /> },
   { id: 'media', label: 'Mídias', icon: Image, render: () => <AgentMediaSettings /> },
   { id: 'knowledge', label: 'Base de Conhecimento', icon: BookOpen, render: () => <KnowledgePage /> },
   { id: 'hours', label: 'Horário de atendimento', icon: Clock, render: () => <BusinessHoursSettings /> },
@@ -29,6 +33,9 @@ const TABS: TabDef[] = [
 export default function AIAgentPage() {
   const { role, loading } = useAppUser();
   const [active, setActive] = useState<TabId>('agent');
+  // Selo "Modo de teste ligado": a aba Agente (aberta por padrão) informa ao
+  // carregar e ao salvar.
+  const [testModeOn, setTestModeOn] = useState(false);
   const current = TABS.find((t) => t.id === active) ?? TABS[0];
 
   if (loading) {
@@ -49,7 +56,14 @@ export default function AIAgentPage() {
         </div>
         <div>
           <div className="text-label">Seção</div>
-          <h1 className="text-2xl font-bold text-display">{VOCAB.aiAgent}</h1>
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="text-2xl font-bold text-display">{VOCAB.aiAgent}</h1>
+            {testModeOn && (
+              <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold bg-[rgba(245,158,11,0.12)] text-[#FBBF24]">
+                <FlaskConical className="h-3 w-3" /> Modo de teste ligado
+              </span>
+            )}
+          </div>
           <p className="text-sm text-[var(--color-text-secondary)]">
             Configuração do agente, base de conhecimento, follow-ups e horário
           </p>
@@ -79,7 +93,7 @@ export default function AIAgentPage() {
         })}
       </div>
 
-      <div>{current.render()}</div>
+      <div>{current.render({ onTestModeChange: setTestModeOn })}</div>
     </div>
   );
 }

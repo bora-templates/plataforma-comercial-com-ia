@@ -69,7 +69,8 @@ export const SCHEMA: Record<string, TableDef> = {
   },
   [`${HUB}.ai_agent_config`]: {
     columns: ['id', 'org_id', 'system_prompt', 'temperature', 'max_tokens', 'is_active', 'created_at', 'updated_at',
-      'model', 'timezone', 'variables', 'active_whatsapp', 'active_instagram', 'auto_move_leads'],
+      'model', 'timezone', 'variables', 'active_whatsapp', 'active_instagram', 'auto_move_leads', 'test_mode',
+      'test_allowlist'],
     unique: [['org_id']],
   },
   [`${HUB}.channels`]: {

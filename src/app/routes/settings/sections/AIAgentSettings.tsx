@@ -9,6 +9,7 @@ import { getSupabase } from '@/lib/supabase';
 import { useAppUser } from '@/app/providers/AppUserProvider';
 import { useAuth } from '@/app/providers/AuthProvider';
 import { BRAND } from '@/config/brand';
+import { AI_TEST_ALLOWLIST_MAX, validateTestAllowlist } from '@/lib/ai-test-mode';
 
 const DEFAULT_PROMPT = `Você é um assistente virtual de atendimento via WhatsApp.
 Seja objetivo, educado e responda em português do Brasil.`;
@@ -63,7 +64,12 @@ function toRows(obj: Record<string, string> | null | undefined): VarRow[] {
   return Object.entries(src).map(([key, value]) => ({ key, value: String(value ?? '') }));
 }
 
-export function AIAgentSettings() {
+export function AIAgentSettings({
+  onTestModeChange,
+}: {
+  // Avisa a página para mostrar o selo "Modo de teste ligado" (ao carregar e ao salvar).
+  onTestModeChange?: (on: boolean) => void;
+} = {}) {
   const { userId } = useAppUser();
   const { session } = useAuth();
   const [rowId, setRowId] = useState<string | null>(null);
@@ -78,6 +84,12 @@ export function AIAgentSettings() {
   const [activeWhatsapp, setActiveWhatsapp] = useState(true);
   const [activeInstagram, setActiveInstagram] = useState(false);
   const [autoMoveLeads, setAutoMoveLeads] = useState(true);
+  // Modo de teste: a IA só conversa com os números da lista (process-ai-message).
+  const [testMode, setTestMode] = useState(false);
+  const [testAllowlistText, setTestAllowlistText] = useState('');
+  // Instalação sem a migration 20261028120000 não tem as colunas: o formulário
+  // salva sem elas e a seção avisa.
+  const [hasTestColumns, setHasTestColumns] = useState(true);
   const [model, setModel] = useState('gpt-4.1-mini');
   const [timezone, setTimezone] = useState('America/Sao_Paulo');
   const [variables, setVariables] = useState<VarRow[]>(toRows(DEFAULT_VARIABLES));
@@ -119,6 +131,12 @@ export function AIAgentSettings() {
           setModel((data.model as string) ?? 'gpt-4.1-mini');
           setTimezone((data.timezone as string) ?? 'America/Sao_Paulo');
           setVariables(toRows(data.variables as Record<string, string> | null));
+          const columns = 'test_mode' in data;
+          setHasTestColumns(columns);
+          const on = columns && Boolean(data.test_mode);
+          setTestMode(on);
+          setTestAllowlistText(((data.test_allowlist as string[] | null) ?? []).join('\n'));
+          onTestModeChange?.(on);
         }
         setLoading(false);
       });
@@ -174,6 +192,11 @@ export function AIAgentSettings() {
       const k = key.trim().toLowerCase().replace(/[^a-z0-9_]/g, '_');
       if (k) varsObj[k] = value;
     }
+    const allowlist = validateTestAllowlist(testAllowlistText);
+    if (hasTestColumns && allowlist.error) {
+      toast.error('Confira a lista do modo de teste', { description: allowlist.error });
+      return;
+    }
     setSaving(true);
     const supabase = getSupabase();
     const payload = {
@@ -188,6 +211,7 @@ export function AIAgentSettings() {
       model,
       timezone,
       variables: varsObj,
+      ...(hasTestColumns ? { test_mode: testMode, test_allowlist: allowlist.items } : {}),
     };
     const { error } = rowId
       ? await supabase.from('ai_agent_config').update(payload).eq('id', rowId)
@@ -223,6 +247,10 @@ export function AIAgentSettings() {
       }
     }
 
+    if (hasTestColumns) {
+      setTestAllowlistText(allowlist.items.join('\n'));
+      onTestModeChange?.(testMode);
+    }
     setSaving(false);
     toast.success('Configuração do agente salva.');
   };
@@ -320,6 +348,55 @@ export function AIAgentSettings() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Modo de teste: antes de ligar a IA para os clientes, o dono testa com
+            os números dele. Fora da lista, a conversa vai para o atendimento
+            humano (process-ai-message, _shared/ai-test-mode.ts). */}
+        <div className="space-y-2">
+          <Label>Modo de teste</Label>
+          <p className="text-[11px] text-[var(--color-text-secondary)] opacity-70 max-w-2xl">
+            Com o modo de teste ligado, a IA só conversa com os números desta lista. Os outros
+            contatos vão para o atendimento humano. Desligue quando quiser liberar a IA para todos
+            os clientes.
+          </p>
+          {hasTestColumns ? (
+            <div className="space-y-3 max-w-2xl">
+              <label className="flex items-center gap-3 h-11 px-4 rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.03] cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={testMode}
+                  onChange={(e) => setTestMode(e.target.checked)}
+                  disabled={saving}
+                  className="accent-[var(--accent-primary)] h-4 w-4"
+                />
+                <span className="text-sm text-[var(--color-text-primary)]">Ligar o modo de teste</span>
+              </label>
+              <div className="space-y-2">
+                <Label htmlFor="test_allowlist">Números liberados no teste</Label>
+                <textarea
+                  id="test_allowlist"
+                  value={testAllowlistText}
+                  onChange={(e) => setTestAllowlistText(e.target.value)}
+                  rows={4}
+                  disabled={saving}
+                  placeholder={'+55 11 99999-0000\n(21) 98888-7777'}
+                  className="w-full rounded-lg border border-[rgba(212,165,116,0.2)] bg-white/[0.03] px-4 py-3 text-sm text-[var(--color-text-primary)] font-mono placeholder:text-[var(--color-text-secondary)] focus:outline-none focus:border-[var(--accent-primary)] focus:bg-white/[0.06]"
+                />
+                <p className="text-[11px] text-[var(--color-text-secondary)] opacity-70">
+                  Um número de WhatsApp por linha, até {AI_TEST_ALLOWLIST_MAX}, com DDD. O número
+                  sem o 55 vale como número do Brasil, e o de outro país começa com +. O modo de
+                  teste vale para o WhatsApp: a Plataforma não guarda o @ de quem escreve pelo
+                  Instagram, então com o modo ligado a IA não responde no Instagram.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <p className="text-[11px] text-[#FBBF24] max-w-2xl">
+              Para usar o modo de teste, rode a migration da versão 1.1.3 no banco
+              (INSTALL.md, seção 8).
+            </p>
+          )}
         </div>
 
         {/* Canais ativos (Módulo 6) — cada canal liga/desliga a IA de forma

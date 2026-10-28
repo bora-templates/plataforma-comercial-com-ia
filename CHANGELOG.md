@@ -2,6 +2,37 @@
 
 Mudanças relevantes deste projeto ficam registradas aqui.
 
+## [1.1.3] · 2026-10-28
+
+Em Atendente IA › Agente, o modo de teste deixa a IA conversar só com uma lista de números, para
+testar com os números da equipe antes de ligar a IA para os clientes.
+
+### Atendente IA
+
+- Seção nova "Modo de teste", logo acima de "Canais atendidos pela IA", com a caixa "Ligar o modo
+  de teste" e o campo "Números liberados no teste", um número de WhatsApp por linha, até 20. A
+  tela confere a lista no "Salvar alterações": cada número precisa ter de 10 a 15 dígitos.
+- Com o modo ligado, a IA só responde os contatos da lista. Os outros contatos vão para o
+  atendimento humano, do mesmo jeito que acontece com a IA desligada, e o `process-ai-message`
+  registra o evento `ai_test_mode_skip`. Disparos, follow-ups, automações de funil e mensagens
+  do time continuam como estão.
+- O número casa só pelos dígitos. Número do Brasil casa com e sem o nono dígito, e o número
+  digitado sem o 55 vale como número do Brasil. O de outro país começa com + e compara os dígitos
+  inteiros.
+- O modo de teste vale para o WhatsApp. A Plataforma não guarda o @ de quem escreve pelo
+  Instagram, então com o modo ligado a IA não responde no Instagram, e a tela avisa.
+- Com o modo ligado, o topo da página Atendente IA mostra o selo "Modo de teste ligado".
+- O modo nasce desligado nas organizações que já existem e nas novas.
+
+### Para atualizar uma instalação que já está no ar
+
+- Rode a migration nova `20261028120000_modo_de_teste_da_ia.sql` com `npm run db:status` e
+  `npm run db:push` (seção 8 do `INSTALL.md`), ou cole o arquivo no SQL Editor.
+- Republique a Edge Function `process-ai-message` com `npm run functions:deploy` (seção 2.2 do
+  `INSTALL.md`). Só ela mudou.
+- Atualize o código e publique na Vercel. Enquanto a migration não roda, a IA segue como antes e
+  a seção do modo de teste pede para rodar a migration.
+
 ## [1.1.2] · 2026-10-28
 
 Em Ajustes › Canais, o número desativado ganha o botão "Remover", para tirar da lista o que não

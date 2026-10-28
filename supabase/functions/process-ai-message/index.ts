@@ -24,6 +24,7 @@ import { callLLM, type LLMProvider } from '../_shared/llm.ts';
 import { jsonResponse, preflight } from '../_shared/cors.ts';
 import { requireServiceRole } from '../_shared/auth.ts';
 import { sendInboxWithResolve } from '../_shared/inbox-delivery.ts';
+import { aiTestModeAllows } from '../_shared/ai-test-mode.ts';
 
 const EMBED_MODEL = 'text-embedding-3-small';
 const TOP_K = 5;
@@ -63,6 +64,9 @@ interface AgentConfig {
   active_instagram: boolean;
   auto_move_leads: boolean;
   model: string | null;
+  // Modo de teste (20261028120000): ausentes em instalação sem a migration.
+  test_mode?: boolean | null;
+  test_allowlist?: string[] | null;
   timezone: string | null;
   variables: Record<string, string> | null;
 }
@@ -449,13 +453,25 @@ Deno.serve(async (req) => {
     return jsonResponse({ ok: true, skipped: 'org not active' });
   }
 
-  // Config do agente DA ORG (não há mais singleton global).
-  const { data: agentRow } = await admin
+  // Config do agente DA ORG (não há mais singleton global). As colunas do modo
+  // de teste só existem depois da migration 20261028120000: se a leitura com
+  // elas falhar (instalação com o código novo e o banco antigo), lê sem elas e
+  // o modo de teste fica desligado.
+  const AGENT_COLUMNS =
+    'system_prompt, temperature, max_tokens, is_active, active_whatsapp, active_instagram, auto_move_leads, model, timezone, variables';
+  let agentRead = await admin
     .from('ai_agent_config')
-    .select('system_prompt, temperature, max_tokens, is_active, active_whatsapp, active_instagram, auto_move_leads, model, timezone, variables')
+    .select(`${AGENT_COLUMNS}, test_mode, test_allowlist`)
     .eq('org_id', orgId)
     .maybeSingle();
-  const agent = (agentRow as AgentConfig | null) ?? null;
+  if (agentRead.error) {
+    agentRead = await admin
+      .from('ai_agent_config')
+      .select(AGENT_COLUMNS)
+      .eq('org_id', orgId)
+      .maybeSingle();
+  }
+  const agent = (agentRead.data as AgentConfig | null) ?? null;
 
   if (conversation.status === 'closed') {
     return jsonResponse({ ok: true, skipped: 'conversation closed' });
@@ -500,6 +516,34 @@ Deno.serve(async (req) => {
         ? `ai disabled for channel ${channel}`
         : 'ai disabled for this number';
     return jsonResponse({ ok: true, skipped: reason, routed_to_human: true });
+  }
+
+  // Modo de teste: com ele ligado, a IA só conversa com os números da lista. O
+  // contato de fora segue o mesmo caminho da IA desligada (atendimento humano).
+  // O contato do Instagram não tem número e nunca está na lista.
+  if (agent.test_mode) {
+    const { data: testContactRow } = await admin
+      .from('contacts')
+      .select('phone')
+      .eq('id', conversation.contact_id)
+      .maybeSingle();
+    const testPhone = channel === 'whatsapp'
+      ? ((testContactRow as { phone?: string | null } | null)?.phone ?? null)
+      : null;
+    if (!aiTestModeAllows(agent, { phone: testPhone })) {
+      await admin
+        .from('conversations')
+        .update({ status: 'human_active', ai_paused: true, last_message_at: new Date().toISOString() })
+        .eq('id', conversation.id);
+      console.log(JSON.stringify({
+        event: 'ai_test_mode_skip',
+        org_id: orgId,
+        conversation_id: conversation.id,
+        channel,
+        allowlist_size: (agent.test_allowlist ?? []).length,
+      }));
+      return jsonResponse({ ok: true, skipped: 'ai test mode: contact not in allowlist', routed_to_human: true });
+    }
   }
 
   // 3. Credentials (da org da conversa).
