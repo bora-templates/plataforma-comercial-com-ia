@@ -16,6 +16,8 @@ import { useAuth } from '@/app/providers/AuthProvider';
 import { getSupabase } from '@/lib/supabase';
 import { operatorLabel, useOperators } from '@/hooks/useOperators';
 import type { InstagramStatus } from '@/lib/zernio-connect-flow';
+import { Dialog } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import { InstagramCard } from './InstagramCard';
 
 // Configurações → Canais. Multi-número: cada linha de whatsapp_hub.channels é
@@ -85,6 +87,7 @@ export function ChannelsSettings() {
   // Contas de Instagram sincronizadas da Zernio (null = carregando).
   const [instagram, setInstagram] = useState<InstagramStatus | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  const [removing, setRemoving] = useState<ChannelRow | null>(null);
   const [showUazapiForm, setShowUazapiForm] = useState(false);
   const [uazForm, setUazForm] = useState({ label: '', serverUrl: '', token: '' });
   const [savingUaz, setSavingUaz] = useState(false);
@@ -244,6 +247,36 @@ export function ChannelsSettings() {
     void loadChannels();
   };
 
+  // Remove um número desativado. A rota recusa número ativo (409) e só apaga
+  // na organização do admin; conversas e disparos ficam, sem o vínculo.
+  const removeChannel = async (channel: ChannelRow) => {
+    if (!session) return;
+    setBusy(channel.id);
+    try {
+      const res = await fetch('/api/channel-remove', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ channelId: channel.id }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok || !body.success) {
+        throw new Error(body.message ?? 'Erro interno');
+      }
+      toast.success('Número removido.');
+      setRemoving(null);
+      void loadChannels();
+    } catch (err) {
+      toast.error('Falha ao remover o número', {
+        description: err instanceof Error ? err.message : 'Erro interno',
+      });
+    } finally {
+      setBusy(null);
+    }
+  };
+
   // Conecta/reconecta números da conta Zernio (a API Key precisa estar salva).
   // Com várias contas, o backend devolve needsSelection.
   const connectZernio = async (accountId?: string) => {
@@ -354,6 +387,15 @@ export function ChannelsSettings() {
           >
             {channel.is_active ? 'Desativar' : 'Reativar'}
           </button>
+          {!channel.is_active ? (
+            <button
+              onClick={() => setRemoving(channel)}
+              disabled={busy === channel.id}
+              className="shrink-0 rounded-lg border border-[rgba(239,68,68,0.35)] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-[#F87171] transition hover:border-[#F87171] disabled:opacity-50"
+            >
+              Remover
+            </button>
+          ) : null}
         </div>
 
         {/* Operador responsável — conversas deste número vão direto para ele. */}
@@ -736,6 +778,36 @@ export function ChannelsSettings() {
         </div>
       </section>
 
+      <Dialog
+        open={removing !== null}
+        onClose={() => (busy ? undefined : setRemoving(null))}
+        title="Remover este número?"
+      >
+        {removing ? (
+          <div className="space-y-4">
+            <p className="text-sm text-[var(--color-text-secondary)]">
+              As conversas e os disparos que passaram por ele continuam na Plataforma, sem o
+              vínculo com o número.{' '}
+              {removing.provider === 'uazapi'
+                ? 'Se a instância ainda existir na UAZAPI, apague lá também para ela não continuar mandando mensagens para a Plataforma.'
+                : 'Se o número ainda estiver conectado na Zernio, desconecte lá antes, senão o Sincronizar números traz ele de volta.'}
+            </p>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" disabled={busy === removing.id} onClick={() => setRemoving(null)}>
+                Cancelar
+              </Button>
+              <Button
+                variant="destructive"
+                disabled={busy === removing.id}
+                onClick={() => void removeChannel(removing)}
+              >
+                {busy === removing.id ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                Remover número
+              </Button>
+            </div>
+          </div>
+        ) : null}
+      </Dialog>
     </div>
   );
 }

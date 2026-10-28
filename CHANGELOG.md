@@ -2,6 +2,26 @@
 
 Mudanças relevantes deste projeto ficam registradas aqui.
 
+## [1.1.2] · 2026-10-28
+
+Em Ajustes › Canais, o número desativado ganha o botão "Remover", para tirar da lista o que não
+se usa mais.
+
+### Canais
+
+- O botão "Remover" aparece só no cartão de número desativado (Zernio e UAZAPI), ao lado de
+  "Reativar", e pede confirmação antes de apagar. Número ativo não pode ser removido pela tela
+  nem pela rota: ela responde 409 com "Desative o número antes de remover."
+- As conversas e os disparos que passaram pelo número continuam na Plataforma, sem o vínculo com
+  ele. As credenciais da Zernio não mudam. Se o número ainda estiver conectado na Zernio, é
+  preciso desconectá-lo lá, senão o "Sincronizar números" traz ele de volta.
+- Rota nova `api/channel-remove`, que só aceita administrador e apaga apenas na organização dele.
+
+### Para atualizar uma instalação que já está no ar
+
+- Basta atualizar o código e publicar na Vercel. As Edge Functions não mudaram e não precisam
+  ser republicadas. Não há migration nova.
+
 ## [1.1.1] · 2026-10-27
 
 O Instagram pela Zernio passa a funcionar quando a instalação tem mais de uma organização, e a
