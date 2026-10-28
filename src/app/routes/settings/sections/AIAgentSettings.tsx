@@ -221,6 +221,11 @@ export function AIAgentSettings({
       toast.error('Falha ao salvar', { description: error.message });
       return;
     }
+    // A configuração já está salva: o selo acompanha, mesmo se a chave falhar abaixo.
+    if (hasTestColumns) {
+      setTestAllowlistText(allowlist.items.join('\n'));
+      onTestModeChange?.(testMode);
+    }
 
     // OpenAI API Key: só grava se o usuário informou uma nova (campo vazio
     // mantém a atual). Vai para public.app_settings via /api/credentials.
@@ -247,10 +252,6 @@ export function AIAgentSettings({
       }
     }
 
-    if (hasTestColumns) {
-      setTestAllowlistText(allowlist.items.join('\n'));
-      onTestModeChange?.(testMode);
-    }
     setSaving(false);
     toast.success('Configuração do agente salva.');
   };
@@ -387,7 +388,9 @@ export function AIAgentSettings({
                   Um número de WhatsApp por linha, até {AI_TEST_ALLOWLIST_MAX}, com DDD. O número
                   sem o 55 vale como número do Brasil, e o de outro país começa com +. O modo de
                   teste vale para o WhatsApp: a Plataforma não guarda o @ de quem escreve pelo
-                  Instagram, então com o modo ligado a IA não responde no Instagram.
+                  Instagram, então com o modo ligado a IA não responde no Instagram. A conversa
+                  que já foi para o atendimento humano continua com o humano. Para a IA voltar
+                  nela, clique em "Retomar IA" na conversa.
                 </p>
               </div>
             </div>

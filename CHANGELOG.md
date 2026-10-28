@@ -16,11 +16,15 @@ testar com os números da equipe antes de ligar a IA para os clientes.
   atendimento humano, do mesmo jeito que acontece com a IA desligada, e o `process-ai-message`
   registra o evento `ai_test_mode_skip`. Disparos, follow-ups, automações de funil e mensagens
   do time continuam como estão.
-- O número casa só pelos dígitos. Número do Brasil casa com e sem o nono dígito, e o número
-  digitado sem o 55 vale como número do Brasil. O de outro país começa com + e compara os dígitos
-  inteiros.
+- O número casa só pelos dígitos. Número do Brasil casa com e sem o nono dígito, o zero de
+  discagem no começo (011, 0 + operadora) é ignorado e o número digitado sem o 55, com DDD
+  válido, vale como número do Brasil. O de outro país começa com + e compara os dígitos inteiros.
+  Número americano digitado sem o + é recusado com "Número de outro país começa com +.".
 - O modo de teste vale para o WhatsApp. A Plataforma não guarda o @ de quem escreve pelo
   Instagram, então com o modo ligado a IA não responde no Instagram, e a tela avisa.
+- A conversa que já foi para o atendimento humano continua com o humano, mesmo depois de o
+  número entrar na lista ou de o modo ser desligado. Para a IA voltar nela, clique em "Retomar
+  IA" na conversa.
 - Com o modo ligado, o topo da página Atendente IA mostra o selo "Modo de teste ligado".
 - O modo nasce desligado nas organizações que já existem e nas novas.
 

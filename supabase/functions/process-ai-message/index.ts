@@ -455,8 +455,10 @@ Deno.serve(async (req) => {
 
   // Config do agente DA ORG (não há mais singleton global). As colunas do modo
   // de teste só existem depois da migration 20261028120000: se a leitura com
-  // elas falhar (instalação com o código novo e o banco antigo), lê sem elas e
-  // o modo de teste fica desligado.
+  // elas falhar por coluna inexistente (42703: instalação com o código novo e o
+  // banco antigo), lê sem elas e o modo de teste fica desligado. Qualquer outro
+  // erro deixa o agente nulo e a conversa vai para o humano, como antes, para a
+  // IA não responder um contato de fora da lista por causa de uma falha de leitura.
   const AGENT_COLUMNS =
     'system_prompt, temperature, max_tokens, is_active, active_whatsapp, active_instagram, auto_move_leads, model, timezone, variables';
   let agentRead = await admin
@@ -464,7 +466,7 @@ Deno.serve(async (req) => {
     .select(`${AGENT_COLUMNS}, test_mode, test_allowlist`)
     .eq('org_id', orgId)
     .maybeSingle();
-  if (agentRead.error) {
+  if ((agentRead.error as { code?: string } | null)?.code === '42703') {
     agentRead = await admin
       .from('ai_agent_config')
       .select(AGENT_COLUMNS)

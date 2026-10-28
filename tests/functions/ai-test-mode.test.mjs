@@ -55,6 +55,35 @@ test('número digitado sem o 55 ganha o 55', { skip }, () => {
   assert.equal(engine.aiTestModeAllows(on(['1199990000']), { phone: '+551199990000' }), true);
 });
 
+test('zero de operadora no começo sai antes da regra', { skip }, () => {
+  // 0 + DDD (discagem de longa distância).
+  assert.equal(engine.aiTestModeAllows(on(['011 99999-0000']), { phone: '+5511999990000' }), true);
+  assert.equal(engine.aiTestModeAllows(on(['(011) 9999-0000']), { phone: '+5511999990000' }), true);
+  // 0 + código da operadora (xx) + DDD.
+  assert.equal(engine.aiTestModeAllows(on(['0 21 11 99999-0000']), { phone: '+5511999990000' }), true);
+  assert.equal(engine.aiTestModeAllows(on(['015 11 9999-0000']), { phone: '+5511999990000' }), true);
+  assert.equal(engine.allowlistPhoneKey('011 99999-0000'), engine.allowlistPhoneKey('+55 11 99999-0000'));
+});
+
+test('sem +, só ganha o 55 quem tem DDD válido do Brasil', { skip }, () => {
+  // DDD começando com 0 depois de tirar o zero não existe: "00 9999-0000" e afins.
+  assert.equal(engine.allowlistPhoneKey('2099990000'), '2099990000');
+  assert.equal(engine.allowlistPhoneKey('1099990000'), '1099990000');
+  assert.equal(engine.allowlistPhoneKey('1199990000'), engine.allowlistPhoneKey('+551199990000'));
+  assert.equal(engine.aiTestModeAllows(on(['2099990000']), { phone: '+552099990000' }), false);
+});
+
+test('número americano sem + é recusado pela tela com aviso de outro país', { skip }, () => {
+  assert.equal(engine.validateTestAllowlist('15551234567').error, 'Número de outro país começa com +.');
+  assert.equal(engine.validateTestAllowlist('1 555 123 4567').error, 'Número de outro país começa com +.');
+  // Com +, vale.
+  assert.equal(engine.validateTestAllowlist('+1 555 123 4567').error, null);
+  // Celular de Sorocaba (DDD 15, terceiro dígito 9) continua valendo.
+  assert.equal(engine.validateTestAllowlist('15 99123-4567').error, null);
+  // Fixo de 10 dígitos com DDD 15 também.
+  assert.equal(engine.validateTestAllowlist('15 3312-4567').error, null);
+});
+
 test('número de fora do Brasil compara os dígitos inteiros', { skip }, () => {
   // Com o +, o número é internacional e não ganha o 55.
   assert.equal(engine.aiTestModeAllows(on(['+1 212 555 1234']), { phone: '+12125551234' }), true);
@@ -115,12 +144,17 @@ test('tela e motor concordam sobre a validação e a chave do número', { skip }
     '@lojateste',
     'fulano',
     '11 99999-0000\n+5511999990000',
+    '15551234567',
+    '011 99999-0000',
+    '0 21 11 99999-0000',
+    '2099990000',
     Array.from({ length: 21 }, (_, i) => `119999900${String(i).padStart(2, '0')}`).join('\n'),
   ];
   for (const texto of casos) {
     assert.deepEqual(ui.validateTestAllowlist(texto), engine.validateTestAllowlist(texto), texto);
   }
-  for (const n of ['+55 11 99999-0000', '1199990000', '+12125551234', '123', '@x']) {
+  for (const n of ['+55 11 99999-0000', '1199990000', '+12125551234', '123', '@x', '011 99999-0000',
+    '0 21 11 99999-0000', '2099990000', '15551234567']) {
     assert.equal(ui.allowlistPhoneKey(n), engine.allowlistPhoneKey(n), n);
   }
   assert.equal(ui.AI_TEST_ALLOWLIST_MAX, engine.AI_TEST_ALLOWLIST_MAX);

@@ -14,7 +14,7 @@
 // ============================================================================
 
 import assert from 'node:assert/strict';
-import { cronRequest, loadEdgeHandler, type Row } from './lib/fake-backend.ts';
+import { cronRequest, loadEdgeHandler, type Row, SCHEMA } from './lib/fake-backend.ts';
 import { newScenario, type Scenario } from './lib/scenario.ts';
 
 const handler = await loadEdgeHandler(
@@ -127,4 +127,38 @@ scenarioTest('modo de teste desligado: todo contato passa, como antes', async (s
   const { conversationId, messageId } = inbound(s, { phone: '+5511999990000' });
   passedTheGate(await run(messageId));
   assert.equal(conversation(s, conversationId).status, 'ai_active');
+});
+
+// ---- Leitura da configuração do agente --------------------------------------------
+
+const agentReads = (s: Scenario): string[] =>
+  s.backend.restLog.filter((line) => line.startsWith('GET whatsapp_hub.ai_agent_config'));
+
+scenarioTest('banco sem a migration (coluna inexistente): relê sem as colunas e a IA segue sem modo de teste', async (s) => {
+  const def = SCHEMA['whatsapp_hub.ai_agent_config'];
+  const original = [...def.columns];
+  def.columns = original.filter((c) => c !== 'test_mode' && c !== 'test_allowlist');
+  try {
+    setAgent(s, {});
+    const { conversationId, messageId } = inbound(s);
+    passedTheGate(await run(messageId));
+    assert.equal(agentReads(s).length, 2);
+    assert.equal(conversation(s, conversationId).status, 'ai_active');
+  } finally {
+    def.columns = original;
+  }
+});
+
+scenarioTest('erro de leitura que não é coluna inexistente: não relê e a conversa vai para o humano', async (s) => {
+  setAgent(s, { test_mode: true, test_allowlist: ['+55 21 98888-7777'] });
+  s.backend.forcedErrors.push({
+    method: 'GET', table: 'ai_agent_config', status: 500, code: '57014', message: 'canceling statement due to statement timeout',
+  });
+  const { conversationId, messageId } = inbound(s, { phone: '+5511999990000' });
+  const res = await run(messageId);
+  assert.equal(res.status, 200, JSON.stringify(res.body));
+  assert.equal(res.body.routed_to_human, true);
+  assert.equal(agentReads(s).length, 1);
+  assert.equal(conversation(s, conversationId).status, 'human_active');
+  assert.equal(conversation(s, conversationId).ai_paused, true);
 });
